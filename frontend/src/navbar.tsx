@@ -12,7 +12,7 @@ function Navbar() {
         </a>
 
         {/* Navigation Links (Hidden on Small Screens) */}
-        <div className="hidden md:flex gap-6">
+        <div className="hidden md:flex gap-6 justify-center items-center">
           <a
             href="#features"
             className="text-muted-foreground hover:text-primary"
@@ -36,8 +36,8 @@ function Navbar() {
         {/* Right-side Controls */}
         <div className="hidden md:flex gap-3 items-center">
           <ModeToggle /> {/* Dark Mode Switch */}
-          <Button variant="ghost">Log In</Button>
-          <Button>Get Started</Button>
+          <Button variant={"secondary"}>Sign In</Button>
+          <Button variant="default">Sign Up</Button>
         </div>
 
         {/* Mobile Menu Button */}
