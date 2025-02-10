@@ -1,12 +1,13 @@
-import { useState } from "react";
+import Hero from "./components/hero";
+import { ThemeProvider } from "@/components/theme-provider";
+import Navbar from "./navbar";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      <div className="text-3xl font-bold bg-red-500 w-fit px-12">Hello</div>
-    </>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <Navbar />
+      <Hero />
+    </ThemeProvider>
   );
 }
 
