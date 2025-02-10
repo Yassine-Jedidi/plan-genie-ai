@@ -53,7 +53,7 @@ function SignUpPage() {
 
         <CardFooter>
           <div className="grid w-full gap-y-4">
-            <Button>Sign in</Button>
+            <Button>Sign up</Button>
             <Button variant="link" size="sm" asChild>
               <Link to="/sign-in">Already have an account? Sign in</Link>
             </Button>

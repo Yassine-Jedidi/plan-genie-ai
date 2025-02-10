@@ -38,7 +38,7 @@ An intelligent application designed to assist users in managing daily tasks and 
 
 ### **User Interface**
 
-- [ ] **Responsive Web App**: Built with React.js.
+- [✓] **Responsive Web App**: Built with React.js.
 - [ ] **Mobile App**: Built with Flutter.
 - [ ] **Multilingual UI**: Support multiple interface languages.
 

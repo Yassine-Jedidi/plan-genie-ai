@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import { ModeToggle } from "./mode-toggle";
 
 function MenuBar() {
   const [open, setOpen] = useState<boolean>(false);

@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { MoveRight, CalendarCheck } from "lucide-react";
+import { MoveRight } from "lucide-react";
 import { Button } from "@/components/ui/button"; // shadcn button component
 import { GetStartedButton } from "./get-started-button";
+import { Link } from "react-router-dom";
 
 function Hero() {
   const [titleNumber, setTitleNumber] = useState(0);
@@ -63,7 +64,9 @@ function Hero() {
           {/* Buttons */}
           <div className="flex flex-row gap-3">
             <Button variant="outline">Compare Plans</Button>
-            <GetStartedButton />
+            <Link to="/sign-up">
+              <GetStartedButton />
+            </Link>
           </div>
 
           <div className="text-center mt-8">
