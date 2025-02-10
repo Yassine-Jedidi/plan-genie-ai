@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle"; // Dark Mode Toggle
+import { MenuBar } from "./components/menu-bar";
 
 function Navbar() {
   return (
@@ -34,16 +34,15 @@ function Navbar() {
         </div>
 
         {/* Right-side Controls */}
-        <div className="hidden md:flex gap-3 items-center">
-          <ModeToggle /> {/* Dark Mode Switch */}
-          <Button variant={"secondary"}>Sign In</Button>
-          <Button variant="default">Sign Up</Button>
+        <div className="flex gap-3 items-center">
+          <ModeToggle /> {/* Dark Mode Switch Always Visible */}
+          <div className="hidden md:flex gap-3">
+            <Button variant="secondary">Sign In</Button>
+            <Button variant="default">Sign Up</Button>
+          </div>
+          {/* Mobile Menu Button */}
+          <MenuBar />
         </div>
-
-        {/* Mobile Menu Button */}
-        <button className="md:hidden">
-          <Menu className="w-6 h-6" />
-        </button>
       </div>
     </nav>
   );
