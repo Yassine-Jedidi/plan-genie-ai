@@ -1,47 +1,60 @@
-import { useEffect } from "react";
-import { Toggle } from "@/components/ui/toggle";
 import { Moon, Sun } from "lucide-react";
-import { useTheme } from "@/components/theme-provider";
+import { cn } from "@/lib/utils";
+import { useTheme } from "@/components/theme-provider"; // Import useTheme to access the context
 
-function ModeToggle() {
-  const { theme, setTheme } = useTheme();
+interface ThemeToggleProps {
+  className?: string;
+}
 
-  // Sync theme with the root element
-  useEffect(() => {
-    const root = window.document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-      root.classList.remove("light");
-    } else if (theme === "light") {
-      root.classList.add("light");
-      root.classList.remove("dark");
-    }
-  }, [theme]);
+export function ModeToggle({ className }: ThemeToggleProps) {
+  const { theme, setTheme } = useTheme(); // Use the context
+  const isDark = theme === "dark"; // Check if the current theme is dark
+
+  const toggleTheme = () => {
+    setTheme(isDark ? "light" : "dark"); // Toggle the theme globally
+  };
 
   return (
-    <div>
-      <Toggle
-        variant="outline"
-        className="group size-9 data-[state=on]:bg-transparent data-[state=on]:hover:bg-muted"
-        pressed={theme === "dark"}
-        onPressedChange={() => setTheme(theme === "dark" ? "light" : "dark")}
-        aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-      >
-        <Moon
-          size={16}
-          strokeWidth={2}
-          className="shrink-0 scale-0 opacity-0 transition-all group-data-[state=on]:scale-100 group-data-[state=on]:opacity-100"
-          aria-hidden="true"
-        />
-        <Sun
-          size={16}
-          strokeWidth={2}
-          className="absolute shrink-0 scale-100 opacity-100 transition-all group-data-[state=on]:scale-0 group-data-[state=on]:opacity-0"
-          aria-hidden="true"
-        />
-      </Toggle>
+    <div
+      className={cn(
+        "flex w-16 h-8 p-1 rounded-full cursor-pointer transition-all duration-300",
+        isDark
+          ? "bg-zinc-950 border border-zinc-800"
+          : "bg-white border border-zinc-200",
+        className
+      )}
+      onClick={toggleTheme} // Toggle theme on click
+      role="button"
+      tabIndex={0}
+    >
+      <div className="flex justify-between items-center w-full">
+        <div
+          className={cn(
+            "flex justify-center items-center w-6 h-6 rounded-full transition-transform duration-300",
+            isDark
+              ? "transform translate-x-0 bg-zinc-800"
+              : "transform translate-x-8 bg-gray-200"
+          )}
+        >
+          {isDark ? (
+            <Moon className="w-4 h-4 text-white" strokeWidth={1.5} />
+          ) : (
+            <Sun className="w-4 h-4 text-gray-700" strokeWidth={1.5} />
+          )}
+        </div>
+        <div
+          className={cn(
+            "flex justify-center items-center w-6 h-6 rounded-full transition-transform duration-300",
+            isDark ? "bg-transparent" : "transform -translate-x-8"
+          )}
+        >
+          {isDark ? (
+            <Sun className="w-4 h-4 text-gray-500" strokeWidth={1.5} />
+          ) : (
+            <Moon className="w-4 h-4 text-black" strokeWidth={1.5} />
+          )}
+        </div>
+      </div>
     </div>
   );
 }
-
-export { ModeToggle };
