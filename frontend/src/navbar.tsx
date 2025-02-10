@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle"; // Dark Mode Toggle
 import { MenuBar } from "./components/menu-bar";
+import { Link } from "react-router-dom";
 
 function Navbar() {
   return (
-    <nav className="fixed top-0 left-0 w-full bg-background/80 backdrop-blur-lg border-b border-border z-50">
+    <nav className="sticky top-0 left-0 w-full bg-background/80 backdrop-blur-lg border-b border-border z-50">
       <div className="container mx-auto flex justify-between items-center py-4 px-6">
         {/* Logo */}
         <a href="/" className="text-2xl font-bold text-primary">
@@ -38,7 +39,9 @@ function Navbar() {
           <ModeToggle /> {/* Dark Mode Switch Always Visible */}
           <div className="hidden md:flex gap-3">
             <Button variant="secondary">Sign In</Button>
-            <Button variant="default">Sign Up</Button>
+            <Link to="/sign-up">
+              <Button variant="default">Sign Up</Button>
+            </Link>
           </div>
           {/* Mobile Menu Button */}
           <MenuBar />
