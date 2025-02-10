@@ -38,7 +38,9 @@ function Navbar() {
         <div className="flex gap-3 items-center">
           <ModeToggle /> {/* Dark Mode Switch Always Visible */}
           <div className="hidden md:flex gap-3">
-            <Button variant="secondary">Sign In</Button>
+            <Link to="/sign-in">
+              <Button variant="secondary">Sign In</Button>
+            </Link>
             <Link to="/sign-up">
               <Button variant="default">Sign Up</Button>
             </Link>
