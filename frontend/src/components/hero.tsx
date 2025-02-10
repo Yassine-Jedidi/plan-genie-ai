@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { MoveRight, CalendarCheck } from "lucide-react";
 import { Button } from "@/components/ui/button"; // shadcn button component
+import { GetStartedButton } from "./get-started-button";
 
 function Hero() {
   const [titleNumber, setTitleNumber] = useState(0);
@@ -61,12 +62,14 @@ function Hero() {
 
           {/* Buttons */}
           <div className="flex flex-row gap-3">
-            <Button variant="secondary" className="flex items-center gap-2">
-              Try AI Scheduling <CalendarCheck className="w-4 h-4" />
-            </Button>
-            <Button className="flex items-center gap-2">
-              Get Started <MoveRight className="w-4 h-4" />
-            </Button>
+            <Button variant="outline">Compare Plans</Button>
+            <GetStartedButton />
+          </div>
+
+          <div className="text-center mt-8">
+            <p className="text-sm text-muted-foreground">
+              ⭐️⭐️⭐️⭐️⭐️ Rated 4.9/5 by 1,000+ users
+            </p>
           </div>
         </div>
       </div>
