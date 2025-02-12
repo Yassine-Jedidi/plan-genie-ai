@@ -12,22 +12,41 @@ import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
-import { Github } from "lucide-react";
+import { Eye, EyeOff, Github } from "lucide-react";
 import { useState } from "react";
 import api from "./components/api/api";
+import { z } from "zod";
+
+// Define Zod schema for validation
+const signUpSchema = z.object({
+  email: z.string().email("Invalid email format"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters long")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number"),
+});
 
 function SignUpPage() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<{
+    email?: string;
+    password?: string;
+  }>({});
+  const [showPassword, setShowPassword] = useState(false);
 
   // Handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setValidationErrors({ ...validationErrors, [e.target.name]: undefined }); // Clear validation errors
   };
 
   // Handle form submission
@@ -36,31 +55,44 @@ function SignUpPage() {
     setLoading(true);
     setError(null);
     setSuccess(null);
+    setValidationErrors({});
 
+    // Validate form data using Zod
+    const result = signUpSchema.safeParse(formData);
+
+    if (!result.success) {
+      const formattedErrors: { email?: string; password?: string } = {};
+      result.error.errors.forEach((err) => {
+        formattedErrors[err.path[0] as keyof typeof formattedErrors] =
+          err.message;
+      });
+
+      setValidationErrors(formattedErrors);
+      setLoading(false);
+      return;
+    }
+
+    // Proceed with API request if validation is successful
     try {
       const response = await api.post("/auth/signup", formData);
-
       setSuccess("Account created successfully! Please check your email.");
     } catch (err: any) {
-      // Extract exact error message from API response
       if (err.response) {
-        // API returned a response
         setError(
           err.response.data?.message ||
             err.response.data?.error ||
             "An unknown error occurred."
         );
       } else if (err.request) {
-        // No response was received from the server
         setError("No response from the server. Please try again later.");
       } else {
-        // Other unexpected error
         setError(err.message || "Something went wrong.");
       }
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <div className="grid w-full grow items-center px-4 py-24 justify-center">
       <form onSubmit={handleSubmit}>
@@ -96,18 +128,38 @@ function SignUpPage() {
                 onChange={handleChange}
                 required
               />
+              {validationErrors.email && (
+                <p className="text-red-500 text-sm">{validationErrors.email}</p>
+              )}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <Label>Password</Label>
-              <Input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </Button>
+              </div>
+              {validationErrors.password && (
+                <p className="text-red-500 text-sm">
+                  {validationErrors.password}
+                </p>
+              )}
             </div>
+
             {error && <p className="text-red-500 text-sm">{error}</p>}
             {success && <p className="text-green-500 text-sm">{success}</p>}
           </CardContent>
