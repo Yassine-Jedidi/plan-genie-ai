@@ -18,10 +18,9 @@ app.post("/auth/signup", async (req, res) => {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
-    const { data, error } = await supabase.auth.admin.createUser({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      email_confirm: true, // This automatically confirms the email
     });
 
     if (error) throw error;
