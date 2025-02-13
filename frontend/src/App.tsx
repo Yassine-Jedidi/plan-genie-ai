@@ -4,6 +4,7 @@ import Navbar from "./navbar";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { SignUpPage } from "./signup";
 import { SignInPage } from "./signin";
+import { AuthCallback } from './components/auth/AuthCallback';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/" element={<Hero />} />
           <Route path="/sign-in" element={<SignInPage />} />
           <Route path="/sign-up" element={<SignUpPage />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
         </Routes>
       </ThemeProvider>
     </Router>

@@ -22,7 +22,7 @@ const signUpSchema = z.object({
   email: z.string().email("Invalid email format"),
   password: z
     .string()
-    .min(8, "Password must be at least 8 characters long")
+    .min(6, "Password must be at least 6 characters long")
     .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
     .regex(/[a-z]/, "Password must contain at least one lowercase letter")
     .regex(/[0-9]/, "Password must contain at least one number"),
@@ -93,6 +93,16 @@ function SignUpPage() {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      const response = await api.get("/auth/google");
+      // Redirect to Google OAuth URL
+      window.location.href = response.data.url;
+    } catch (error: any) {
+      setError("Failed to initiate Google sign in");
+    }
+  };
+
   return (
     <div className="grid w-full grow items-center px-4 py-24 justify-center">
       <form onSubmit={handleSubmit}>
@@ -109,7 +119,12 @@ function SignUpPage() {
                 <Github />
                 GitHub
               </Button>
-              <Button size="sm" variant="outline" type="button">
+              <Button
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={handleGoogleSignIn}
+              >
                 <FontAwesomeIcon icon={faGoogle} />
                 Google
               </Button>

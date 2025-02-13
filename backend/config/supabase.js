@@ -16,4 +16,20 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
   },
 });
 
-module.exports = supabase;
+// Add Google OAuth URL helper
+const getGoogleOAuthURL = () => {
+  const provider = "google";
+  const redirectTo = `${process.env.BACKEND_URL}/auth/callback/google`;
+  return supabase.auth.signInWithOAuth({
+    provider,
+    options: {
+      redirectTo,
+      queryParams: {
+        access_type: "offline",
+        prompt: "consent",
+      },
+    },
+  });
+};
+
+module.exports = { supabase, getGoogleOAuthURL };
