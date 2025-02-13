@@ -23,13 +23,34 @@ router.post("/signup", async (req, res) => {
 router.post("/signin", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) throw error;
-    res.json(data);
+
+    // Set secure cookies
+    res.cookie("sb-access-token", session.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    if (session.refresh_token) {
+      res.cookie("sb-refresh-token", session.refresh_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+    }
+
+    res.json({ user: session.user });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -123,6 +144,29 @@ router.post("/callback/token-exchange", async (req, res) => {
   } catch (error) {
     console.error("Token exchange error:", error);
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Add this new route to get current user
+router.get("/me", async (req, res) => {
+  try {
+    const accessToken = req.cookies["sb-access-token"];
+
+    if (!accessToken) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser(accessToken);
+
+    if (error) throw error;
+
+    res.json({ user });
+  } catch (error) {
+    console.error("Auth check error:", error);
+    res.status(401).json({ error: "Authentication failed" });
   }
 });
 

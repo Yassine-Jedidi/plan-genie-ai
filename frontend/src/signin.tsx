@@ -16,6 +16,7 @@ import { Github } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import api from "./components/api/api";
+import { useAuth } from "@/lib/auth";
 
 function SignInPage() {
   const [formData, setFormData] = useState({
@@ -24,6 +25,7 @@ function SignInPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { checkAuth } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,8 +33,8 @@ function SignInPage() {
     setError(null);
 
     try {
-      const response = await api.post("/auth/signin", formData);
-      // Redirect to home page on successful sign in
+      await api.post("/auth/signin", formData);
+      await checkAuth();
       window.location.href = "/";
     } catch (err: any) {
       if (err.response) {

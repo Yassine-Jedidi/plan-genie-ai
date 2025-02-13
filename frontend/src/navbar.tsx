@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle"; // Dark Mode Toggle
 import { MenuBar } from "./components/menu-bar";
 import { Link } from "react-router-dom";
+import { AvatarButton } from "./components/avatar-button";
 
 function Navbar() {
   return (
@@ -37,6 +38,7 @@ function Navbar() {
         {/* Right-side Controls */}
         <div className="flex gap-3 items-center">
           <ModeToggle /> {/* Dark Mode Switch Always Visible */}
+          <AvatarButton />
           <div className="hidden md:flex gap-3">
             <Link to="/sign-in">
               <Button variant="secondary">Sign In</Button>
