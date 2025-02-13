@@ -151,7 +151,7 @@ router.post("/callback/token-exchange", async (req, res) => {
 router.get("/me", async (req, res) => {
   try {
     const accessToken = req.cookies["sb-access-token"];
-
+    console.log("this is access_token", accessToken);
     if (!accessToken) {
       return res.status(401).json({ error: "Not authenticated" });
     }

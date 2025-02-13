@@ -3,8 +3,12 @@ import { ModeToggle } from "@/components/mode-toggle"; // Dark Mode Toggle
 import { MenuBar } from "./components/menu-bar";
 import { Link } from "react-router-dom";
 import { AvatarButton } from "./components/avatar-button";
+import { useAuth } from "@/lib/auth"; // Import your auth context or hook
 
 function Navbar() {
+  // Assuming you have a context or hook to track authentication state
+  const { user, checkAuth } = useAuth(); // Replace with your actual auth logic
+
   return (
     <nav className="sticky top-0 left-0 w-full bg-background/80 backdrop-blur-lg border-b border-border z-50">
       <div className="container mx-auto flex justify-between items-center py-4 px-6">
@@ -38,15 +42,19 @@ function Navbar() {
         {/* Right-side Controls */}
         <div className="flex gap-3 items-center">
           <ModeToggle /> {/* Dark Mode Switch Always Visible */}
-          <AvatarButton />
-          <div className="hidden md:flex gap-3">
-            <Link to="/sign-in">
-              <Button variant="secondary">Sign In</Button>
-            </Link>
-            <Link to="/sign-up">
-              <Button variant="default">Sign Up</Button>
-            </Link>
-          </div>
+          {/* Show AvatarButton only if authenticated */}
+          {user ? (
+            <AvatarButton />
+          ) : (
+            <div className="hidden md:flex gap-3">
+              <Link to="/sign-in">
+                <Button variant="secondary">Sign In</Button>
+              </Link>
+              <Link to="/sign-up">
+                <Button variant="default">Sign Up</Button>
+              </Link>
+            </div>
+          )}
           {/* Mobile Menu Button */}
           <MenuBar />
         </div>

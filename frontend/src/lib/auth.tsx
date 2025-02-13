@@ -25,6 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await api.get("/auth/me");
       setUser(response.data.user);
+      console.log("user : ", response.data.user);
     } catch (error) {
       setUser(null);
     } finally {
@@ -58,4 +59,4 @@ export const useAuth = () => {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
-}; 
+};
