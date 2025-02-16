@@ -1,5 +1,6 @@
 const express = require("express");
 const { supabase, getGoogleOAuthURL } = require("../config/supabase");
+const fetch = require("node-fetch");
 
 const router = express.Router();
 
@@ -76,12 +77,47 @@ router.post("/refresh", refreshTokenIfNeeded, async (req, res) => {
   }
 });
 
+// Verify Turnstile token
+async function verifyTurnstileToken(token) {
+  const formData = new URLSearchParams();
+  formData.append("secret", process.env.TURNSTILE_SECRET_KEY);
+  formData.append("response", token);
+
+  try {
+    const response = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const data = await response.json();
+    return data.success;
+  } catch (error) {
+    console.error("Turnstile verification error:", error);
+    return false;
+  }
+}
+
 router.post("/signup", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, turnstileToken } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ error: "Email and password are required" });
+    }
+
+    if (!turnstileToken) {
+      return res
+        .status(400)
+        .json({ error: "Turnstile verification is required" });
+    }
+
+    // Verify Turnstile token
+    const isValidToken = await verifyTurnstileToken(turnstileToken);
+    if (!isValidToken) {
+      return res.status(400).json({ error: "Invalid Turnstile token" });
     }
 
     // Extract full name from email (before @)

@@ -13,9 +13,10 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { Eye, EyeOff, Github } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import api from "./components/api/api";
 import { z } from "zod";
+import Turnstile from "react-turnstile";
 
 // Define Zod schema for validation
 const signUpSchema = z.object({
@@ -42,6 +43,7 @@ function SignUpPage() {
     password?: string;
   }>({});
   const [showPassword, setShowPassword] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   // Handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,6 +58,12 @@ function SignUpPage() {
     setError(null);
     setSuccess(null);
     setValidationErrors({});
+
+    if (!turnstileToken) {
+      setError("Please complete the Turnstile verification");
+      setLoading(false);
+      return;
+    }
 
     // Validate form data using Zod
     const result = signUpSchema.safeParse(formData);
@@ -74,7 +82,10 @@ function SignUpPage() {
 
     // Proceed with API request if validation is successful
     try {
-      const response = await api.post("/auth/signup", formData);
+      const response = await api.post("/auth/signup", {
+        ...formData,
+        turnstileToken,
+      });
       setSuccess("Account created successfully! Please check your email.");
     } catch (err: any) {
       if (err.response) {
@@ -148,7 +159,7 @@ function SignUpPage() {
               )}
             </div>
 
-            <div className="space-y-2 relative">
+            <div className="space-y-2">
               <Label>Password</Label>
               <div className="relative">
                 <Input
@@ -173,6 +184,19 @@ function SignUpPage() {
                   {validationErrors.password}
                 </p>
               )}
+            </div>
+
+            <div className="flex justify-center mt-4">
+              <Turnstile
+                sitekey="0x4AAAAAAA9BEEKWwme8C69l"
+                onVerify={(token) => setTurnstileToken(token)}
+                onError={() => {
+                  setError("Turnstile verification failed");
+                  setTurnstileToken(null);
+                }}
+                onExpire={() => setTurnstileToken(null)}
+                language={"en"}
+              />
             </div>
 
             {error && <p className="text-red-500 text-sm">{error}</p>}
