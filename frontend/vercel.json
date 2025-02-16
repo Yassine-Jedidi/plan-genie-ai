@@ -1,0 +1,24 @@
+{
+    "rewrites": [
+      {
+        "source": "/sign-in",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/dashboard",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/auth/callback",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/auth/callback/google",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/(.*)",
+        "destination": "/index.html"
+      }
+    ]
+  }
