@@ -142,7 +142,24 @@ router.post("/signup", async (req, res) => {
 
 router.post("/signin", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, turnstileToken } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+
+    if (!turnstileToken) {
+      return res
+        .status(400)
+        .json({ error: "Turnstile verification is required" });
+    }
+
+    // Verify Turnstile token
+    const isValidToken = await verifyTurnstileToken(turnstileToken);
+    if (!isValidToken) {
+      return res.status(400).json({ error: "Invalid Turnstile token" });
+    }
+
     const {
       data: { session },
       error,

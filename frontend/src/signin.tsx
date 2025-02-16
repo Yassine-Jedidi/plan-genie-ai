@@ -17,6 +17,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import api from "./components/api/api";
 import { useAuth } from "@/lib/auth";
+import Turnstile from "react-turnstile";
+import { AxiosError } from "axios";
 
 function SignInPage() {
   const [formData, setFormData] = useState({
@@ -26,27 +28,36 @@ function SignInPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { checkAuth } = useAuth();
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
+    if (!turnstileToken) {
+      setError("Please complete the Turnstile verification");
+      setLoading(false);
+      return;
+    }
+
     try {
-      await api.post("/auth/signin", formData);
+      await api.post("/auth/signin", { ...formData, turnstileToken });
       await checkAuth();
       window.location.href = "/";
-    } catch (err: any) {
-      if (err.response) {
+    } catch (err) {
+      if (err instanceof AxiosError && err.response) {
         setError(
           err.response.data?.message ||
             err.response.data?.error ||
             "An unknown error occurred."
         );
-      } else if (err.request) {
+      } else if (err instanceof AxiosError && err.request) {
         setError("No response from the server. Please try again later.");
-      } else {
+      } else if (err instanceof Error) {
         setError(err.message || "Something went wrong.");
+      } else {
+        setError("An unexpected error occurred.");
       }
     } finally {
       setLoading(false);
@@ -58,8 +69,10 @@ function SignInPage() {
       const response = await api.get("/auth/google");
       // Redirect to Google OAuth URL
       window.location.href = response.data.url;
-    } catch (error: any) {
-      setError("Failed to initiate Google sign in");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError("Failed to initiate Google sign in");
+      }
     }
   };
 
@@ -68,7 +81,7 @@ function SignInPage() {
   };
 
   return (
-    <div className="grid w-full grow items-center px-4 py-24 justify-center">
+    <div className="grid w-full grow items-center px-4 py-16 justify-center">
       <form onSubmit={handleSubmit}>
         <Card className="w-full sm:w-96">
           <CardHeader>
@@ -117,6 +130,19 @@ function SignInPage() {
                 value={formData.password}
                 onChange={handleChange}
                 required
+              />
+            </div>
+
+            <div className="flex justify-center mt-4">
+              <Turnstile
+                sitekey="0x4AAAAAAA9BEEKWwme8C69l"
+                onVerify={(token) => setTurnstileToken(token)}
+                onError={() => {
+                  setError("Turnstile verification failed");
+                  setTurnstileToken(null);
+                }}
+                onExpire={() => setTurnstileToken(null)}
+                language="en"
               />
             </div>
 

@@ -13,10 +13,11 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { Eye, EyeOff, Github } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import api from "./components/api/api";
 import { z } from "zod";
 import Turnstile from "react-turnstile";
+import { AxiosError } from "axios";
 
 // Define Zod schema for validation
 const signUpSchema = z.object({
@@ -82,22 +83,24 @@ function SignUpPage() {
 
     // Proceed with API request if validation is successful
     try {
-      const response = await api.post("/auth/signup", {
+      await api.post("/auth/signup", {
         ...formData,
         turnstileToken,
       });
       setSuccess("Account created successfully! Please check your email.");
-    } catch (err: any) {
-      if (err.response) {
+    } catch (err) {
+      if (err instanceof AxiosError && err.response) {
         setError(
           err.response.data?.message ||
             err.response.data?.error ||
             "An unknown error occurred."
         );
-      } else if (err.request) {
+      } else if (err instanceof AxiosError && err.request) {
         setError("No response from the server. Please try again later.");
-      } else {
+      } else if (err instanceof Error) {
         setError(err.message || "Something went wrong.");
+      } else {
+        setError("An unexpected error occurred.");
       }
     } finally {
       setLoading(false);
@@ -109,13 +112,15 @@ function SignUpPage() {
       const response = await api.get("/auth/google");
       // Redirect to Google OAuth URL
       window.location.href = response.data.url;
-    } catch (error: any) {
-      setError("Failed to initiate Google sign in");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError("Failed to initiate Google sign in");
+      }
     }
   };
 
   return (
-    <div className="grid w-full grow items-center px-4 py-24 justify-center">
+    <div className="grid w-full grow items-center px-4 py-16 justify-center">
       <form onSubmit={handleSubmit}>
         <Card className="w-full sm:w-96">
           <CardHeader>
@@ -195,7 +200,7 @@ function SignUpPage() {
                   setTurnstileToken(null);
                 }}
                 onExpire={() => setTurnstileToken(null)}
-                language={"en"}
+                language="en"
               />
             </div>
 
