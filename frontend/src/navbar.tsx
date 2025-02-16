@@ -3,7 +3,7 @@ import { ModeToggle } from "@/components/mode-toggle"; // Dark Mode Toggle
 import { MenuBar } from "./components/menu-bar";
 import { Link } from "react-router-dom";
 import { AvatarButton } from "./components/avatar-button";
-import { useAuth } from "@/lib/auth"; // Import your auth context or hook
+import { useAuth } from "@/hooks/use-auth";
 
 function Navbar() {
   const { user, loading } = useAuth();

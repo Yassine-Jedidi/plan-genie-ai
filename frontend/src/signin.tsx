@@ -16,7 +16,7 @@ import { Github } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import api from "./components/api/api";
-import { useAuth } from "@/lib/auth";
+import { useAuth } from "@/hooks/use-auth";
 import Turnstile from "react-turnstile";
 import { AxiosError } from "axios";
 

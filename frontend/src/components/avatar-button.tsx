@@ -18,7 +18,7 @@ import {
   Pin,
   UserPen,
 } from "lucide-react";
-import { useAuth } from "@/lib/auth";
+import { useAuth } from "@/hooks/use-auth";
 
 function AvatarButton() {
   const { user, signOut } = useAuth();
