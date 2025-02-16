@@ -18,8 +18,15 @@ import {
   Pin,
   UserPen,
 } from "lucide-react";
+import { useAuth } from "@/lib/auth";
 
 function AvatarButton() {
+  const { user, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -30,7 +37,10 @@ function AvatarButton() {
       <DropdownMenuContent className="max-w-64">
         <DropdownMenuLabel className="flex items-start gap-3">
           <img
-            src="https://originui.com/avatar.jpg"
+            src={
+              user?.user_metadata?.avatar_url ||
+              "https://www.gravatar.com/avatar?d=mp"
+            }
             alt="Avatar"
             width={32}
             height={32}
@@ -38,10 +48,10 @@ function AvatarButton() {
           />
           <div className="flex min-w-0 flex-col">
             <span className="truncate text-sm font-medium text-foreground">
-              Keith Kennedy
+              {user?.user_metadata?.full_name || "Anonymous User"}
             </span>
             <span className="truncate text-xs font-normal text-muted-foreground">
-              k.kennedy@originui.com
+              {user?.user_metadata?.email}
             </span>
           </div>
         </DropdownMenuLabel>
@@ -97,7 +107,7 @@ function AvatarButton() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSignOut}>
           <LogOut
             size={16}
             strokeWidth={2}
