@@ -4,6 +4,7 @@ import { MenuBar } from "./components/menu-bar";
 import { Link } from "react-router-dom";
 import { AvatarButton } from "./components/avatar-button";
 import { useAuth } from "@/hooks/use-auth";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function Navbar() {
   const { user, loading } = useAuth();
@@ -41,8 +42,12 @@ function Navbar() {
         {/* Right-side Controls */}
         <div className="flex gap-3 items-center">
           <ModeToggle /> {/* Dark Mode Switch Always Visible */}
-          {/* Only show auth buttons after loading is complete */}
-          {!loading && (
+          {loading ? (
+            <div className="hidden md:flex gap-3">
+              <Skeleton className="h-9 w-20" /> {/* Sign In button skeleton */}
+              <Skeleton className="h-9 w-20" /> {/* Sign Up button skeleton */}
+            </div>
+          ) : (
             <>
               {user ? (
                 <AvatarButton />
