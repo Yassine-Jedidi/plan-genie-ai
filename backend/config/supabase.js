@@ -13,6 +13,13 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
     autoRefreshToken: false,
     persistSession: false,
+    detectSessionInUrl: false,
+    setCookieOptions: {
+      domain: "plan-genie-ai-backend.vercel.app",
+      path: "/",
+      sameSite: "None",
+      secure: true,
+    },
   },
 });
 

@@ -34,16 +34,18 @@ const refreshTokenIfNeeded = async (req, res, next) => {
       // Set new cookies
       res.cookie("sb-access-token", session.access_token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: true,
+        sameSite: "None",
+        domain: "plan-genie-ai-backend.vercel.app",
         maxAge: 60 * 60 * 1000, // 1 hour
       });
 
       if (session.refresh_token) {
         res.cookie("sb-refresh-token", session.refresh_token, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
+          secure: true,
+          sameSite: "None",
+          domain: "plan-genie-ai-backend.vercel.app",
           maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for refresh token
         });
       }
@@ -173,16 +175,18 @@ router.post("/signin", async (req, res) => {
     // Set secure cookies
     res.cookie("sb-access-token", session.access_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: true,
+      sameSite: "None",
+      domain: "plan-genie-ai-backend.vercel.app",
       maxAge: 60 * 60 * 1000, // 1 hour
     });
 
     if (session.refresh_token) {
       res.cookie("sb-refresh-token", session.refresh_token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: true,
+        sameSite: "None",
+        domain: "plan-genie-ai-backend.vercel.app",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for refresh token
       });
     }
@@ -201,13 +205,17 @@ router.post("/signout", async (req, res) => {
     // Clear auth cookies
     res.clearCookie("sb-access-token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: true,
+      sameSite: "None",
+      domain: "plan-genie-ai-backend.vercel.app",
+      path: "/",
     });
     res.clearCookie("sb-refresh-token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: true,
+      sameSite: "None",
+      domain: "plan-genie-ai-backend.vercel.app",
+      path: "/",
     });
 
     res.json({ message: "Signed out successfully" });
@@ -269,16 +277,18 @@ router.post("/callback/token-exchange", async (req, res) => {
     // Set secure cookies
     res.cookie("sb-access-token", session.access_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: true,
+      sameSite: "None",
+      domain: "plan-genie-ai-backend.vercel.app",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     if (session.refresh_token) {
       res.cookie("sb-refresh-token", session.refresh_token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: true,
+        sameSite: "None",
+        domain: "plan-genie-ai-backend.vercel.app",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       });
     }
