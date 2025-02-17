@@ -1,63 +1,93 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/use-auth";
+import api from "@/components/api/api";
+
+interface TokenData {
+  access_token: string | null;
+  refresh_token: string | null;
+  expires_in: string | null;
+  provider_token: string | null;
+  provider_refresh_token: string | null;
+}
 
 export function AuthCallback() {
   const navigate = useNavigate();
+  const { checkAuth } = useAuth();
+  const [tokenData, setTokenData] = useState<TokenData | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
+  // First effect to capture the hash data immediately
   useEffect(() => {
-    const handleCallback = async () => {
+    const hash = window.location.hash;
+    if (!hash) {
+      setError("No hash fragment found");
+      return;
+    }
+
+    const params = new URLSearchParams(hash.substring(1));
+    const data = {
+      access_token: params.get("access_token"),
+      refresh_token: params.get("refresh_token"),
+      expires_in: params.get("expires_in"),
+      provider_token: params.get("provider_token"),
+      provider_refresh_token: params.get("provider_refresh_token"),
+    };
+
+    if (!data.access_token) {
+      setError("No access token found in URL");
+      return;
+    }
+
+    setTokenData(data);
+  }, []); // Run only once on mount
+
+  // Second effect to handle the token exchange
+  useEffect(() => {
+    const exchangeTokens = async () => {
+      if (!tokenData) return;
+
       try {
-        // Get the hash fragment from the URL
-        const hash = window.location.hash.substring(1);
-        const params = new URLSearchParams(hash);
+        console.log("Sending tokens to backend...");
 
-        // Extract tokens and other data
-        const access_token = params.get("access_token");
-        const refresh_token = params.get("refresh_token");
-        const expires_in = params.get("expires_in");
-        const provider_token = params.get("provider_token");
-        const provider_refresh_token = params.get("provider_refresh_token");
-
-        if (!access_token) {
-          throw new Error("No access token found in URL");
-        }
-
-        // Send tokens to backend
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/auth/callback/token-exchange`,
-          {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              access_token,
-              refresh_token,
-              expires_in,
-              provider_token,
-              provider_refresh_token,
-            }),
-          }
+        const response = await api.post(
+          "/auth/callback/token-exchange",
+          tokenData
         );
 
-        const data = await response.json();
+        console.log("Response data:", response.data);
 
-        if (!response.ok) {
-          throw new Error(data.error || "Failed to exchange tokens");
+        if (!response.data.success) {
+          throw new Error("Failed to exchange tokens");
         }
 
-        // Redirect to home page or dashboard
-        navigate("/");
-      } catch (error) {
-        console.error("Auth callback error:", error);
-        // Redirect to sign-in page with error
-        navigate("/sign-in?error=Authentication failed");
+        // Wait for a moment to ensure cookies are set
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Update auth state
+        await checkAuth();
+
+        // Navigate to home page
+        navigate("/", { replace: true });
+      } catch (err) {
+        console.error("Auth callback error:", err);
+        setError(err instanceof Error ? err.message : "Authentication failed");
       }
     };
 
-    handleCallback();
-  }, [navigate]);
+    if (tokenData) {
+      exchangeTokens();
+    }
+  }, [tokenData, navigate, checkAuth]);
+
+  // Final effect to handle errors
+  useEffect(() => {
+    if (error) {
+      navigate(`/sign-in?error=${encodeURIComponent(error)}`, {
+        replace: true,
+      });
+    }
+  }, [error, navigate]);
 
   return (
     <div className="flex items-center justify-center min-h-screen">

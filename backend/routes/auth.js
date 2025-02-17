@@ -4,6 +4,23 @@ const fetch = require("node-fetch");
 
 const router = express.Router();
 
+// Add CORS middleware for all routes
+router.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin === process.env.FRONTEND_URL) {
+    res.header("Access-Control-Allow-Origin", origin);
+    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Accept");
+    res.header("Access-Control-Allow-Credentials", "true");
+  }
+  next();
+});
+
+// Handle OPTIONS requests for all routes
+router.options("*", (req, res) => {
+  res.sendStatus(200);
+});
+
 // Middleware to refresh token if needed
 const refreshTokenIfNeeded = async (req, res, next) => {
   try {
@@ -265,6 +282,8 @@ router.post("/callback/token-exchange", async (req, res) => {
       provider_refresh_token,
     } = req.body;
 
+    console.log("Received token exchange request");
+
     if (!access_token) {
       throw new Error("No access token provided");
     }
@@ -278,7 +297,10 @@ router.post("/callback/token-exchange", async (req, res) => {
       refresh_token,
     });
 
-    if (sessionError) throw sessionError;
+    if (sessionError) {
+      console.error("Session error:", sessionError);
+      throw sessionError;
+    }
 
     // Set secure cookies
     res.cookie("sb-access-token", session.access_token, {
@@ -304,8 +326,13 @@ router.post("/callback/token-exchange", async (req, res) => {
       data: { user },
       error: userError,
     } = await supabase.auth.getUser(session.access_token);
-    if (userError) throw userError;
 
+    if (userError) {
+      console.error("User error:", userError);
+      throw userError;
+    }
+
+    console.log("Token exchange successful");
     res.json({ user, success: true });
   } catch (error) {
     console.error("Token exchange error:", error);
