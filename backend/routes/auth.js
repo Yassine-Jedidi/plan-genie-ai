@@ -21,6 +21,18 @@ router.options("*", (req, res) => {
   res.sendStatus(200);
 });
 
+// Add this helper function at the top of the file after the router definition
+const getCookieOptions = (req) => {
+  const isProduction = process.env.NODE_ENV === "production";
+  return {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    domain: isProduction ? "plan-genie-ai-backend.vercel.app" : undefined,
+    path: "/",
+  };
+};
+
 // Middleware to refresh token if needed
 const refreshTokenIfNeeded = async (req, res, next) => {
   try {
@@ -50,19 +62,13 @@ const refreshTokenIfNeeded = async (req, res, next) => {
 
       // Set new cookies
       res.cookie("sb-access-token", session.access_token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-        domain: "plan-genie-ai-backend.vercel.app",
+        ...getCookieOptions(req),
         maxAge: 60 * 60 * 1000, // 1 hour
       });
 
       if (session.refresh_token) {
         res.cookie("sb-refresh-token", session.refresh_token, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "None",
-          domain: "plan-genie-ai-backend.vercel.app",
+          ...getCookieOptions(req),
           maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for refresh token
         });
       }
@@ -191,19 +197,13 @@ router.post("/signin", async (req, res) => {
 
     // Set secure cookies
     res.cookie("sb-access-token", session.access_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      domain: "plan-genie-ai-backend.vercel.app",
+      ...getCookieOptions(req),
       maxAge: 60 * 60 * 1000, // 1 hour
     });
 
     if (session.refresh_token) {
       res.cookie("sb-refresh-token", session.refresh_token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-        domain: "plan-genie-ai-backend.vercel.app",
+        ...getCookieOptions(req),
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for refresh token
       });
     }
@@ -221,18 +221,10 @@ router.post("/signout", async (req, res) => {
 
     // Clear auth cookies
     res.clearCookie("sb-access-token", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      domain: "plan-genie-ai-backend.vercel.app",
-      path: "/",
+      ...getCookieOptions(req),
     });
     res.clearCookie("sb-refresh-token", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      domain: "plan-genie-ai-backend.vercel.app",
-      path: "/",
+      ...getCookieOptions(req),
     });
 
     res.json({ message: "Signed out successfully" });
@@ -304,19 +296,13 @@ router.post("/callback/token-exchange", async (req, res) => {
 
     // Set secure cookies
     res.cookie("sb-access-token", session.access_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      domain: "plan-genie-ai-backend.vercel.app",
-      maxAge: expires_in ? expires_in * 1000 : 60 * 60 * 1000, // Use expires_in from OAuth or default to 1 hour
+      ...getCookieOptions(req),
+      maxAge: expires_in ? expires_in * 1000 : 60 * 60 * 1000,
     });
 
     if (session.refresh_token) {
       res.cookie("sb-refresh-token", session.refresh_token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-        domain: "plan-genie-ai-backend.vercel.app",
+        ...getCookieOptions(req),
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       });
     }

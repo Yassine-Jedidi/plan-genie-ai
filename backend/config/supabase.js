@@ -9,13 +9,15 @@ if (!supabaseUrl || !supabaseKey) {
   throw new Error("Missing Supabase URL or Key. Check your .env file.");
 }
 
+const isProduction = process.env.NODE_ENV === "production";
+
 const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
     autoRefreshToken: false,
     persistSession: false,
     detectSessionInUrl: false,
     setCookieOptions: {
-      domain: "plan-genie-ai-backend.vercel.app",
+      domain: isProduction ? "plan-genie-ai-backend.vercel.app" : undefined,
       path: "/",
       sameSite: "None",
       secure: true,
