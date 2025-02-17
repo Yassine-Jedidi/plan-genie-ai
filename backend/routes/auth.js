@@ -257,7 +257,13 @@ router.get("/callback/google", async (req, res) => {
 // New route to handle the token exchange
 router.post("/callback/token-exchange", async (req, res) => {
   try {
-    const { access_token, refresh_token } = req.body;
+    const {
+      access_token,
+      refresh_token,
+      expires_in,
+      provider_token,
+      provider_refresh_token,
+    } = req.body;
 
     if (!access_token) {
       throw new Error("No access token provided");
@@ -268,8 +274,8 @@ router.post("/callback/token-exchange", async (req, res) => {
       data: { session },
       error: sessionError,
     } = await supabase.auth.setSession({
-      access_token: access_token,
-      refresh_token: refresh_token,
+      access_token,
+      refresh_token,
     });
 
     if (sessionError) throw sessionError;
@@ -280,7 +286,7 @@ router.post("/callback/token-exchange", async (req, res) => {
       secure: true,
       sameSite: "None",
       domain: "plan-genie-ai-backend.vercel.app",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: expires_in ? expires_in * 1000 : 60 * 60 * 1000, // Use expires_in from OAuth or default to 1 hour
     });
 
     if (session.refresh_token) {
@@ -300,7 +306,7 @@ router.post("/callback/token-exchange", async (req, res) => {
     } = await supabase.auth.getUser(session.access_token);
     if (userError) throw userError;
 
-    res.json({ success: true });
+    res.json({ user, success: true });
   } catch (error) {
     console.error("Token exchange error:", error);
     res.status(500).json({ error: error.message });
