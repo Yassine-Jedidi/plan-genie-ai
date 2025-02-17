@@ -7,7 +7,7 @@ export function GetStartedButton() {
       <GlowEffect
         colors={["#FF5733", "#33FF57", "#3357FF", "#F1C40F"]}
         mode="colorShift"
-        blur="medium"
+        blur="strongest"
         duration={3}
         scale={0.9}
       />

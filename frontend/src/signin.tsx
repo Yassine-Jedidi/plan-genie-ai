@@ -10,17 +10,21 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { Github } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import api from "./components/api/api";
 import { useAuth } from "@/hooks/use-auth";
 import Turnstile from "react-turnstile";
 import { AxiosError } from "axios";
+import { toast } from "sonner";
 
 function SignInPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const messageShown = useRef(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -30,13 +34,24 @@ function SignInPage() {
   const { checkAuth } = useAuth();
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
+  // Check for success message from signup
+  useEffect(() => {
+    const state = location.state as { message?: string } | null;
+    if (state?.message && !messageShown.current) {
+      toast.success(state.message);
+      messageShown.current = true;
+      // Clear the message from location state
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     if (!turnstileToken) {
-      setError("Please complete the Turnstile verification");
+      toast.error("Please complete the Turnstile verification");
       setLoading(false);
       return;
     }
@@ -44,20 +59,21 @@ function SignInPage() {
     try {
       await api.post("/auth/signin", { ...formData, turnstileToken });
       await checkAuth();
-      window.location.href = "/";
+      toast.success("Signed in successfully!");
+      navigate("/");
     } catch (err) {
       if (err instanceof AxiosError && err.response) {
-        setError(
+        const errorMessage =
           err.response.data?.message ||
-            err.response.data?.error ||
-            "An unknown error occurred."
-        );
+          err.response.data?.error ||
+          "An unknown error occurred.";
+        toast.error(errorMessage);
       } else if (err instanceof AxiosError && err.request) {
-        setError("No response from the server. Please try again later.");
+        toast.error("No response from the server. Please try again later.");
       } else if (err instanceof Error) {
-        setError(err.message || "Something went wrong.");
+        toast.error(err.message || "Something went wrong.");
       } else {
-        setError("An unexpected error occurred.");
+        toast.error("An unexpected error occurred.");
       }
     } finally {
       setLoading(false);
@@ -71,7 +87,7 @@ function SignInPage() {
       window.location.href = response.data.url;
     } catch (err) {
       if (err instanceof Error) {
-        setError("Failed to initiate Google sign in");
+        toast.error("Failed to initiate Google sign in");
       }
     }
   };
@@ -138,7 +154,7 @@ function SignInPage() {
                 sitekey="0x4AAAAAAA9BEEKWwme8C69l"
                 onVerify={(token) => setTurnstileToken(token)}
                 onError={() => {
-                  setError("Turnstile verification failed");
+                  toast.error("Turnstile verification failed");
                   setTurnstileToken(null);
                 }}
                 onExpire={() => setTurnstileToken(null)}

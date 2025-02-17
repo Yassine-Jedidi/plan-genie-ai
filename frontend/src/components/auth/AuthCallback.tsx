@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import api from "@/components/api/api";
+import { toast } from "sonner";
 
 interface TokenData {
   access_token: string | null;
@@ -16,6 +17,8 @@ export function AuthCallback() {
   const { checkAuth } = useAuth();
   const [tokenData, setTokenData] = useState<TokenData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const successToastShown = useRef(false);
+  const errorToastShown = useRef(false);
 
   // First effect to capture the hash data immediately
   useEffect(() => {
@@ -67,6 +70,12 @@ export function AuthCallback() {
         // Update auth state
         await checkAuth();
 
+        // Show success toast only once
+        if (!successToastShown.current) {
+          toast.success("Successfully signed in with Google!");
+          successToastShown.current = true;
+        }
+
         // Navigate to home page
         navigate("/", { replace: true });
       } catch (err) {
@@ -82,7 +91,9 @@ export function AuthCallback() {
 
   // Final effect to handle errors
   useEffect(() => {
-    if (error) {
+    if (error && !errorToastShown.current) {
+      toast.error("Failed to sign in with Google. Please try again.");
+      errorToastShown.current = true;
       navigate(`/sign-in?error=${encodeURIComponent(error)}`, {
         replace: true,
       });

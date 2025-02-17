@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ModeToggle } from "@/components/mode-toggle"; // Dark Mode Toggle
+import { ModeToggle } from "@/components/mode-toggle";
 import { MenuBar } from "./components/menu-bar";
 import { Link } from "react-router-dom";
 import { AvatarButton } from "./components/avatar-button";
@@ -11,13 +11,28 @@ function Navbar() {
 
   return (
     <nav className="sticky top-0 left-0 w-full bg-background/80 backdrop-blur-lg border-b border-border z-50">
-      <div className="container mx-auto flex justify-between items-center py-4 px-6">
-        {/* Logo */}
-        <a href="/" className="text-2xl font-bold text-primary">
-          Plan Genie AI
-        </a>
+      <div className="container mx-auto grid grid-cols-[1fr,auto,1fr] md:grid-cols-3 items-center py-4 px-6">
+        {/* Left Column - Menu on mobile, Logo on desktop */}
+        <div className="flex items-center md:justify-start">
+          <div className="md:hidden">
+            <MenuBar />
+          </div>
+          <a
+            href="/"
+            className="hidden md:block text-2xl font-bold text-primary"
+          >
+            Plan Genie AI
+          </a>
+        </div>
 
-        {/* Navigation Links (Hidden on Small Screens) */}
+        {/* Center Column - Logo on mobile only */}
+        <div className="flex items-center justify-center md:hidden">
+          <a href="/" className="text-2xl font-bold text-primary">
+            Plan Genie AI
+          </a>
+        </div>
+
+        {/* Navigation Links - Desktop Only */}
         <div className="hidden md:flex gap-6 justify-center items-center">
           <a
             href="#features"
@@ -39,13 +54,13 @@ function Navbar() {
           </a>
         </div>
 
-        {/* Right-side Controls */}
-        <div className="flex gap-3 items-center">
-          <ModeToggle /> {/* Dark Mode Switch Always Visible */}
+        {/* Right Column - Controls */}
+        <div className="flex gap-3 items-center justify-end">
+          <ModeToggle />
           {loading ? (
             <div className="hidden md:flex gap-3">
-              <Skeleton className="h-9 w-20" /> {/* Sign In button skeleton */}
-              <Skeleton className="h-9 w-20" /> {/* Sign Up button skeleton */}
+              <Skeleton className="h-9 w-20" />
+              <Skeleton className="h-9 w-20" />
             </div>
           ) : (
             <>
@@ -63,8 +78,6 @@ function Navbar() {
               )}
             </>
           )}
-          {/* Mobile Menu Button */}
-          <MenuBar />
         </div>
       </div>
     </nav>

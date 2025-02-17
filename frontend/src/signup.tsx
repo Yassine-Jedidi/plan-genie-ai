@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { Eye, EyeOff, Github } from "lucide-react";
@@ -18,6 +18,7 @@ import api from "./components/api/api";
 import { z } from "zod";
 import Turnstile from "react-turnstile";
 import { AxiosError } from "axios";
+import { toast } from "sonner";
 
 // Define Zod schema for validation
 const signUpSchema = z.object({
@@ -31,14 +32,13 @@ const signUpSchema = z.object({
 });
 
 function SignUpPage() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<{
     email?: string;
     password?: string;
@@ -56,12 +56,10 @@ function SignUpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
-    setSuccess(null);
     setValidationErrors({});
 
     if (!turnstileToken) {
-      setError("Please complete the Turnstile verification");
+      toast.error("Please complete the Turnstile verification");
       setLoading(false);
       return;
     }
@@ -87,20 +85,24 @@ function SignUpPage() {
         ...formData,
         turnstileToken,
       });
-      setSuccess("Account created successfully! Please check your email.");
+      navigate("/sign-in", {
+        state: {
+          message: "Account created successfully! Please sign in to continue.",
+        },
+      });
     } catch (err) {
       if (err instanceof AxiosError && err.response) {
-        setError(
+        toast.error(
           err.response.data?.message ||
             err.response.data?.error ||
             "An unknown error occurred."
         );
       } else if (err instanceof AxiosError && err.request) {
-        setError("No response from the server. Please try again later.");
+        toast.error("No response from the server. Please try again later.");
       } else if (err instanceof Error) {
-        setError(err.message || "Something went wrong.");
+        toast.error(err.message || "Something went wrong.");
       } else {
-        setError("An unexpected error occurred.");
+        toast.error("An unexpected error occurred.");
       }
     } finally {
       setLoading(false);
@@ -114,7 +116,7 @@ function SignUpPage() {
       window.location.href = response.data.url;
     } catch (err) {
       if (err instanceof Error) {
-        setError("Failed to initiate Google sign in");
+        toast.error("Failed to initiate Google sign in");
       }
     }
   };
@@ -196,16 +198,13 @@ function SignUpPage() {
                 sitekey="0x4AAAAAAA9BEEKWwme8C69l"
                 onVerify={(token) => setTurnstileToken(token)}
                 onError={() => {
-                  setError("Turnstile verification failed");
+                  toast.error("Turnstile verification failed");
                   setTurnstileToken(null);
                 }}
                 onExpire={() => setTurnstileToken(null)}
                 language="en"
               />
             </div>
-
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            {success && <p className="text-green-500 text-sm">{success}</p>}
           </CardContent>
 
           <CardFooter>

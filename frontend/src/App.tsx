@@ -6,6 +6,7 @@ import { SignUpPage } from "./signup";
 import { SignInPage } from "./signin";
 import { AuthCallback } from "./components/auth/AuthCallback";
 import { AuthProvider } from "./lib/auth";
+import { Toaster } from "@/components/ui/sonner";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/sign-up" element={<SignUpPage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
           </Routes>
+          <Toaster />
         </ThemeProvider>
       </AuthProvider>
     </Router>

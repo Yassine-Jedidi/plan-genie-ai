@@ -24,22 +24,25 @@ function MenuBar() {
         {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
       </Button>
       {open && (
-        <div className="absolute right-0 mt-2 w-48 bg-background border border-border shadow-lg rounded-lg py-2 z-50">
+        <div className="absolute left-0 mt-2 w-48 bg-background border border-border shadow-lg rounded-lg py-2 z-50">
           <a
             href="#features"
             className="block px-4 py-2 text-foreground hover:bg-accent"
+            onClick={() => setOpen(false)}
           >
             Features
           </a>
           <a
             href="#pricing"
             className="block px-4 py-2 text-foreground hover:bg-accent"
+            onClick={() => setOpen(false)}
           >
             Pricing
           </a>
           <a
             href="#contact"
             className="block px-4 py-2 text-foreground hover:bg-accent"
+            onClick={() => setOpen(false)}
           >
             Contact
           </a>
@@ -54,12 +57,20 @@ function MenuBar() {
               ) : (
                 <div className="px-4 py-2 space-y-2">
                   <Link to="/sign-in" className="block">
-                    <Button variant="secondary" className="w-full">
+                    <Button
+                      variant="secondary"
+                      className="w-full"
+                      onClick={() => setOpen(false)}
+                    >
                       Sign In
                     </Button>
                   </Link>
                   <Link to="/sign-up" className="block">
-                    <Button variant="default" className="w-full">
+                    <Button
+                      variant="default"
+                      className="w-full"
+                      onClick={() => setOpen(false)}
+                    >
                       Sign Up
                     </Button>
                   </Link>
