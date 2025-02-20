@@ -1,4 +1,3 @@
-"use client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -147,9 +146,14 @@ function SignInPage() {
                 onChange={handleChange}
                 required
               />
+              <div className="flex">
+                <Button variant="link" size="sm" className="px-0" asChild>
+                  <Link to="/forgot-password">Forgot your password?</Link>
+                </Button>
+              </div>
             </div>
 
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-center">
               <Turnstile
                 sitekey="0x4AAAAAAA9BEEKWwme8C69l"
                 onVerify={(token) => setTurnstileToken(token)}

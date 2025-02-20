@@ -5,6 +5,7 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { SignUpPage } from "./signup";
 import { SignInPage } from "./signin";
 import { AuthCallback } from "./components/auth/AuthCallback";
+import { ForgotPasswordPage } from "./forgot-password";
 import { AuthProvider } from "./lib/auth";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -19,6 +20,7 @@ function App() {
             <Route path="/sign-in" element={<SignInPage />} />
             <Route path="/sign-up" element={<SignUpPage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           </Routes>
           <Toaster />
         </ThemeProvider>
