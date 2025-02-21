@@ -349,4 +349,91 @@ router.get("/me", async (req, res) => {
   }
 });
 
+// Add password reset route
+router.post("/reset-password", async (req, res) => {
+  try {
+    const { email, turnstileToken } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    if (!turnstileToken) {
+      return res
+        .status(400)
+        .json({ error: "Turnstile verification is required" });
+    }
+
+    // Verify Turnstile token
+    const isValidToken = await verifyTurnstileToken(turnstileToken);
+    if (!isValidToken) {
+      return res.status(400).json({ error: "Invalid Turnstile token" });
+    }
+
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${process.env.FRONTEND_URL}/reset-password`,
+    });
+
+    if (error) throw error;
+
+    // Always return success to prevent email enumeration
+    res.json({
+      message:
+        "If an account with that email exists, a password reset link has been sent.",
+    });
+  } catch (error) {
+    console.error("Password reset error:", error);
+    // Always return success to prevent email enumeration
+    res.json({
+      message:
+        "If an account with that email exists, a password reset link has been sent.",
+    });
+  }
+});
+
+// Add update password route
+router.post("/update-password", async (req, res) => {
+  try {
+    const { password, accessToken, refreshToken } = req.body;
+
+    if (!password) {
+      return res.status(400).json({ error: "Password is required" });
+    }
+
+    if (!accessToken) {
+      return res.status(400).json({ error: "Access token is required" });
+    }
+
+    // First, exchange the tokens for a session
+    const { data: sessionData, error: sessionError } =
+      await supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken || null,
+      });
+
+    if (sessionError) {
+      console.error("Session error:", sessionError);
+      throw sessionError;
+    }
+
+    // Now update the password using the established session
+    const { data, error } = await supabase.auth.updateUser({
+      password: password,
+    });
+
+    if (error) throw error;
+
+    // Clear any existing session cookies
+    res.clearCookie("sb-access-token", getCookieOptions(req));
+    res.clearCookie("sb-refresh-token", getCookieOptions(req));
+
+    res.json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Update password error:", error);
+    res
+      .status(500)
+      .json({ error: error.message || "Failed to update password" });
+  }
+});
+
 module.exports = router;

@@ -14,6 +14,7 @@ import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import Turnstile from "react-turnstile";
 import { AxiosError } from "axios";
+import api from "./components/api/api";
 
 function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -31,10 +32,12 @@ function ForgotPasswordPage() {
     }
 
     try {
-      // We'll implement the actual API call later
-      toast.success(
-        "Password reset link have been sent to your email address if an account exists."
-      );
+      const response = await api.post("/auth/reset-password", {
+        email,
+        turnstileToken,
+      });
+
+      toast.success(response.data.message);
       setEmail(""); // Clear the email field after successful submission
     } catch (err) {
       if (err instanceof AxiosError && err.response) {

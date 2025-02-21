@@ -6,6 +6,7 @@ import { SignUpPage } from "./signup";
 import { SignInPage } from "./signin";
 import { AuthCallback } from "./components/auth/AuthCallback";
 import { ForgotPasswordPage } from "./forgot-password";
+import { ResetPasswordPage } from "./reset-password";
 import { AuthProvider } from "./lib/auth";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -21,6 +22,7 @@ function App() {
             <Route path="/sign-up" element={<SignUpPage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
           </Routes>
           <Toaster />
         </ThemeProvider>

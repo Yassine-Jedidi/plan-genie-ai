@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
-import { Github } from "lucide-react";
+import { Eye, EyeOff, Github } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useEffect, useRef } from "react";
 import api from "./components/api/api";
@@ -32,7 +32,7 @@ function SignInPage() {
   const [error, setError] = useState<string | null>(null);
   const { checkAuth } = useAuth();
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-
+  const [showPassword, setShowPassword] = useState(false);
   // Check for success message from signup
   useEffect(() => {
     const state = location.state as { message?: string } | null;
@@ -139,13 +139,24 @@ function SignInPage() {
 
             <div className="space-y-2">
               <Label>Password</Label>
-              <Input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </Button>
+              </div>
               <div className="flex">
                 <Button variant="link" size="sm" className="px-0" asChild>
                   <Link to="/forgot-password">Forgot your password?</Link>
