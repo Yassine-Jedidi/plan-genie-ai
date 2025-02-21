@@ -12,13 +12,15 @@ import { Label } from "@/components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
-import { Eye, EyeOff, Github } from "lucide-react";
-import { useState } from "react";
+import { Github } from "lucide-react";
+import { useState, useRef } from "react";
 import api from "./components/api/api";
 import { z } from "zod";
 import Turnstile from "react-turnstile";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
+import { Password } from "./components/password";
+import { VerifyPassword } from "./components/verify-password";
 
 // Define Zod schema for validation
 const signUpSchema = z.object({
@@ -33,17 +35,17 @@ const signUpSchema = z.object({
 
 function SignUpPage() {
   const navigate = useNavigate();
+  const passwordInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    verifyPassword: "",
   });
-
   const [loading, setLoading] = useState(false);
   const [validationErrors, setValidationErrors] = useState<{
     email?: string;
     password?: string;
   }>({});
-  const [showPassword, setShowPassword] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   // Handle input change
@@ -64,8 +66,17 @@ function SignUpPage() {
       return;
     }
 
+    if (formData.password !== formData.verifyPassword) {
+      toast.error("Passwords do not match");
+      setLoading(false);
+      return;
+    }
+
     // Validate form data using Zod
-    const result = signUpSchema.safeParse(formData);
+    const result = signUpSchema.safeParse({
+      email: formData.email,
+      password: formData.password,
+    });
 
     if (!result.success) {
       const formattedErrors: { email?: string; password?: string } = {};
@@ -166,32 +177,19 @@ function SignUpPage() {
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label>Password</Label>
-              <div className="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </Button>
-              </div>
-              {validationErrors.password && (
-                <p className="text-red-500 text-sm">
-                  {validationErrors.password}
-                </p>
-              )}
-            </div>
+            <Password
+              ref={passwordInputRef}
+              onChange={(value: string) => {
+                setFormData((prev) => ({ ...prev, password: value }));
+              }}
+            />
+
+            <VerifyPassword
+              password={formData.password}
+              onVerifiedPasswordChange={(value) =>
+                setFormData((prev) => ({ ...prev, verifyPassword: value }))
+              }
+            />
 
             <div className="flex justify-center mt-4">
               <Turnstile
