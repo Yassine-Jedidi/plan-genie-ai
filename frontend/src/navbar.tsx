@@ -27,7 +27,7 @@ function Navbar() {
 
         {/* Center Column - Logo on mobile only */}
         <div className="flex items-center justify-center md:hidden">
-          <a href="/" className="text-2xl font-bold text-primary">
+          <a href="/" className="justify-start font-bold text-primary">
             Plan Genie AI
           </a>
         </div>

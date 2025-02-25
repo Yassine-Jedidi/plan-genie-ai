@@ -20,6 +20,8 @@ import {
   ClipboardList,
   Settings,
   LogOut,
+  LifeBuoy,
+  BarChart,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -29,14 +31,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 
 // Menu items
 const items = [
   {
     title: "Home",
-    url: "#",
+    url: "/home",
     icon: Home,
   },
   {
@@ -50,19 +53,31 @@ const items = [
     icon: Calendar,
   },
   {
-    title: "Settings",
+    title: "Analytics",
     url: "#",
-    icon: Settings,
+    icon: BarChart,
+  },
+  {
+    title: "Help & Support",
+    url: "#",
+    icon: LifeBuoy,
   },
 ];
 
 function HomePage() {
   const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
+    try {
+      await signOut();
+      toast.success("Signed out successfully!");
+      navigate("/");
+    } catch (error) {
+      console.error("Sign-out failed:", error);
+      toast.error("Failed to sign out. Please try again.");
+    }
   };
 
   return (
@@ -73,21 +88,31 @@ function HomePage() {
             <SidebarGroupLabel>Application</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild tooltip={item.title}>
-                      <a href={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {items.map((item) => {
+                  const isActive = location.pathname === item.url;
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        tooltip={item.title}
+                        className={`transition-all duration-200 hover:scale-105 ${
+                          isActive
+                            ? "bg-foreground/30 text-primary font-semibold"
+                            : "hover:bg-foreground/20"
+                        }`}
+                      >
+                        <a href={item.url}>
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </a>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
-
         <SidebarFooter>
           <SidebarGroup>
             <DropdownMenu>
@@ -114,10 +139,10 @@ function HomePage() {
                       )}
                       <div className="flex flex-col items-start">
                         <span className="text-sm font-medium">
-                          {user?.user_metadata?.full_name || "Anonymous User"}
+                          {user?.user_metadata?.full_name}
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          {user?.email || "No email"}
+                          {user?.email}
                         </span>
                       </div>
                     </div>

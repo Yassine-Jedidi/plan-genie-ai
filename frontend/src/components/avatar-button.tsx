@@ -20,12 +20,22 @@ import {
   UserPen,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 function AvatarButton() {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const handleSignOut = async () => {
-    await signOut();
+    try {
+      await signOut();
+      toast.success("Signed out successfully!");
+      navigate("/");
+    } catch (error) {
+      console.error("Sign-out failed:", error);
+      toast.error("Failed to sign out. Please try again.");
+    }
   };
 
   return (
