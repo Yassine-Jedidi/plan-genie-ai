@@ -77,7 +77,7 @@ export function AuthCallback() {
         }
 
         // Navigate to home page
-        navigate("/", { replace: true });
+        navigate("/home", { replace: true });
       } catch (err) {
         console.error("Auth callback error:", err);
         setError(err instanceof Error ? err.message : "Authentication failed");

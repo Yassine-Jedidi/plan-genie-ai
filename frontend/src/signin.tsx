@@ -59,7 +59,7 @@ function SignInPage() {
       await api.post("/auth/signin", { ...formData, turnstileToken });
       await checkAuth();
       toast.success("Signed in successfully!");
-      navigate("/");
+      navigate("/home");
     } catch (err) {
       if (err instanceof AxiosError && err.response) {
         const errorMessage =
