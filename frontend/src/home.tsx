@@ -17,10 +17,19 @@ import {
   ChevronsUpDown,
   Calendar,
   Home,
-  Inbox,
-  Search,
+  ClipboardList,
   Settings,
+  LogOut,
 } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 
 // Menu items
 const items = [
@@ -30,19 +39,14 @@ const items = [
     icon: Home,
   },
   {
-    title: "Inbox",
+    title: "Tasks",
     url: "#",
-    icon: Inbox,
+    icon: ClipboardList,
   },
   {
     title: "Calendar",
     url: "#",
     icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
   },
   {
     title: "Settings",
@@ -52,6 +56,14 @@ const items = [
 ];
 
 function HomePage() {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
+
   return (
     <SidebarProvider>
       <Sidebar>
@@ -77,18 +89,51 @@ function HomePage() {
 
         <SidebarFooter>
           <SidebarGroup>
-            <SidebarMenuButton className="w-full justify-between gap-3 h-12">
-              <div className="flex items-center gap-2">
-                <User className="h-5 w-5 rounded-md" />
-                <div className="flex flex-col items-start">
-                  <span className="text-sm font-medium">John Doe</span>
-                  <span className="text-xs text-muted-foreground">
-                    john@example.com
-                  </span>
-                </div>
-              </div>
-              <ChevronsUpDown className="h-5 w-5 rounded-md" />
-            </SidebarMenuButton>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton className="w-full justify-between gap-3 h-12">
+                  <div className="flex items-center gap-2">
+                    {user?.user_metadata?.avatar_url ? (
+                      <img
+                        src={user.user_metadata.avatar_url}
+                        alt="User avatar"
+                        className="h-8 w-8 rounded-full"
+                      />
+                    ) : (
+                      <User className="h-8 w-8" />
+                    )}
+                    <div className="flex flex-col items-start">
+                      <span className="text-sm font-medium">
+                        {user?.user_metadata?.full_name || "Anonymous User"}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {user?.email || "No email"}
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronsUpDown className="h-5 w-5 rounded-md" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem
+                  onClick={() => (window.location.href = "/profile")}
+                >
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => (window.location.href = "/settings")}
+                >
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </SidebarGroup>
         </SidebarFooter>
       </Sidebar>

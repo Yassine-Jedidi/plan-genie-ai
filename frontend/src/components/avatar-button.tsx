@@ -16,6 +16,7 @@ import {
   Layers2,
   LogOut,
   Pin,
+  User,
   UserPen,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
@@ -35,17 +36,18 @@ function AvatarButton() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="max-w-64">
-        <DropdownMenuLabel className="flex items-start gap-3">
-          <img
-            src={
-              user?.user_metadata?.avatar_url ||
-              "https://www.gravatar.com/avatar?d=mp"
-            }
-            alt="Avatar"
-            width={32}
-            height={32}
-            className="shrink-0 rounded-full"
-          />
+        <DropdownMenuLabel className="flex items-center gap-3">
+          {user?.user_metadata?.avatar_url ? (
+            <img
+              src={user?.user_metadata?.avatar_url}
+              alt="Avatar"
+              width={32}
+              height={32}
+              className="shrink-0 rounded-full"
+            />
+          ) : (
+            <User className="w-8 h-8 shrink-0 text-muted-foreground" />
+          )}
           <div className="flex min-w-0 flex-col">
             <span className="truncate text-sm font-medium text-foreground">
               {user?.user_metadata?.full_name || "Anonymous User"}
