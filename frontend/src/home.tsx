@@ -30,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Menu items
 const items = [
@@ -56,7 +57,7 @@ const items = [
 ];
 
 function HomePage() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -92,46 +93,72 @@ function HomePage() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton className="w-full justify-between gap-3 h-12">
-                  <div className="flex items-center gap-2">
-                    {user?.user_metadata?.avatar_url ? (
-                      <img
-                        src={user.user_metadata.avatar_url}
-                        alt="User avatar"
-                        className="h-8 w-8 rounded-full"
-                      />
-                    ) : (
-                      <User className="h-8 w-8" />
-                    )}
-                    <div className="flex flex-col items-start">
-                      <span className="text-sm font-medium">
-                        {user?.user_metadata?.full_name || "Anonymous User"}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {user?.email || "No email"}
-                      </span>
+                  {loading ? (
+                    <div className="flex items-center gap-2 w-full">
+                      <Skeleton className="h-8 w-8 rounded-full" />
+                      <div className="flex flex-col items-start gap-1 flex-1">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-3 w-32" />
+                      </div>
                     </div>
-                  </div>
-                  <ChevronsUpDown className="h-5 w-5 rounded-md" />
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      {user?.user_metadata?.avatar_url ? (
+                        <img
+                          src={user.user_metadata.avatar_url}
+                          alt="User avatar"
+                          className="h-8 w-8 rounded-full"
+                        />
+                      ) : (
+                        <User className="h-8 w-8" />
+                      )}
+                      <div className="flex flex-col items-start">
+                        <span className="text-sm font-medium">
+                          {user?.user_metadata?.full_name || "Anonymous User"}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {user?.email || "No email"}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  <ChevronsUpDown className="h-5 w-5 rounded-md shrink-0" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem
-                  onClick={() => (window.location.href = "/profile")}
-                >
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => (window.location.href = "/settings")}
-                >
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
+                {loading ? (
+                  <div className="p-2">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Skeleton className="h-4 w-4" />
+                      <Skeleton className="h-4 w-20" />
+                    </div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Skeleton className="h-4 w-4" />
+                      <Skeleton className="h-4 w-24" />
+                    </div>
+                    <DropdownMenuSeparator />
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-4 w-4" />
+                      <Skeleton className="h-4 w-16" />
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <DropdownMenuItem onClick={() => navigate("/profile")}>
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/settings")}>
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarGroup>
