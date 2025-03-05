@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
-import { Eye, EyeOff, Github } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useEffect, useRef } from "react";
 import api from "./components/api/api";
@@ -106,15 +106,12 @@ function SignInPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-y-4">
-            <div className="grid grid-cols-2 gap-x-4">
-              <Button size="sm" variant="outline" type="button">
-                <Github />
-                GitHub
-              </Button>
+            <div className="w-full">
               <Button
                 size="sm"
                 variant="outline"
                 type="button"
+                className="w-full flex items-center justify-center gap-2"
                 onClick={handleGoogleSignIn}
               >
                 <FontAwesomeIcon icon={faGoogle} />

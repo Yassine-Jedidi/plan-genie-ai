@@ -78,7 +78,7 @@ function VerifyPassword({
       {verifyPassword && (
         <p
           id={`${id}-description`}
-          className={`text-sm ${
+          className={`text-sm font-semibold ${
             allMatch ? "text-emerald-600" : "text-red-500"
           }`}
         >
