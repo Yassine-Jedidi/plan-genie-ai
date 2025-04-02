@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+torch==2.5.1
+transformers==4.49.0
+pydantic==2.9.2
+safetensors==0.4.5
+spacy==3.8.4
