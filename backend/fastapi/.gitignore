@@ -41,7 +41,7 @@ venv.bak/
 htmlcov/
 
 # Model files
-camembert/
+models/
 *.bin
 *.pkl
 *.h5

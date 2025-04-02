@@ -34,6 +34,25 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+
+// Define type for the analysis results
+interface AnalysisResult {
+  type: string;
+  confidence: number;
+  entities: Record<string, string[]>;
+}
 
 // Menu items
 const items = [
@@ -68,6 +87,9 @@ function HomePage() {
   const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [inputText, setInputText] = useState("");
+  const [analyzing, setAnalyzing] = useState(false);
+  const [results, setResults] = useState<AnalysisResult | null>(null);
 
   const handleSignOut = async () => {
     try {
@@ -77,6 +99,42 @@ function HomePage() {
     } catch (error) {
       console.error("Sign-out failed:", error);
       toast.error("Failed to sign out. Please try again.");
+    }
+  };
+
+  const analyzeText = async () => {
+    if (!inputText.trim()) {
+      toast.error("Please enter some text to analyze");
+      return;
+    }
+
+    setAnalyzing(true);
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:8000"
+        }/analyze-text/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text: inputText }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to analyze text");
+      }
+
+      const data = await response.json();
+      setResults(data as AnalysisResult);
+      toast.success("Text analysis complete!");
+    } catch (error) {
+      console.error("Text analysis failed:", error);
+      toast.error("Failed to analyze text. Please try again.");
+    } finally {
+      setAnalyzing(false);
     }
   };
 
@@ -195,8 +253,106 @@ function HomePage() {
           <SidebarTrigger className="h-4 w-4 mt-2" />
         </div>
         <div className="p-6">
-          <h1 className="text-2xl font-bold">Main Content</h1>
-          <p className="mt-2">This is the main content area of the page.</p>
+          <h1 className="text-2xl font-bold mb-6">Task Analysis</h1>
+
+          <div className="grid gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Analyze Task Text</CardTitle>
+                <CardDescription>
+                  Enter text to analyze and extract tasks, dates, and details
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Textarea
+                  placeholder="Enter your task text here... e.g., 'I need to prepare a presentation for the marketing team by next Friday.'"
+                  className="min-h-[150px]"
+                  value={inputText}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                    setInputText(e.target.value)
+                  }
+                />
+              </CardContent>
+              <CardFooter>
+                <Button
+                  onClick={analyzeText}
+                  disabled={analyzing || !inputText.trim()}
+                  className="w-full"
+                >
+                  {analyzing ? "Analyzing..." : "Analyze Text"}
+                </Button>
+              </CardFooter>
+            </Card>
+
+            {results && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Analysis Results</CardTitle>
+                  <CardDescription>
+                    Task type detected with{" "}
+                    {(results.confidence * 100).toFixed(2)}% confidence
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-lg font-medium">Task Type</h3>
+                      <Badge className="mt-1" variant="secondary">
+                        {results.type}
+                      </Badge>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-medium">Entities</h3>
+                      <div className="grid gap-2 mt-2">
+                        {Object.entries(results.entities).length > 0 ? (
+                          Object.entries(results.entities).map(
+                            ([entityType, values]) => (
+                              <div
+                                key={entityType}
+                                className="bg-muted/50 p-2 rounded-md"
+                              >
+                                <h4 className="font-medium">{entityType}</h4>
+                                <ul className="list-disc list-inside">
+                                  {Array.isArray(values) &&
+                                    values.map((value, index) => (
+                                      <li key={index} className="text-sm">
+                                        {value}
+                                      </li>
+                                    ))}
+                                </ul>
+                              </div>
+                            )
+                          )
+                        ) : (
+                          <p className="text-sm text-muted-foreground">
+                            No entities detected
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setResults(null)}
+                    className="mr-2"
+                  >
+                    Clear Results
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      // Here you could implement saving the task
+                      toast.success("Task saved!");
+                    }}
+                  >
+                    Save as Task
+                  </Button>
+                </CardFooter>
+              </Card>
+            )}
+          </div>
         </div>
       </main>
     </SidebarProvider>

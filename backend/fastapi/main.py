@@ -30,37 +30,63 @@ app.add_middleware(
 # Get base directory
 base_dir = Path(__file__).parent.absolute()
 
-# Try to load models with proper paths for Windows
+# Your Hugging Face Hub username
+HF_USERNAME = "YassineJedidi"  # Replace with your actual username
+
+# Try to load models from Hugging Face Hub
 try:
-    # Convert paths to strings with forward slashes
-    tokenizer_path = str(base_dir / "camembert" /
-                         "camembert-taches-tokenizer").replace("\\", "/")
-    ner_model_path = str(base_dir / "camembert" /
-                         "camembert-taches-ner-final").replace("\\", "/")
-    type_model_path = str(base_dir / "camembert" /
-                          "camembert-taches-type-final").replace("\\", "/")
+    print("Loading models from Hugging Face Hub")
 
-    print(f"Loading tokenizer from: {tokenizer_path}")
-    print(f"Loading NER model from: {ner_model_path}")
-    print(f"Loading type model from: {type_model_path}")
+    # Model repositories on Hugging Face
+    tokenizer_repo = f"{HF_USERNAME}/tasks-tokenizer"
+    ner_model_repo = f"{HF_USERNAME}/tasks-ner"
+    type_model_repo = f"{HF_USERNAME}/tasks-type"
 
-    # Load models
-    tokenizer = AutoTokenizer.from_pretrained(
-        tokenizer_path, local_files_only=True)
-    ner_model = AutoModelForTokenClassification.from_pretrained(
-        ner_model_path, local_files_only=True)
+    print(f"Loading tokenizer from: {tokenizer_repo}")
+    print(f"Loading NER model from: {ner_model_repo}")
+    print(f"Loading type model from: {type_model_repo}")
+
+    # Load models from Hugging Face Hub
+    tokenizer = AutoTokenizer.from_pretrained(tokenizer_repo)
+    ner_model = AutoModelForTokenClassification.from_pretrained(ner_model_repo)
     type_model = AutoModelForSequenceClassification.from_pretrained(
-        type_model_path, local_files_only=True)
+        type_model_repo)
 
 except Exception as e:
-    print(f"Error loading models: {e}")
-    # Fallback to load from HuggingFace
-    print("Attempting to load models from HuggingFace Hub")
-    tokenizer = AutoTokenizer.from_pretrained("camembert-base")
-    ner_model = AutoModelForTokenClassification.from_pretrained(
-        "camembert-base")
-    type_model = AutoModelForSequenceClassification.from_pretrained(
-        "camembert-base")
+    print(f"Error loading models from Hugging Face Hub: {e}")
+
+    # Fallback to local files if available
+    try:
+        # Convert paths to strings with forward slashes
+        tokenizer_path = str(base_dir / "models" /
+                             "tasks-tokenizer").replace("\\", "/")
+        ner_model_path = str(base_dir / "models" /
+                             "tasks-ner").replace("\\", "/")
+        type_model_path = str(base_dir / "models" /
+                              "tasks-types").replace("\\", "/")
+
+        print(f"Falling back to local models")
+        print(f"Loading tokenizer from: {tokenizer_path}")
+        print(f"Loading NER model from: {ner_model_path}")
+        print(f"Loading type model from: {type_model_path}")
+
+        # Load models from local files
+        tokenizer = AutoTokenizer.from_pretrained(
+            tokenizer_path, local_files_only=True)
+        ner_model = AutoModelForTokenClassification.from_pretrained(
+            ner_model_path, local_files_only=True)
+        type_model = AutoModelForSequenceClassification.from_pretrained(
+            type_model_path, local_files_only=True)
+
+    except Exception as e:
+        print(f"Error loading local models: {e}")
+        # Fallback to base model from HuggingFace
+        print("Falling back to base CamemBERT model from HuggingFace Hub")
+        tokenizer = AutoTokenizer.from_pretrained("camembert-base")
+        ner_model = AutoModelForTokenClassification.from_pretrained(
+            "camembert-base")
+        type_model = AutoModelForSequenceClassification.from_pretrained(
+            "camembert-base")
 
 # Load spaCy for tokenization
 nlp = spacy.load('fr_core_news_lg')
