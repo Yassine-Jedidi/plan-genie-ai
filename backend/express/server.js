@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv");
+const axios = require("axios");
 
 dotenv.config();
 
@@ -22,6 +23,45 @@ app.use(cookieParser());
 // ✅ Import and use auth routes
 const authRoutes = require("./routes/auth");
 app.use("/auth", authRoutes);
+
+// Proxy routes for FastAPI service
+const FASTAPI_URL = "https://YassineJedidi-plan-genie-ai.hf.space";
+
+app.post("/api/predict-type", async (req, res) => {
+  try {
+    const response = await axios.post(`${FASTAPI_URL}/predict-type/`, req.body);
+    res.json(response.data);
+  } catch (error) {
+    res
+      .status(error.response?.status || 500)
+      .json(error.response?.data || { error: "Internal server error" });
+  }
+});
+
+app.post("/api/extract-entities", async (req, res) => {
+  try {
+    const response = await axios.post(
+      `${FASTAPI_URL}/extract-entities/`,
+      req.body
+    );
+    res.json(response.data);
+  } catch (error) {
+    res
+      .status(error.response?.status || 500)
+      .json(error.response?.data || { error: "Internal server error" });
+  }
+});
+
+app.post("/api/analyze-text", async (req, res) => {
+  try {
+    const response = await axios.post(`${FASTAPI_URL}/analyze-text/`, req.body);
+    res.json(response.data);
+  } catch (error) {
+    res
+      .status(error.response?.status || 500)
+      .json(error.response?.data || { error: "Internal server error" });
+  }
+});
 
 // Handle OPTIONS preflight
 app.options("*", cors(corsOptions));

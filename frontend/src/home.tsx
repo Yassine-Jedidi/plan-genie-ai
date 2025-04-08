@@ -46,13 +46,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-// Define type for the analysis results
-interface AnalysisResult {
-  type: string;
-  confidence: number;
-  entities: Record<string, string[]>;
-}
+import { nlpService, AnalysisResult } from "@/services/nlpService";
 
 // Menu items
 const items = [
@@ -110,29 +104,16 @@ function HomePage() {
 
     setAnalyzing(true);
     try {
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_API_URL || "http://localhost:8000"
-        }/analyze-text/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ text: inputText }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to analyze text");
-      }
-
-      const data = await response.json();
-      setResults(data as AnalysisResult);
+      const data = await nlpService.analyzeText(inputText);
+      setResults(data);
       toast.success("Text analysis complete!");
     } catch (error) {
       console.error("Text analysis failed:", error);
-      toast.error("Failed to analyze text. Please try again.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to analyze text. Please try again."
+      );
     } finally {
       setAnalyzing(false);
     }
