@@ -36,7 +36,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Card,
   CardContent,
@@ -47,6 +46,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { nlpService, AnalysisResult } from "@/services/nlpService";
+import { PromptInputWithActions } from "./components/input";
 
 // Menu items
 const items = [
@@ -233,38 +233,11 @@ function HomePage() {
         <div className="px-4 py-2">
           <SidebarTrigger className="h-4 w-4 mt-2" />
         </div>
-        <div className="p-6">
+
+        <div className="p-6 flex flex-col h-[calc(100vh-60px)]">
           <h1 className="text-2xl font-bold mb-6">Task Analysis</h1>
 
-          <div className="grid gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Analyze Task Text</CardTitle>
-                <CardDescription>
-                  Enter text to analyze and extract tasks, dates, and details
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Textarea
-                  placeholder="Enter your task text here... e.g., 'I need to prepare a presentation for the marketing team by next Friday.'"
-                  className="min-h-[150px]"
-                  value={inputText}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                    setInputText(e.target.value)
-                  }
-                />
-              </CardContent>
-              <CardFooter>
-                <Button
-                  onClick={analyzeText}
-                  disabled={analyzing || !inputText.trim()}
-                  className="w-full"
-                >
-                  {analyzing ? "Analyzing..." : "Analyze Text"}
-                </Button>
-              </CardFooter>
-            </Card>
-
+          <div className="grid gap-6 flex-grow overflow-auto">
             {results && (
               <Card>
                 <CardHeader>
@@ -333,6 +306,16 @@ function HomePage() {
                 </CardFooter>
               </Card>
             )}
+          </div>
+
+          <div className="mt-4 sticky bottom-0 flex justify-center">
+            <PromptInputWithActions
+              onSubmit={analyzeText}
+              value={inputText}
+              onValueChange={setInputText}
+              isLoading={analyzing}
+              placeholder="Enter your task text here... e.g., 'I need to prepare a presentation for the marketing team by next Friday.'"
+            />
           </div>
         </div>
       </main>
