@@ -22,6 +22,9 @@ import {
   LogOut,
   LifeBuoy,
   BarChart,
+  Edit,
+  Save,
+  X,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -39,14 +42,39 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { nlpService, AnalysisResult } from "@/services/nlpService";
 import { PromptInputWithActions } from "./components/input";
+import { Input } from "@/components/ui/input";
+
+// Create custom select components
+interface SelectProps {
+  value: string;
+  onValueChange: (value: string) => void;
+}
+
+const Select = ({ value, onValueChange }: SelectProps) => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="w-[200px] justify-between">
+          {value} <ChevronsUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem onSelect={() => onValueChange("Tâche")}>
+          Tâche
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => onValueChange("Événement")}>
+          Événement
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 
 // Menu items
 const items = [
@@ -84,6 +112,8 @@ function HomePage() {
   const [inputText, setInputText] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
   const [results, setResults] = useState<AnalysisResult | null>(null);
+  const [editingEntity, setEditingEntity] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
 
   const handleSignOut = async () => {
     try {
@@ -97,6 +127,7 @@ function HomePage() {
   };
 
   const analyzeText = async () => {
+    console.log("Analyzing text:", inputText);
     if (!inputText.trim()) {
       toast.error("Please enter some text to analyze");
       return;
@@ -107,6 +138,7 @@ function HomePage() {
       const data = await nlpService.analyzeText(inputText);
       setResults(data);
       toast.success("Text analysis complete!");
+      setInputText("");
     } catch (error) {
       console.error("Text analysis failed:", error);
       toast.error(
@@ -117,6 +149,94 @@ function HomePage() {
     } finally {
       setAnalyzing(false);
     }
+  };
+
+  const handleTypeChange = (newType: string) => {
+    if (results) {
+      // Create a new entities object with the appropriate structure for the new type
+      const newEntities: Record<string, string[]> = {};
+
+      if (newType === "Tâche") {
+        // For Tâche type, ensure TITRE, DELAI, and PRIORITE exist
+        newEntities["TITRE"] = results.entities["TITRE"] || [];
+        newEntities["DELAI"] = results.entities["DELAI"] || [];
+        newEntities["PRIORITE"] = results.entities["PRIORITE"] || [];
+      } else if (newType === "Événement") {
+        // For Événement type, ensure TITRE and DATE_HEURE exist
+        newEntities["TITRE"] = results.entities["TITRE"] || [];
+        newEntities["DATE_HEURE"] = results.entities["DATE_HEURE"] || [];
+      }
+
+      setResults({
+        ...results,
+        type: newType,
+        entities: newEntities,
+      });
+    }
+  };
+
+  const startEditEntity = (
+    entityType: string,
+    value: string,
+    index: number
+  ) => {
+    setEditingEntity(`${entityType}_${index}`);
+    setEditValue(value);
+  };
+
+  const saveEntityEdit = (entityType: string, index: number) => {
+    if (results && editValue.trim()) {
+      const updatedEntities = { ...results.entities };
+
+      // Ensure the entity array exists
+      if (!updatedEntities[entityType]) {
+        updatedEntities[entityType] = [];
+      }
+
+      // If index is beyond current length, add a new item
+      if (index >= updatedEntities[entityType].length) {
+        updatedEntities[entityType].push(editValue);
+      } else {
+        // Otherwise update existing item
+        updatedEntities[entityType][index] = editValue;
+      }
+
+      setResults({
+        ...results,
+        entities: updatedEntities,
+      });
+      setEditingEntity(null);
+    }
+  };
+
+  // Helper function to get a display-friendly name for entity types
+  const getEntityDisplayName = (entityType: string) => {
+    const displayNames: Record<string, string> = {
+      TITRE: "Titre",
+      DELAI: "Délai",
+      PRIORITE: "Priorité",
+      DATE_HEURE: "Date",
+    };
+    return displayNames[entityType] || entityType;
+  };
+
+  // Helper function to ensure all required entities exist
+  const getEntitiesForDisplay = (
+    type: string,
+    entities: Record<string, string[]>
+  ) => {
+    const result = { ...entities };
+
+    if (type === "Tâche") {
+      if (!result["TITRE"]) result["TITRE"] = [];
+      if (!result["DELAI"]) result["DELAI"] = [];
+      if (!result["PRIORITE"]) result["PRIORITE"] = [];
+    } else if (type === "Événement") {
+      if (!result["TITRE"]) result["TITRE"] = [];
+      if (!result["DATE_HEURE"]) result["DATE_HEURE"] = [];
+    }
+
+    return result;
   };
 
   return (
@@ -235,80 +355,188 @@ function HomePage() {
         </div>
 
         <div className="p-6 flex flex-col h-[calc(100vh-60px)]">
-          <h1 className="text-2xl font-bold mb-6">Task Analysis</h1>
+          <h1 className="text-2xl font-bold mb-4">Task Analysis</h1>
 
-          <div className="grid gap-6 flex-grow overflow-auto">
+          <div className="grid gap-4 flex-grow overflow-auto pb-4">
             {results && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Analysis Results</CardTitle>
-                  <CardDescription>
-                    Task type detected with{" "}
-                    {(results.confidence * 100).toFixed(2)}% confidence
-                  </CardDescription>
+              <Card className="shadow-md border border-primary/10 overflow-hidden bg-gradient-to-br from-background to-muted/30">
+                <CardHeader className="p-3 pb-0">
+                  <CardTitle className="text-lg flex justify-between items-center">
+                    <span>Analysis Results</span>
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-lg font-medium">Task Type</h3>
-                      <Badge className="mt-1" variant="secondary">
-                        {results.type}
-                      </Badge>
-                    </div>
+                <CardContent className="p-3 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-sm font-medium">Task Type:</h3>
+                    <Select
+                      value={results.type}
+                      onValueChange={handleTypeChange}
+                    />
+                  </div>
 
-                    <div>
-                      <h3 className="text-lg font-medium">Entities</h3>
-                      <div className="grid gap-2 mt-2">
-                        {Object.entries(results.entities).length > 0 ? (
-                          Object.entries(results.entities).map(
-                            ([entityType, values]) => (
+                  <div className="space-y-3">
+                    {Object.entries(
+                      getEntitiesForDisplay(results.type, results.entities)
+                    ).map(([entityType, values]) => (
+                      <div
+                        key={entityType}
+                        className="bg-muted/10 p-3 rounded-lg border border-primary/5 transition-all hover:shadow-sm hover:border-primary/20"
+                      >
+                        <h4 className="text-sm font-medium text-primary/80 mb-2">
+                          {getEntityDisplayName(entityType)}
+                        </h4>
+                        <div className="space-y-2">
+                          {values.length > 0 ? (
+                            values.map((value, index) => (
                               <div
-                                key={entityType}
-                                className="bg-muted/50 p-2 rounded-md"
+                                key={index}
+                                className="flex items-center gap-2"
                               >
-                                <h4 className="font-medium">{entityType}</h4>
-                                <ul className="list-disc list-inside">
-                                  {Array.isArray(values) &&
-                                    values.map((value, index) => (
-                                      <li key={index} className="text-sm">
-                                        {value}
-                                      </li>
-                                    ))}
-                                </ul>
+                                {editingEntity === `${entityType}_${index}` ? (
+                                  <div className="flex items-center gap-1 w-full">
+                                    <Input
+                                      value={editValue}
+                                      onChange={(e) =>
+                                        setEditValue(e.target.value)
+                                      }
+                                      onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                          e.preventDefault();
+                                          saveEntityEdit(entityType, index);
+                                        }
+                                      }}
+                                      autoFocus
+                                      className="flex-1 h-8 text-sm focus-visible:ring-primary/30"
+                                    />
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() =>
+                                        saveEntityEdit(entityType, index)
+                                      }
+                                      className="h-7 w-7 hover:text-primary"
+                                    >
+                                      <Save className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => setEditingEntity(null)}
+                                      className="h-7 w-7 hover:text-destructive"
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <div
+                                    className="flex items-center justify-between w-full group hover:bg-background/50 rounded-md transition-colors"
+                                    onClick={() =>
+                                      startEditEntity(entityType, value, index)
+                                    }
+                                  >
+                                    <div className="flex-1 px-3 py-1.5 rounded-md text-sm cursor-pointer">
+                                      {value}
+                                    </div>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                      <Edit className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                )}
                               </div>
-                            )
-                          )
-                        ) : (
-                          <p className="text-sm text-muted-foreground">
-                            No entities detected
-                          </p>
-                        )}
+                            ))
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              {editingEntity === `${entityType}_0` ? (
+                                <div className="flex items-center gap-1 w-full">
+                                  <Input
+                                    value={editValue}
+                                    onChange={(e) =>
+                                      setEditValue(e.target.value)
+                                    }
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") {
+                                        e.preventDefault();
+                                        saveEntityEdit(entityType, 0);
+                                      }
+                                    }}
+                                    autoFocus
+                                    className="flex-1 h-8 text-sm focus-visible:ring-primary/30"
+                                  />
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() =>
+                                      saveEntityEdit(entityType, 0)
+                                    }
+                                    className="h-7 w-7 hover:text-primary"
+                                  >
+                                    <Save className="h-3 w-3" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setEditingEntity(null)}
+                                    className="h-7 w-7 hover:text-destructive"
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div
+                                  className="flex items-center justify-between w-full group bg-background/30 hover:bg-background/50 rounded-md transition-colors"
+                                  onClick={() =>
+                                    startEditEntity(entityType, "", 0)
+                                  }
+                                >
+                                  <div className="flex-1 px-3 py-1.5 rounded-md text-sm text-muted-foreground cursor-pointer">
+                                    Cliquez pour ajouter
+                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  >
+                                    <Edit className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
+                    ))}
                   </div>
                 </CardContent>
-                <CardFooter>
-                  <Button
-                    variant="outline"
-                    onClick={() => setResults(null)}
-                    className="mr-2"
-                  >
-                    Clear Results
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      // Here you could implement saving the task
-                      toast.success("Task saved!");
-                    }}
-                  >
-                    Save as Task
-                  </Button>
-                </CardFooter>
+                <div className="sticky bottom-0 mt-auto bg-gradient-to-t from-background to-transparent pt-6">
+                  <CardFooter className="flex justify-between p-3 border-t border-border/20">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setResults(null)}
+                      className="text-xs h-8"
+                    >
+                      Clear
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        toast.success("Task saved!");
+                      }}
+                      className="text-xs h-8"
+                    >
+                      Save Task
+                    </Button>
+                  </CardFooter>
+                </div>
               </Card>
             )}
           </div>
 
-          <div className="mt-4 sticky bottom-0 flex justify-center">
+          <div className="mt-auto sticky bottom-0 flex justify-center">
             <PromptInputWithActions
               onSubmit={analyzeText}
               value={inputText}
