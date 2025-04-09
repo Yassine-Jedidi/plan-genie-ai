@@ -33,6 +33,12 @@ base_dir = Path(__file__).parent.absolute()
 # Your Hugging Face Hub username
 HF_USERNAME = "YassineJedidi"  # Replace with your actual username
 
+# Définition des entités valides pour chaque type
+entites_valides = {
+    "Tâche": {"TITRE", "DELAI", "PRIORITE"},
+    "Événement": {"TITRE", "DATE_HEURE"},
+}
+
 # Try to load models from Hugging Face Hub
 try:
     print("Loading models from Hugging Face Hub")
@@ -183,10 +189,14 @@ async def analyze_text(input_data: TextInput):
     type_result = await predict_type(input_data)
     text_type = type_result["type"]
     confidence = type_result["confidence"]
-    entities = (await extract_entities(input_data))["entities"]
+    raw_entities = (await extract_entities(input_data))["entities"]
+
+    # Filtrage des entités selon le type détecté
+    allowed = entites_valides.get(text_type, set())
+    filtered_entities = {k: v for k, v in raw_entities.items() if k in allowed}
 
     return {
         "type": text_type,
         "confidence": confidence,
-        "entities": entities
+        "entities": filtered_entities
     }
