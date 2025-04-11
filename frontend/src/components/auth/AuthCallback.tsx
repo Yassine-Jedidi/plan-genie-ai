@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import api from "@/components/api/api";
 import { toast } from "sonner";
+import { Progress } from "@/components/ui/progress";
 
 interface TokenData {
   access_token: string | null;
@@ -17,11 +18,13 @@ export function AuthCallback() {
   const { checkAuth } = useAuth();
   const [tokenData, setTokenData] = useState<TokenData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState(10);
   const successToastShown = useRef(false);
   const errorToastShown = useRef(false);
 
   // First effect to capture the hash data immediately
   useEffect(() => {
+    setProgress(10);
     const hash = window.location.hash;
     if (!hash) {
       setError("No hash fragment found");
@@ -43,7 +46,19 @@ export function AuthCallback() {
     }
 
     setTokenData(data);
+    setProgress(30);
   }, []); // Run only once on mount
+
+  // Progress animation effect
+  useEffect(() => {
+    if (!tokenData) return;
+
+    const timer = setTimeout(() => {
+      setProgress((prev) => Math.min(prev + 20, 90));
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [tokenData, progress]);
 
   // Second effect to handle the token exchange
   useEffect(() => {
@@ -52,6 +67,7 @@ export function AuthCallback() {
 
       try {
         console.log("Sending tokens to backend...");
+        setProgress(50);
 
         const response = await api.post(
           "/auth/callback/token-exchange",
@@ -59,6 +75,7 @@ export function AuthCallback() {
         );
 
         console.log("Response data:", response.data);
+        setProgress(70);
 
         if (!response.data.success) {
           throw new Error("Failed to exchange tokens");
@@ -66,9 +83,11 @@ export function AuthCallback() {
 
         // Wait for a moment to ensure cookies are set
         await new Promise((resolve) => setTimeout(resolve, 1000));
+        setProgress(90);
 
         // Update auth state
         await checkAuth();
+        setProgress(100);
 
         // Show success toast only once
         if (!successToastShown.current) {
@@ -101,10 +120,17 @@ export function AuthCallback() {
   }, [error, navigate]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="text-center">
-        <h2 className="text-2xl font-semibold mb-2">Completing sign in...</h2>
-        <p className="text-gray-600">Please wait while we authenticate you.</p>
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="text-center w-full max-w-md px-4">
+        <h2 className="text-xl font-semibold mb-4">Completing sign in</h2>
+        <Progress value={progress} className="h-2 mb-4" />
+        <p className="text-gray-600">
+          {progress < 50
+            ? "Verifying credentials..."
+            : progress < 80
+            ? "Authenticating your account..."
+            : "Almost there..."}
+        </p>
       </div>
     </div>
   );
