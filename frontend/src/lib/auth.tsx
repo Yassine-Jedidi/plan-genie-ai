@@ -21,6 +21,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
+      sessionStorage.setItem("intentionalSignOut", "true");
       await api.post("/auth/signout");
       setUser(null);
     } catch (error) {

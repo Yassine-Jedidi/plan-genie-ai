@@ -15,6 +15,7 @@ import { ResetPasswordPage } from "./reset-password";
 import { AuthProvider } from "./lib/auth";
 import { Toaster } from "@/components/ui/sonner";
 import HomePage from "./home";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
 function AppContent() {
   const location = useLocation();
@@ -25,12 +26,19 @@ function AppContent() {
       {showNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Hero />} />
+
+        {/* Public routes - redirect if already authenticated */}
         <Route path="/sign-in" element={<SignInPage />} />
         <Route path="/sign-up" element={<SignUpPage />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/home" element={<HomePage />} />
+
+        <Route path="/auth/callback" element={<AuthCallback />} />
+
+        {/* Protected Routes - require authentication */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/home" element={<HomePage />} />
+        </Route>
       </Routes>
       <Toaster />
     </ThemeProvider>
