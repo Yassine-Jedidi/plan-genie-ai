@@ -18,13 +18,22 @@ export function AuthCallback() {
   const { checkAuth } = useAuth();
   const [tokenData, setTokenData] = useState<TokenData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [progress, setProgress] = useState(10);
+  const [progress, setProgress] = useState(0);
   const successToastShown = useRef(false);
   const errorToastShown = useRef(false);
+  const progressRef = useRef(0);
 
-  // First effect to capture the hash data immediately
+  const setProgressSafe = (value: number) => {
+    // Prevent decreasing progress
+    if (value > progressRef.current) {
+      progressRef.current = value;
+      setProgress(value);
+    }
+  };
+
+  // First stage: Parse hash tokens
   useEffect(() => {
-    setProgress(10);
+    setProgressSafe(10);
     const hash = window.location.hash;
     if (!hash) {
       setError("No hash fragment found");
@@ -46,57 +55,45 @@ export function AuthCallback() {
     }
 
     setTokenData(data);
-    setProgress(30);
-  }, []); // Run only once on mount
+    setProgressSafe(30);
+  }, []);
 
-  // Progress animation effect
-  useEffect(() => {
-    if (!tokenData) return;
-
-    const timer = setTimeout(() => {
-      setProgress((prev) => Math.min(prev + 20, 90));
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [tokenData, progress]);
-
-  // Second effect to handle the token exchange
+  // Second stage: Exchange tokens with backend
   useEffect(() => {
     const exchangeTokens = async () => {
       if (!tokenData) return;
 
       try {
-        console.log("Sending tokens to backend...");
-        setProgress(50);
+        setProgressSafe(50);
 
         const response = await api.post(
           "/auth/callback/token-exchange",
           tokenData
         );
 
-        console.log("Response data:", response.data);
-        setProgress(70);
-
         if (!response.data.success) {
           throw new Error("Failed to exchange tokens");
         }
 
-        // Wait for a moment to ensure cookies are set
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setProgress(90);
+        setProgressSafe(70);
 
-        // Update auth state
+        // Allow cookies to be set
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Check auth and update state
         await checkAuth();
-        setProgress(100);
+        setProgressSafe(90);
 
-        // Show success toast only once
         if (!successToastShown.current) {
           toast.success("Successfully signed in with Google!");
           successToastShown.current = true;
         }
 
-        // Navigate to home page
-        navigate("/home", { replace: true });
+        setProgressSafe(100);
+
+        setTimeout(() => {
+          navigate("/home", { replace: true });
+        }, 300);
       } catch (err) {
         console.error("Auth callback error:", err);
         setError(err instanceof Error ? err.message : "Authentication failed");
@@ -106,9 +103,9 @@ export function AuthCallback() {
     if (tokenData) {
       exchangeTokens();
     }
-  }, [tokenData, navigate, checkAuth]);
+  }, [tokenData, checkAuth, navigate]);
 
-  // Final effect to handle errors
+  // Final stage: Handle errors
   useEffect(() => {
     if (error && !errorToastShown.current) {
       toast.error("Failed to sign in with Google. Please try again.");
@@ -125,10 +122,14 @@ export function AuthCallback() {
         <h2 className="text-xl font-semibold mb-4">Completing sign in</h2>
         <Progress value={progress} className="h-2 mb-4" />
         <p className="text-gray-600">
-          {progress < 50
+          {progress < 30
+            ? "Initializing..."
+            : progress < 50
             ? "Verifying credentials..."
-            : progress < 80
-            ? "Authenticating your account..."
+            : progress < 70
+            ? "Exchanging tokens..."
+            : progress < 90
+            ? "Checking account..."
             : "Almost there..."}
         </p>
       </div>
