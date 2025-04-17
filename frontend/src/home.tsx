@@ -47,6 +47,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { nlpService, AnalysisResult } from "@/services/nlpService";
+import { taskService } from "@/services/taskService";
 import { PromptInputWithActions } from "./components/input";
 import { Input } from "@/components/ui/input";
 
@@ -114,6 +115,7 @@ function HomePage() {
   const [results, setResults] = useState<AnalysisResult | null>(null);
   const [editingEntity, setEditingEntity] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -206,6 +208,30 @@ function HomePage() {
         entities: updatedEntities,
       });
       setEditingEntity(null);
+    }
+  };
+
+  // Function to save task to the database
+  const saveTask = async () => {
+    if (!results) {
+      toast.error("No task to save");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await taskService.saveTask(results);
+      toast.success(`${results.type} saved successfully!`);
+      setResults(null); // Clear the form after saving
+    } catch (error) {
+      console.error("Error saving task:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to save task. Please try again."
+      );
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -523,12 +549,11 @@ function HomePage() {
                     </Button>
                     <Button
                       size="sm"
-                      onClick={() => {
-                        toast.success("Task saved!");
-                      }}
+                      onClick={saveTask}
+                      disabled={saving}
                       className="text-xs h-8"
                     >
-                      Save Task
+                      {saving ? "Saving..." : "Save Task"}
                     </Button>
                   </CardFooter>
                 </div>

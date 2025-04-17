@@ -1,13 +1,49 @@
 const express = require("express");
 const prisma = require("../config/prisma");
+const { supabase } = require("../config/supabase");
 const router = express.Router();
 
-// POST endpoint to save tasks and events
+// Authentication middleware
+const authenticateUser = async (req, res, next) => {
+  try {
+    const accessToken = req.cookies["sb-access-token"];
+
+    if (!accessToken) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser(accessToken);
+
+    if (error || !user) {
+      return res.status(401).json({ error: "Invalid or expired token" });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error("Authentication error:", error);
+    res.status(401).json({ error: "Authentication failed" });
+  }
+};
+
+// Apply authentication middleware to all routes
+router.use(authenticateUser);
+
+// Save task or event
 router.post("/save", async (req, res) => {
   try {
-    const { type, entities, userId } = req.body;
+    if (!prisma) {
+      return res
+        .status(500)
+        .json({ error: "Database connection not available" });
+    }
 
-    if (!type || !entities || !userId) {
+    const { type, entities } = req.body;
+
+    if (!type || !entities) {
       return res.status(400).json({ error: "Missing required data" });
     }
 
@@ -22,7 +58,7 @@ router.post("/save", async (req, res) => {
           title,
           deadline,
           priority,
-          user_id: userId,
+          user_id: req.user.id,
         },
       });
 
@@ -36,7 +72,7 @@ router.post("/save", async (req, res) => {
         data: {
           title,
           date_time,
-          user_id: userId,
+          user_id: req.user.id,
         },
       });
 
