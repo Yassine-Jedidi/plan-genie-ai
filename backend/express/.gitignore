@@ -1,9 +1,2 @@
 .env
-node_modules/
-generated/
-*.log
-.DS_Store
-coverage/
-.vscode/
-dist/
-build/
+
