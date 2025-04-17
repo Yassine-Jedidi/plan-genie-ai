@@ -15,10 +15,12 @@ app.use(cookieParser());
 // Import routes
 const authRoutes = require("./routes/auth");
 const fastApiRoutes = require("./routes/fastapi");
+const tasksRoutes = require("./routes/tasks");
 
 // Apply routes
 app.use("/auth", authRoutes);
 app.use("/api", fastApiRoutes);
+app.use("/tasks", tasksRoutes);
 
 // Handle OPTIONS preflight
 app.options("*", corsMiddleware());
