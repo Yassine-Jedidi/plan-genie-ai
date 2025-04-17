@@ -10,6 +10,39 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Custom User model that syncs with Supabase auth.users
+model User {
+  id         String   @id
+  email      String   @unique
+  full_name  String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  tasks      Task[]
+  events     Event[]
+}
+
+model Task {
+  id         String   @id @default(uuid())
+  title      String
+  deadline   String?
+  priority   String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+}
+
+model Event {
+  id         String   @id @default(uuid())
+  title      String
+  date_time  String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
 }
