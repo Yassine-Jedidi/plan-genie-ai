@@ -1,25 +1,10 @@
 const express = require("express");
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../config/prisma");
 const router = express.Router();
-
-// Create an instance of PrismaClient
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL,
-    },
-  },
-});
 
 // POST endpoint to save tasks and events
 router.post("/save", async (req, res) => {
   try {
-    if (!prisma) {
-      return res
-        .status(500)
-        .json({ error: "Database connection not available" });
-    }
-
     const { type, entities, userId } = req.body;
 
     if (!type || !entities || !userId) {
