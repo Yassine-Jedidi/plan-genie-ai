@@ -11,36 +11,6 @@ const prisma = new PrismaClient({
   },
 });
 
-// Middleware to authenticate user
-const authenticateUser = async (req, res, next) => {
-  try {
-    const accessToken = req.cookies["sb-access-token"];
-    if (!accessToken) {
-      return res.status(401).json({ error: "Authentication required" });
-    }
-
-    // Get user from Supabase with the access token
-    const { supabase } = require("../config/supabase");
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser(accessToken);
-
-    if (error || !user) {
-      return res.status(401).json({ error: "Invalid authentication token" });
-    }
-
-    req.user = user;
-    next();
-  } catch (error) {
-    console.error("Authentication error:", error);
-    res.status(500).json({ error: "Authentication failed" });
-  }
-};
-
-// Apply authentication middleware to all routes
-router.use(authenticateUser);
-
 // POST endpoint to save tasks and events
 router.post("/save", async (req, res) => {
   try {
@@ -50,9 +20,9 @@ router.post("/save", async (req, res) => {
         .json({ error: "Database connection not available" });
     }
 
-    const { type, entities } = req.body;
+    const { type, entities, userId } = req.body;
 
-    if (!type || !entities) {
+    if (!type || !entities || !userId) {
       return res.status(400).json({ error: "Missing required data" });
     }
 
@@ -67,7 +37,7 @@ router.post("/save", async (req, res) => {
           title,
           deadline,
           priority,
-          user_id: req.user.id,
+          user_id: userId,
         },
       });
 
@@ -81,7 +51,7 @@ router.post("/save", async (req, res) => {
         data: {
           title,
           date_time,
-          user_id: req.user.id,
+          user_id: userId,
         },
       });
 
@@ -96,11 +66,17 @@ router.post("/save", async (req, res) => {
 });
 
 // GET endpoint to retrieve user's tasks
-router.get("/tasks", async (req, res) => {
+router.get("/tasks/:userId", async (req, res) => {
   try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
     const tasks = await prisma.task.findMany({
       where: {
-        user_id: req.user.id,
+        user_id: userId,
       },
       orderBy: {
         created_at: "desc",
@@ -115,11 +91,17 @@ router.get("/tasks", async (req, res) => {
 });
 
 // GET endpoint to retrieve user's events
-router.get("/events", async (req, res) => {
+router.get("/events/:userId", async (req, res) => {
   try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
     const events = await prisma.event.findMany({
       where: {
-        user_id: req.user.id,
+        user_id: userId,
       },
       orderBy: {
         date_time: "asc",
