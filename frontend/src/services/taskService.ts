@@ -34,9 +34,9 @@ export const taskService = {
     }
   },
 
-  async getTasks(userId: string): Promise<Task[]> {
+  async getTasks(): Promise<Task[]> {
     try {
-      const { data } = await api.get(`/tasks/tasks/${userId}`);
+      const { data } = await api.get("/tasks/tasks");
       return data;
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
@@ -61,7 +61,7 @@ export const taskService = {
   async getAllItems(userId: string): Promise<{ tasks: Task[], events: Event[] }> {
     try {
       const [tasksResponse, eventsResponse] = await Promise.all([
-        this.getTasks(userId),
+        this.getTasks(),
         this.getEvents(userId)
       ]);
       

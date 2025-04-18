@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarFooter,
   SidebarTrigger,
-} from "@/components/sidebar";
+} from "@/components/ui/sidebar";
 
 import {
   User,
@@ -86,7 +86,7 @@ const items = [
   },
   {
     title: "Tasks",
-    url: "#",
+    url: "/tasks",
     icon: ClipboardList,
   },
   {

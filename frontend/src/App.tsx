@@ -16,10 +16,11 @@ import { AuthProvider } from "./lib/auth";
 import { Toaster } from "@/components/ui/sonner";
 import HomePage from "./home";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
-
+import TasksPage from "./tasks";
 function AppContent() {
   const location = useLocation();
-  const showNavbar = location.pathname !== "/home";
+  const showNavbar =
+    location.pathname !== "/home" && location.pathname !== "/tasks";
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
@@ -36,8 +37,10 @@ function AppContent() {
         <Route path="/auth/callback" element={<AuthCallback />} />
 
         {/* Protected Routes - require authentication */}
+
         <Route element={<ProtectedRoute />}>
           <Route path="/home" element={<HomePage />} />
+          <Route path="/tasks" element={<TasksPage />} />
         </Route>
       </Routes>
       <Toaster />

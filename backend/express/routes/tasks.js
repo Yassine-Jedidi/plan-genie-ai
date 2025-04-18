@@ -87,10 +87,9 @@ router.post("/save", async (req, res) => {
 });
 
 // GET endpoint to retrieve user's tasks
-router.get("/tasks/:userId", async (req, res) => {
+router.get("/tasks", async (req, res) => {
   try {
-    const { userId } = req.params;
-
+    const userId = req.user.id;
     if (!userId) {
       return res.status(400).json({ error: "User ID is required" });
     }
