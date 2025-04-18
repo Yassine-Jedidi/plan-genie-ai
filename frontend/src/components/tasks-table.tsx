@@ -145,7 +145,7 @@ const columns: ColumnDef<Task>[] = [
     accessorKey: "deadline",
     cell: ({ row }) => {
       const deadline = row.getValue("deadline") as string | null;
-      return deadline ? new Date(deadline).toLocaleDateString() : "No deadline";
+      return deadline;
     },
     size: 120,
   },
@@ -206,8 +206,8 @@ export default function TasksTable({ tasks }: TasksTableProps) {
 
   const [sorting, setSorting] = useState<SortingState>([
     {
-      id: "title",
-      desc: false,
+      id: "created_at",
+      desc: true,
     },
   ]);
 
