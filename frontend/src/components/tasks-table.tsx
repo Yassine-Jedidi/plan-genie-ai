@@ -88,7 +88,7 @@ import { Task } from "@/services/taskService";
 import { useNavigate } from "react-router-dom";
 
 // Custom filter function for multi-column searching
-const multiColumnFilterFn: FilterFn<Task> = (row, columnId, filterValue) => {
+const multiColumnFilterFn: FilterFn<Task> = (row, _columnId, filterValue) => {
   const searchableRowContent = `${row.original.title} ${
     row.original.priority || ""
   }`.toLowerCase();
@@ -701,7 +701,8 @@ export default function TasksTable({ tasks }: TasksTableProps) {
   );
 }
 
-function RowActions({ row }: { row: Row<Task> }) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function RowActions({ row: _row }: { row: Row<Task> }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
