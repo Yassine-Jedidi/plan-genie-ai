@@ -53,6 +53,21 @@ router.post("/save", async (req, res) => {
       const deadline = entities.DELAI?.[0] || null;
       const priority = entities.PRIORITE?.[0] || null;
 
+      // Check if user exists in the database
+      let dbUser = await prisma.user.findUnique({
+        where: { id: req.user.id },
+      });
+
+      // If user doesn't exist in database, create them
+      if (!dbUser) {
+        dbUser = await prisma.user.create({
+          data: {
+            id: req.user.id,
+            email: req.user.email,
+          },
+        });
+      }
+
       const task = await prisma.task.create({
         data: {
           title,
@@ -67,6 +82,21 @@ router.post("/save", async (req, res) => {
       // Create event
       const title = entities.TITRE?.[0] || "Untitled Event";
       const date_time = entities.DATE_HEURE?.[0] || new Date().toISOString();
+
+      // Check if user exists in the database
+      let dbUser = await prisma.user.findUnique({
+        where: { id: req.user.id },
+      });
+
+      // If user doesn't exist in database, create them
+      if (!dbUser) {
+        dbUser = await prisma.user.create({
+          data: {
+            id: req.user.id,
+            email: req.user.email,
+          },
+        });
+      }
 
       const event = await prisma.event.create({
         data: {
