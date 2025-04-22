@@ -33,11 +33,26 @@ function AppContent() {
 
       {showSidebar ? (
         <SidebarProvider>
-          <AppSidebar />
           <Routes>
             <Route element={<ProtectedRoute />}>
-              <Route path="/home" element={<HomePage />} />
-              <Route path="/tasks" element={<TasksPage />} />
+              <Route
+                path="/home"
+                element={
+                  <>
+                    <AppSidebar />
+                    <HomePage />
+                  </>
+                }
+              />
+              <Route
+                path="/tasks"
+                element={
+                  <>
+                    <AppSidebar />
+                    <TasksPage />
+                  </>
+                }
+              />
             </Route>
           </Routes>
         </SidebarProvider>
