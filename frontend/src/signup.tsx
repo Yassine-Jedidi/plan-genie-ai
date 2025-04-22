@@ -46,11 +46,19 @@ function SignUpPage() {
     password?: string;
   }>({});
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [widgetId, setWidgetId] = useState<string | null>(null);
 
   // Handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setValidationErrors({ ...validationErrors, [e.target.name]: undefined }); // Clear validation errors
+  };
+
+  const resetTurnstile = () => {
+    if (window.turnstile && widgetId) {
+      window.turnstile.reset(widgetId);
+      setTurnstileToken(null);
+    }
   };
 
   // Handle form submission
@@ -114,6 +122,8 @@ function SignUpPage() {
       } else {
         toast.error("An unexpected error occurred.");
       }
+      // Reset Turnstile after a failed sign up attempt
+      resetTurnstile();
     } finally {
       setLoading(false);
     }
@@ -196,6 +206,8 @@ function SignUpPage() {
                   setTurnstileToken(null);
                 }}
                 onExpire={() => setTurnstileToken(null)}
+                onLoad={(widgetId) => setWidgetId(widgetId)}
+                refreshExpired="auto"
                 language="en"
               />
             </div>

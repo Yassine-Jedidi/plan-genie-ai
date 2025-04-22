@@ -20,10 +20,20 @@ import Turnstile from "react-turnstile";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
 
+// Add window.turnstile type definition
+declare global {
+  interface Window {
+    turnstile?: {
+      reset: (widgetId: string) => void;
+    };
+  }
+}
+
 function SignInPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const messageShown = useRef(false);
+  const [widgetId, setWidgetId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -43,6 +53,13 @@ function SignInPage() {
       window.history.replaceState({}, document.title);
     }
   }, [location]);
+
+  const resetTurnstile = () => {
+    if (window.turnstile && widgetId) {
+      window.turnstile.reset(widgetId);
+      setTurnstileToken(null);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,6 +91,8 @@ function SignInPage() {
       } else {
         toast.error("An unexpected error occurred.");
       }
+      // Reset Turnstile after a failed login attempt
+      resetTurnstile();
     } finally {
       setLoading(false);
     }
@@ -170,6 +189,8 @@ function SignInPage() {
                   setTurnstileToken(null);
                 }}
                 onExpire={() => setTurnstileToken(null)}
+                onLoad={(widgetId) => setWidgetId(widgetId)}
+                refreshExpired="auto"
                 language="en"
               />
             </div>
