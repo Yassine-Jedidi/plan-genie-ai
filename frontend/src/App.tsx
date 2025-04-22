@@ -17,32 +17,44 @@ import { Toaster } from "@/components/ui/sonner";
 import HomePage from "./home";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import TasksPage from "./tasks";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+
 function AppContent() {
   const location = useLocation();
   const showNavbar =
     location.pathname !== "/home" && location.pathname !== "/tasks";
+  const showSidebar =
+    location.pathname === "/home" || location.pathname === "/tasks";
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       {showNavbar && <Navbar />}
-      <Routes>
-        <Route path="/" element={<Hero />} />
 
-        {/* Public routes - redirect if already authenticated */}
-        <Route path="/sign-in" element={<SignInPage />} />
-        <Route path="/sign-up" element={<SignUpPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
+      {showSidebar ? (
+        <SidebarProvider>
+          <AppSidebar />
+          <Routes>
+            <Route element={<ProtectedRoute />}>
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/tasks" element={<TasksPage />} />
+            </Route>
+          </Routes>
+        </SidebarProvider>
+      ) : (
+        <Routes>
+          <Route path="/" element={<Hero />} />
 
-        <Route path="/auth/callback" element={<AuthCallback />} />
+          {/* Public routes - redirect if already authenticated */}
+          <Route path="/sign-in" element={<SignInPage />} />
+          <Route path="/sign-up" element={<SignUpPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-        {/* Protected Routes - require authentication */}
+          <Route path="/auth/callback" element={<AuthCallback />} />
+        </Routes>
+      )}
 
-        <Route element={<ProtectedRoute />}>
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/tasks" element={<TasksPage />} />
-        </Route>
-      </Routes>
       <Toaster />
     </ThemeProvider>
   );

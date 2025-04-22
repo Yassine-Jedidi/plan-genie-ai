@@ -1,7 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 
 export const ProtectedRoute = () => {
@@ -24,11 +23,7 @@ export const ProtectedRoute = () => {
   }, [loading, user]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Spinner size="lg" />
-      </div>
-    );
+    return null;
   }
 
   if (!user) {
