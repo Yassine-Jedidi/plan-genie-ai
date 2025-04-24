@@ -141,10 +141,12 @@ export function AppSidebar() {
                         <img
                           src={user.user_metadata.avatar_url}
                           alt="User avatar"
-                          className="h-8 w-8 rounded-full"
+                          className="h-8 w-8 rounded-full object-cover"
                         />
                       ) : (
-                        <User className="h-8 w-8" />
+                        <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+                          <User className="h-5 w-5 text-muted-foreground" />
+                        </div>
                       )}
                       <div className="flex flex-col items-start">
                         <span className="text-sm font-medium">

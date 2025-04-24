@@ -2,8 +2,40 @@ const express = require("express");
 const { supabase, getGoogleOAuthURL } = require("../config/supabase");
 const fetch = require("node-fetch");
 const prisma = require("../config/prisma");
+const multer = require("multer");
+const path = require("path");
+const crypto = require("crypto");
 
 const router = express.Router();
+
+// Configure multer for memory storage
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 2 * 1024 * 1024, // 2MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Accept only image files
+    if (file.mimetype.startsWith("image/")) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only image files are allowed"), false);
+    }
+  },
+});
+
+// Error handling middleware for multer
+const handleMulterError = (err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res
+        .status(400)
+        .json({ error: "File is too large. Maximum size allowed is 2MB." });
+    }
+    return res.status(400).json({ error: err.message });
+  }
+  next(err);
+};
 
 // Add CORS middleware for all routes
 router.use((req, res, next) => {
@@ -449,8 +481,72 @@ router.post("/update-password", async (req, res) => {
   }
 });
 
+// Route to upload avatar to Supabase storage
+router.post(
+  "/upload-avatar",
+  upload.single("avatar"),
+  handleMulterError,
+  async (req, res) => {
+    try {
+      // Check if file exists
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+
+      // Check authentication
+      const accessToken = req.cookies["sb-access-token"];
+      if (!accessToken) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      // Get user info
+      const { data: userData, error: userError } = await supabase.auth.getUser(
+        accessToken
+      );
+      if (userError) throw userError;
+
+      const user = userData.user;
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Generate unique filename
+      const fileExt = path.extname(req.file.originalname).toLowerCase();
+      const fileName = `${user.id}-${crypto
+        .randomBytes(16)
+        .toString("hex")}${fileExt}`;
+
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from("avatars")
+        .upload(fileName, req.file.buffer, {
+          contentType: req.file.mimetype,
+          upsert: true,
+        });
+
+      if (error) throw error;
+
+      // Get the public URL
+      const { data: publicUrlData } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(fileName);
+
+      // Return the public URL
+      res.json({
+        avatar_url: publicUrlData.publicUrl,
+        file_path: fileName,
+      });
+    } catch (error) {
+      console.error("Avatar upload error:", error);
+      res.status(500).json({
+        error: error.message || "Failed to upload avatar",
+      });
+    }
+  }
+);
+
 // Add update profile route
-router.put("/update-profile", async (req, res) => {
+router.put("/update-profile", handleMulterError, async (req, res) => {
   try {
     const accessToken = req.cookies["sb-access-token"];
     if (!accessToken) {
@@ -473,12 +569,20 @@ router.put("/update-profile", async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
+    // Prepare metadata update
+    const metadata = {
+      full_name: data.full_name,
+    };
+
+    // Add avatar URL to metadata if provided
+    if (data.avatar_url) {
+      metadata.avatar_url = data.avatar_url;
+    }
+
     // Update Supabase user metadata
     const { data: updatedUser, error: updateError } =
       await supabase.auth.updateUser({
-        data: {
-          full_name: data.full_name,
-        },
+        data: metadata,
       });
 
     if (updateError) throw updateError;
@@ -488,6 +592,7 @@ router.put("/update-profile", async (req, res) => {
       where: { id: user.id },
       data: {
         full_name: data.full_name,
+        avatar_url: data.avatar_url || undefined,
       },
     });
 

@@ -1104,6 +1104,7 @@ export namespace Prisma {
     id: string | null
     email: string | null
     full_name: string | null
+    avatar_url: string | null
     created_at: Date | null
     updated_at: Date | null
   }
@@ -1112,6 +1113,7 @@ export namespace Prisma {
     id: string | null
     email: string | null
     full_name: string | null
+    avatar_url: string | null
     created_at: Date | null
     updated_at: Date | null
   }
@@ -1120,6 +1122,7 @@ export namespace Prisma {
     id: number
     email: number
     full_name: number
+    avatar_url: number
     created_at: number
     updated_at: number
     _all: number
@@ -1130,6 +1133,7 @@ export namespace Prisma {
     id?: true
     email?: true
     full_name?: true
+    avatar_url?: true
     created_at?: true
     updated_at?: true
   }
@@ -1138,6 +1142,7 @@ export namespace Prisma {
     id?: true
     email?: true
     full_name?: true
+    avatar_url?: true
     created_at?: true
     updated_at?: true
   }
@@ -1146,6 +1151,7 @@ export namespace Prisma {
     id?: true
     email?: true
     full_name?: true
+    avatar_url?: true
     created_at?: true
     updated_at?: true
     _all?: true
@@ -1227,6 +1233,7 @@ export namespace Prisma {
     id: string
     email: string
     full_name: string | null
+    avatar_url: string | null
     created_at: Date
     updated_at: Date
     _count: UserCountAggregateOutputType | null
@@ -1252,6 +1259,7 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     full_name?: boolean
+    avatar_url?: boolean
     created_at?: boolean
     updated_at?: boolean
     tasks?: boolean | User$tasksArgs<ExtArgs>
@@ -1263,6 +1271,7 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     full_name?: boolean
+    avatar_url?: boolean
     created_at?: boolean
     updated_at?: boolean
   }, ExtArgs["result"]["user"]>
@@ -1271,6 +1280,7 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     full_name?: boolean
+    avatar_url?: boolean
     created_at?: boolean
     updated_at?: boolean
   }, ExtArgs["result"]["user"]>
@@ -1279,11 +1289,12 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     full_name?: boolean
+    avatar_url?: boolean
     created_at?: boolean
     updated_at?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "full_name" | "created_at" | "updated_at", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "full_name" | "avatar_url" | "created_at" | "updated_at", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tasks?: boolean | User$tasksArgs<ExtArgs>
     events?: boolean | User$eventsArgs<ExtArgs>
@@ -1302,6 +1313,7 @@ export namespace Prisma {
       id: string
       email: string
       full_name: string | null
+      avatar_url: string | null
       created_at: Date
       updated_at: Date
     }, ExtArgs["result"]["user"]>
@@ -1732,6 +1744,7 @@ export namespace Prisma {
     readonly id: FieldRef<"User", 'String'>
     readonly email: FieldRef<"User", 'String'>
     readonly full_name: FieldRef<"User", 'String'>
+    readonly avatar_url: FieldRef<"User", 'String'>
     readonly created_at: FieldRef<"User", 'DateTime'>
     readonly updated_at: FieldRef<"User", 'DateTime'>
   }
@@ -4361,6 +4374,7 @@ export namespace Prisma {
     id: 'id',
     email: 'email',
     full_name: 'full_name',
+    avatar_url: 'avatar_url',
     created_at: 'created_at',
     updated_at: 'updated_at'
   };
@@ -4474,6 +4488,7 @@ export namespace Prisma {
     id?: StringFilter<"User"> | string
     email?: StringFilter<"User"> | string
     full_name?: StringNullableFilter<"User"> | string | null
+    avatar_url?: StringNullableFilter<"User"> | string | null
     created_at?: DateTimeFilter<"User"> | Date | string
     updated_at?: DateTimeFilter<"User"> | Date | string
     tasks?: TaskListRelationFilter
@@ -4484,6 +4499,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     full_name?: SortOrderInput | SortOrder
+    avatar_url?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     tasks?: TaskOrderByRelationAggregateInput
@@ -4497,6 +4513,7 @@ export namespace Prisma {
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     full_name?: StringNullableFilter<"User"> | string | null
+    avatar_url?: StringNullableFilter<"User"> | string | null
     created_at?: DateTimeFilter<"User"> | Date | string
     updated_at?: DateTimeFilter<"User"> | Date | string
     tasks?: TaskListRelationFilter
@@ -4507,6 +4524,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     full_name?: SortOrderInput | SortOrder
+    avatar_url?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -4521,6 +4539,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"User"> | string
     email?: StringWithAggregatesFilter<"User"> | string
     full_name?: StringNullableWithAggregatesFilter<"User"> | string | null
+    avatar_url?: StringNullableWithAggregatesFilter<"User"> | string | null
     created_at?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -4654,6 +4673,7 @@ export namespace Prisma {
     id: string
     email: string
     full_name?: string | null
+    avatar_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     tasks?: TaskCreateNestedManyWithoutUserInput
@@ -4664,6 +4684,7 @@ export namespace Prisma {
     id: string
     email: string
     full_name?: string | null
+    avatar_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     tasks?: TaskUncheckedCreateNestedManyWithoutUserInput
@@ -4674,6 +4695,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     full_name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     tasks?: TaskUpdateManyWithoutUserNestedInput
@@ -4684,6 +4706,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     full_name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     tasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
@@ -4694,6 +4717,7 @@ export namespace Prisma {
     id: string
     email: string
     full_name?: string | null
+    avatar_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -4702,6 +4726,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     full_name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4710,6 +4735,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     full_name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4915,6 +4941,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     full_name?: SortOrder
+    avatar_url?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }
@@ -4923,6 +4950,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     full_name?: SortOrder
+    avatar_url?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }
@@ -4931,6 +4959,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     full_name?: SortOrder
+    avatar_url?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }
@@ -5395,6 +5424,7 @@ export namespace Prisma {
     id: string
     email: string
     full_name?: string | null
+    avatar_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     events?: EventCreateNestedManyWithoutUserInput
@@ -5404,6 +5434,7 @@ export namespace Prisma {
     id: string
     email: string
     full_name?: string | null
+    avatar_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     events?: EventUncheckedCreateNestedManyWithoutUserInput
@@ -5429,6 +5460,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     full_name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     events?: EventUpdateManyWithoutUserNestedInput
@@ -5438,6 +5470,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     full_name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     events?: EventUncheckedUpdateManyWithoutUserNestedInput
@@ -5447,6 +5480,7 @@ export namespace Prisma {
     id: string
     email: string
     full_name?: string | null
+    avatar_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     tasks?: TaskCreateNestedManyWithoutUserInput
@@ -5456,6 +5490,7 @@ export namespace Prisma {
     id: string
     email: string
     full_name?: string | null
+    avatar_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     tasks?: TaskUncheckedCreateNestedManyWithoutUserInput
@@ -5481,6 +5516,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     full_name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     tasks?: TaskUpdateManyWithoutUserNestedInput
@@ -5490,6 +5526,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     full_name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     tasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
