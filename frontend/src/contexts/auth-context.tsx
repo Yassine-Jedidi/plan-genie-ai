@@ -6,6 +6,7 @@ export interface AuthContextType {
   loading: boolean;
   checkAuth: () => Promise<void>;
   signOut: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(

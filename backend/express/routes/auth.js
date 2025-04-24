@@ -1,6 +1,7 @@
 const express = require("express");
 const { supabase, getGoogleOAuthURL } = require("../config/supabase");
 const fetch = require("node-fetch");
+const prisma = require("../config/prisma");
 
 const router = express.Router();
 
@@ -159,6 +160,18 @@ router.post("/signup", async (req, res) => {
     });
 
     if (error) throw error;
+
+    // Create user in Prisma database with Supabase auth ID
+    if (data.user) {
+      await prisma.user.create({
+        data: {
+          id: data.user.id,
+          email: data.user.email,
+          full_name: fullName,
+        },
+      });
+    }
+
     res.json(data);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -433,6 +446,57 @@ router.post("/update-password", async (req, res) => {
     res
       .status(500)
       .json({ error: error.message || "Failed to update password" });
+  }
+});
+
+// Add update profile route
+router.put("/update-profile", async (req, res) => {
+  try {
+    const accessToken = req.cookies["sb-access-token"];
+    if (!accessToken) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const { data } = req.body;
+    if (!data || !data.full_name) {
+      return res.status(400).json({ error: "Full name is required" });
+    }
+
+    // Get current user
+    const { data: userData, error: userError } = await supabase.auth.getUser(
+      accessToken
+    );
+    if (userError) throw userError;
+
+    const user = userData.user;
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Update Supabase user metadata
+    const { data: updatedUser, error: updateError } =
+      await supabase.auth.updateUser({
+        data: {
+          full_name: data.full_name,
+        },
+      });
+
+    if (updateError) throw updateError;
+
+    // Update user in Prisma database
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        full_name: data.full_name,
+      },
+    });
+
+    res.json({ user: updatedUser.user });
+  } catch (error) {
+    console.error("Update profile error:", error);
+    res
+      .status(500)
+      .json({ error: error.message || "Failed to update profile" });
   }
 });
 

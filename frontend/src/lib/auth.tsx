@@ -19,6 +19,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const refreshUser = async () => {
+    try {
+      const response = await api.get("/auth/me");
+      setUser(response.data.user);
+      return response.data.user;
+    } catch (error) {
+      console.error("Error refreshing user:", error);
+      throw error;
+    }
+  };
+
   const signOut = async () => {
     try {
       sessionStorage.setItem("intentionalSignOut", "true");
@@ -34,7 +45,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, checkAuth, signOut }}>
+    <AuthContext.Provider
+      value={{ user, loading, checkAuth, signOut, refreshUser }}
+    >
       {children}
     </AuthContext.Provider>
   );
