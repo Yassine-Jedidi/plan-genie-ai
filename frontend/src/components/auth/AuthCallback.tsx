@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import api from "@/components/api/api";
 import { toast } from "sonner";
-import { Progress } from "@/components/ui/progress";
 
 interface TokenData {
   access_token: string | null;
@@ -19,21 +18,83 @@ export function AuthCallback() {
   const [tokenData, setTokenData] = useState<TokenData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [statusMessage, setStatusMessage] = useState("Initializing...");
   const successToastShown = useRef(false);
   const errorToastShown = useRef(false);
   const progressRef = useRef(0);
+  const progressIntervalRef = useRef<number | null>(null);
+
+  // Function to smoothly increment progress
+  const startProgressIncrement = (
+    startValue: number,
+    endValue: number,
+    duration: number,
+    newStatus?: string
+  ) => {
+    // Clear any existing interval
+    if (progressIntervalRef.current !== null) {
+      window.clearInterval(progressIntervalRef.current);
+    }
+
+    // Update status message if provided
+    if (newStatus) {
+      setStatusMessage(newStatus);
+    }
+
+    // Set starting value immediately
+    setProgressSafe(startValue);
+
+    // Calculate increment steps
+    const steps = Math.max(1, Math.floor(duration / 100)); // Update roughly every 100ms
+    const increment = (endValue - startValue) / steps;
+    let currentStep = 0;
+
+    // Start interval
+    progressIntervalRef.current = window.setInterval(() => {
+      currentStep++;
+      const newProgress = startValue + increment * currentStep;
+
+      if (currentStep >= steps || newProgress >= endValue) {
+        setProgressSafe(endValue);
+        window.clearInterval(progressIntervalRef.current!);
+        progressIntervalRef.current = null;
+      } else {
+        setProgressSafe(newProgress);
+      }
+    }, 100);
+  };
 
   const setProgressSafe = (value: number) => {
-    // Prevent decreasing progress
-    if (value > progressRef.current) {
-      progressRef.current = value;
-      setProgress(value);
+    // Prevent decreasing progress and ensure it's within bounds
+    const safeValue = Math.min(100, Math.max(0, value));
+    if (safeValue >= progressRef.current) {
+      progressRef.current = safeValue;
+      setProgress(safeValue);
     }
   };
 
+  // Clean up interval on unmount
+  useEffect(() => {
+    return () => {
+      if (progressIntervalRef.current !== null) {
+        window.clearInterval(progressIntervalRef.current);
+      }
+    };
+  }, []);
+
+  // Start with initial progress as soon as component mounts
+  useEffect(() => {
+    // Start immediately visible (1%) to ensure user sees activity
+    setProgress(1);
+
+    // Then begin the first animation
+    setTimeout(() => {
+      startProgressIncrement(1, 10, 600, "Initializing authentication...");
+    }, 100);
+  }, []);
+
   // First stage: Parse hash tokens
   useEffect(() => {
-    setProgressSafe(10);
     const hash = window.location.hash;
     if (!hash) {
       setError("No hash fragment found");
@@ -55,7 +116,7 @@ export function AuthCallback() {
     }
 
     setTokenData(data);
-    setProgressSafe(30);
+    startProgressIncrement(10, 30, 800, "Verifying credentials...");
   }, []);
 
   // Second stage: Exchange tokens with backend
@@ -64,7 +125,19 @@ export function AuthCallback() {
       if (!tokenData) return;
 
       try {
-        setProgressSafe(50);
+        // Progress during API call preparation
+        startProgressIncrement(30, 45, 600, "Preparing token exchange...");
+
+        // Short delay to show the preparation step
+        await new Promise((resolve) => setTimeout(resolve, 400));
+
+        // Progress during actual API call
+        startProgressIncrement(
+          45,
+          60,
+          1000,
+          "Exchanging tokens with server..."
+        );
 
         const response = await api.post(
           "/auth/callback/token-exchange",
@@ -75,25 +148,30 @@ export function AuthCallback() {
           throw new Error("Failed to exchange tokens");
         }
 
-        setProgressSafe(70);
+        // Progress after successful API call
+        startProgressIncrement(60, 75, 600, "Establishing secure session...");
 
         // Allow cookies to be set
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 600));
+
+        // Progress during auth check
+        startProgressIncrement(75, 90, 800, "Validating your account...");
 
         // Check auth and update state
         await checkAuth();
-        setProgressSafe(90);
 
         if (!successToastShown.current) {
           toast.success("Successfully signed in with Google!");
           successToastShown.current = true;
         }
 
-        setProgressSafe(100);
+        // Final progress before navigation
+        startProgressIncrement(90, 100, 500, "Redirecting to dashboard...");
 
+        // Give time for the progress to complete
         setTimeout(() => {
           navigate("/home", { replace: true });
-        }, 300);
+        }, 800);
       } catch (err) {
         console.error("Auth callback error:", err);
         setError(err instanceof Error ? err.message : "Authentication failed");
@@ -108,29 +186,31 @@ export function AuthCallback() {
   // Final stage: Handle errors
   useEffect(() => {
     if (error && !errorToastShown.current) {
+      setStatusMessage("Authentication failed");
       toast.error("Failed to sign in with Google. Please try again.");
       errorToastShown.current = true;
-      navigate(`/sign-in?error=${encodeURIComponent(error)}`, {
-        replace: true,
-      });
+
+      // Short delay before navigating away
+      setTimeout(() => {
+        navigate(`/sign-in?error=${encodeURIComponent(error)}`, {
+          replace: true,
+        });
+      }, 1000);
     }
   }, [error, navigate]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <div className="text-center w-full max-w-md px-4">
-        <h2 className="text-xl font-semibold mb-4">Completing sign in</h2>
-        <Progress value={progress} className="h-2 mb-4" />
-        <p className="text-gray-600">
-          {progress < 30
-            ? "Initializing..."
-            : progress < 50
-            ? "Verifying credentials..."
-            : progress < 70
-            ? "Exchanging tokens..."
-            : progress < 90
-            ? "Checking account..."
-            : "Almost there..."}
+        <h2 className="text-xl font-semibold mb-4">Completing Sign In</h2>
+        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4 dark:bg-gray-700">
+          <div
+            className="bg-primary h-2.5 rounded-full transition-all duration-300 ease-in-out"
+            style={{ width: `${Math.max(1, progress)}%` }}
+          />
+        </div>
+        <p className="text-gray-600 animate-fade-in transition-opacity">
+          {statusMessage}
         </p>
       </div>
     </div>
