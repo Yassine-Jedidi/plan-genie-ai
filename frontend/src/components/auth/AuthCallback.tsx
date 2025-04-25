@@ -19,10 +19,12 @@ export function AuthCallback() {
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const [statusMessage, setStatusMessage] = useState("Initializing...");
+  const [retries, setRetries] = useState(0);
   const successToastShown = useRef(false);
   const errorToastShown = useRef(false);
   const progressRef = useRef(0);
   const progressIntervalRef = useRef<number | null>(null);
+  const maxRetries = 3;
 
   // Function to smoothly increment progress
   const startProgressIncrement = (
@@ -151,14 +153,33 @@ export function AuthCallback() {
         // Progress after successful API call
         startProgressIncrement(60, 75, 600, "Establishing secure session...");
 
-        // Allow cookies to be set
-        await new Promise((resolve) => setTimeout(resolve, 600));
+        // Allow cookies to be set with a longer delay
+        await new Promise((resolve) => setTimeout(resolve, 800));
 
         // Progress during auth check
         startProgressIncrement(75, 90, 800, "Validating your account...");
 
-        // Check auth and update state
-        await checkAuth();
+        try {
+          // Try checking auth with retry mechanism
+          await checkAuth();
+        } catch (authError) {
+          console.error("Auth check failed, retrying...", authError);
+
+          if (retries < maxRetries) {
+            // Increment retry counter
+            setRetries((prev) => prev + 1);
+
+            // Wait a bit longer before retry
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+
+            // Try one more time
+            await checkAuth();
+          } else {
+            throw new Error(
+              "Failed to verify authentication after multiple attempts"
+            );
+          }
+        }
 
         if (!successToastShown.current) {
           toast.success("Successfully signed in with Google!");
@@ -174,14 +195,35 @@ export function AuthCallback() {
         }, 800);
       } catch (err) {
         console.error("Auth callback error:", err);
-        setError(err instanceof Error ? err.message : "Authentication failed");
+
+        // If we've already tried multiple times, show the error
+        if (retries >= maxRetries) {
+          setError(
+            err instanceof Error ? err.message : "Authentication failed"
+          );
+        } else {
+          // Otherwise try again with an incremental delay
+          setRetries((prev) => prev + 1);
+          const retryDelay = 1000 * (retries + 1); // Incremental backoff
+
+          setStatusMessage(
+            `Retrying... (Attempt ${retries + 1}/${maxRetries + 1})`
+          );
+
+          // Retry the entire exchange process
+          setTimeout(() => {
+            // Reset progress to start fresh
+            startProgressIncrement(30, 45, 600, "Preparing token exchange...");
+            exchangeTokens();
+          }, retryDelay);
+        }
       }
     };
 
     if (tokenData) {
       exchangeTokens();
     }
-  }, [tokenData, checkAuth, navigate]);
+  }, [tokenData, checkAuth, navigate, retries, maxRetries]);
 
   // Final stage: Handle errors
   useEffect(() => {
@@ -199,6 +241,36 @@ export function AuthCallback() {
     }
   }, [error, navigate]);
 
+  // Handle successful silent auth
+  useEffect(() => {
+    // If auth was checked successfully but we got an error during the flow
+    // This can happen when cookies were set but we didn't detect it
+    const checkSilentAuth = async () => {
+      try {
+        // If we get an auth error but cookies are actually set correctly,
+        // this will still succeed and we can redirect the user
+        if (error && !successToastShown.current) {
+          const response = await api.get("/auth/me");
+          if (response.data?.user) {
+            // User is actually authenticated
+            toast.success("Successfully signed in with Google!");
+            successToastShown.current = true;
+            navigate("/home", { replace: true });
+          }
+        }
+      } catch {
+        // Silently fail - we're just checking if auth actually succeeded
+      }
+    };
+
+    // Only run this check if we've shown an error but not success
+    if (error && errorToastShown.current && !successToastShown.current) {
+      // Delay this check to allow cookies to be processed
+      const timeout = setTimeout(checkSilentAuth, 1500);
+      return () => clearTimeout(timeout);
+    }
+  }, [error, navigate]);
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <div className="text-center w-full max-w-md px-4">
@@ -212,6 +284,11 @@ export function AuthCallback() {
         <p className="text-gray-600 animate-fade-in transition-opacity">
           {statusMessage}
         </p>
+        {retries > 0 && (
+          <p className="text-amber-600 text-sm mt-2">
+            Retrying connection... ({retries}/{maxRetries + 1})
+          </p>
+        )}
       </div>
     </div>
   );
