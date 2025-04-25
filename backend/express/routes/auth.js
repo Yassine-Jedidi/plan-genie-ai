@@ -93,6 +93,44 @@ const refreshTokenIfNeeded = async (req, res, next) => {
 
       if (error) throw error;
 
+      // Get user from Prisma to check for custom data
+      if (session.user) {
+        const prismaUser = await prisma.user.findUnique({
+          where: { id: session.user.id },
+        });
+
+        // Check if we need to update Supabase metadata
+        let needsUpdate = false;
+        const updateData = {};
+
+        // Check if avatar needs to be preserved
+        if (
+          prismaUser &&
+          prismaUser.avatar_url &&
+          prismaUser.avatar_url !== session.user.user_metadata?.avatar_url
+        ) {
+          updateData.avatar_url = prismaUser.avatar_url;
+          needsUpdate = true;
+        }
+
+        // Check if full_name needs to be preserved
+        if (
+          prismaUser &&
+          prismaUser.full_name &&
+          prismaUser.full_name !== session.user.user_metadata?.full_name
+        ) {
+          updateData.full_name = prismaUser.full_name;
+          needsUpdate = true;
+        }
+
+        // Update Supabase if needed
+        if (needsUpdate) {
+          await supabase.auth.updateUser({
+            data: updateData,
+          });
+        }
+      }
+
       // Set new cookies
       res.cookie("sb-access-token", session.access_token, {
         ...getCookieOptions(req),
@@ -240,6 +278,53 @@ router.post("/signin", async (req, res) => {
 
     if (error) throw error;
 
+    // Check Prisma for custom user data before setting cookies
+    const prismaUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+    });
+
+    // Determine if we need to update Supabase metadata
+    let needsUpdate = false;
+    const updateData = {};
+
+    // If Prisma has a custom avatar, update the Supabase user_metadata
+    if (prismaUser && prismaUser.avatar_url) {
+      const currentAvatar = session.user.user_metadata?.avatar_url;
+
+      // Only update if the avatars are different
+      if (currentAvatar !== prismaUser.avatar_url) {
+        updateData.avatar_url = prismaUser.avatar_url;
+        needsUpdate = true;
+      }
+    }
+
+    // If Prisma has a custom full_name, update the Supabase user_metadata
+    if (prismaUser && prismaUser.full_name) {
+      const currentFullName = session.user.user_metadata?.full_name;
+
+      // Only update if the names are different
+      if (currentFullName !== prismaUser.full_name) {
+        updateData.full_name = prismaUser.full_name;
+        needsUpdate = true;
+      }
+    }
+
+    // Update Supabase if needed
+    if (needsUpdate) {
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: updateData,
+      });
+
+      if (updateError) {
+        console.error("Failed to update Supabase user data:", updateError);
+      }
+    }
+
+    // Get the updated user data after potential updates
+    const {
+      data: { user: updatedUser },
+    } = await supabase.auth.getUser(session.access_token);
+
     // Set secure cookies
     res.cookie("sb-access-token", session.access_token, {
       ...getCookieOptions(req),
@@ -253,7 +338,7 @@ router.post("/signin", async (req, res) => {
       });
     }
 
-    res.json({ user: session.user });
+    res.json({ user: updatedUser });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -363,8 +448,80 @@ router.post("/callback/token-exchange", async (req, res) => {
       throw userError;
     }
 
+    // Check if user exists in Prisma database
+    let prismaUser = await prisma.user.findUnique({
+      where: { id: user.id },
+    });
+
+    const googleAvatarUrl =
+      user.user_metadata.avatar_url || user.user_metadata.picture;
+    const googleFullName =
+      user.user_metadata.full_name ||
+      user.user_metadata.name ||
+      user.email.split("@")[0];
+
+    if (!prismaUser) {
+      // Create new user in Prisma if they don't exist
+      prismaUser = await prisma.user.create({
+        data: {
+          id: user.id,
+          email: user.email,
+          full_name: googleFullName,
+          avatar_url: googleAvatarUrl,
+        },
+      });
+    }
+
+    // Determine if we need to update Supabase data
+    let needsUpdate = false;
+    const updateData = {};
+
+    // Check if avatar needs to be updated
+    if (prismaUser.avatar_url && prismaUser.avatar_url !== googleAvatarUrl) {
+      updateData.avatar_url = prismaUser.avatar_url;
+      needsUpdate = true;
+    } else if (!prismaUser.avatar_url) {
+      // If no custom avatar in Prisma yet, update Prisma with Google's avatar
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          avatar_url: googleAvatarUrl,
+        },
+      });
+    }
+
+    // Check if full_name needs to be updated
+    if (prismaUser.full_name && prismaUser.full_name !== googleFullName) {
+      updateData.full_name = prismaUser.full_name;
+      needsUpdate = true;
+    } else if (!prismaUser.full_name) {
+      // If no custom full_name in Prisma yet, update Prisma with Google's name
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          full_name: googleFullName,
+        },
+      });
+    }
+
+    // Update Supabase user_metadata if needed
+    if (needsUpdate) {
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: updateData,
+      });
+
+      if (updateError) {
+        console.error("Failed to update Supabase user data:", updateError);
+      }
+    }
+
+    // Get the updated user with corrected data
+    const {
+      data: { user: updatedUser },
+    } = await supabase.auth.getUser(session.access_token);
+
     console.log("Token exchange successful");
-    res.json({ user, success: true });
+    res.json({ user: updatedUser, success: true });
   } catch (error) {
     console.error("Token exchange error:", error);
     res.status(500).json({ error: error.message });
@@ -387,7 +544,27 @@ router.get("/me", async (req, res) => {
 
     if (error) throw error;
 
-    res.json({ user });
+    // Also fetch the user from Prisma database to get the latest data
+    const prismaUser = await prisma.user.findUnique({
+      where: { id: user.id },
+    });
+
+    // Create a merged user object, always prioritizing Prisma data
+    const mergedUser = {
+      ...user,
+      // Always prioritize Prisma data over Supabase data
+      avatar_url:
+        prismaUser?.avatar_url ||
+        user.avatar_url ||
+        user.user_metadata?.avatar_url ||
+        user.user_metadata?.picture,
+      full_name:
+        prismaUser?.full_name ||
+        user.user_metadata?.full_name ||
+        user.user_metadata?.name,
+    };
+
+    res.json({ user: mergedUser });
   } catch (error) {
     console.error("Auth check error:", error);
     res.status(401).json({ error: "Authentication failed" });
@@ -530,6 +707,12 @@ router.post(
       const { data: publicUrlData } = supabase.storage
         .from("avatars")
         .getPublicUrl(fileName);
+
+      // Update avatar in Prisma database
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { avatar_url: publicUrlData.publicUrl },
+      });
 
       // Return the public URL
       res.json({
