@@ -19,16 +19,26 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import TasksPage from "./tasks";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import SettingsPage from "./settings";
 
 function AppContent() {
   const location = useLocation();
   const showNavbar =
-    location.pathname !== "/home" && location.pathname !== "/tasks";
+    location.pathname !== "/home" &&
+    location.pathname !== "/tasks" &&
+    location.pathname !== "/settings";
   const showSidebar =
-    location.pathname === "/home" || location.pathname === "/tasks";
+    location.pathname === "/home" ||
+    location.pathname === "/tasks" ||
+    location.pathname === "/settings";
 
   return (
-    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+    <ThemeProvider
+      defaultTheme="system"
+      storageKey="vite-ui-theme"
+      defaultColorTheme="default"
+      colorStorageKey="vite-ui-color-theme"
+    >
       {showNavbar && <Navbar />}
 
       {showSidebar ? (
@@ -50,6 +60,15 @@ function AppContent() {
                   <>
                     <AppSidebar />
                     <TasksPage />
+                  </>
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  <>
+                    <AppSidebar />
+                    <SettingsPage />
                   </>
                 }
               />
