@@ -346,19 +346,30 @@ router.post("/signin", async (req, res) => {
 
 router.post("/signout", async (req, res) => {
   try {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    const accessToken = req.cookies["sb-access-token"];
 
-    // Clear auth cookies
-    res.clearCookie("sb-access-token", {
-      ...getCookieOptions(req),
-    });
-    res.clearCookie("sb-refresh-token", {
-      ...getCookieOptions(req),
-    });
+    if (accessToken) {
+      // Use the access token to sign out the specific session
+      const { error } = await supabase.auth.signOut({
+        scope: "local", // Only sign out from the current device
+        accessToken: accessToken,
+      });
 
+      if (error) throw error;
+    } else {
+      // Fallback to global signout if no access token is available
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+    }
+
+    // Clear auth cookies with appropriate options
+    res.clearCookie("sb-access-token", getCookieOptions(req));
+    res.clearCookie("sb-refresh-token", getCookieOptions(req));
+
+    // Send successful response
     res.json({ message: "Signed out successfully" });
   } catch (error) {
+    console.error("Sign out error:", error);
     res.status(500).json({ error: error.message });
   }
 });
