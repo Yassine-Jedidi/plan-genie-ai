@@ -34,6 +34,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { useState } from "react";
 import { ProfileDialog } from "@/components/profile-dialog";
+import { Link } from "react-router-dom";
 
 // Menu items
 const items = [
@@ -112,10 +113,10 @@ export function AppSidebar() {
                             : "hover:bg-primary/20"
                         }`}
                       >
-                        <a href={item.url}>
+                        <Link to={item.url}>
                           <item.icon />
                           <span>{item.title}</span>
-                        </a>
+                        </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   );
