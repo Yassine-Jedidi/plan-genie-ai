@@ -8,9 +8,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ModeToggle } from "@/components/mode-toggle";
 import { Check, Sun, Moon } from "lucide-react";
-import { ColorTheme } from "@/contexts/theme-context";
+import { ColorTheme, Theme } from "@/contexts/theme-context";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";
@@ -29,7 +28,7 @@ const colorThemes = [
 ];
 
 export default function SettingsPage() {
-  const { theme, colorTheme, setColorTheme } = useTheme();
+  const { theme, setTheme, colorTheme, setColorTheme } = useTheme();
   const { isMobile } = useSidebar();
   const { user } = useAuth();
   const [saving, setSaving] = useState(false);
@@ -40,16 +39,41 @@ export default function SettingsPage() {
     // Update local theme immediately for responsive UI
     setColorTheme(newTheme);
 
-    // If user is logged in, save to database
+    // Save to database
     if (user) {
       themeService
         .updateTheme({ colorTheme: newTheme })
         .then(() => {
-          toast.success("Theme updated successfully!");
+          toast.success("Color theme updated successfully!");
         })
         .catch((error) => {
-          console.error("Failed to save theme:", error);
-          toast.error("Failed to save theme settings");
+          console.error("Failed to save color theme:", error);
+          toast.error("Failed to save color theme settings");
+        })
+        .finally(() => {
+          setSaving(false);
+        });
+    } else {
+      setSaving(false);
+    }
+  };
+
+  const handleModeChange = (newMode: Theme) => {
+    setSaving(true);
+
+    // Update theme mode immediately
+    setTheme(newMode);
+
+    // Save to database
+    if (user) {
+      themeService
+        .updateTheme({ theme: newMode })
+        .then(() => {
+          toast.success("Theme mode updated successfully!");
+        })
+        .catch((error) => {
+          console.error("Failed to save theme mode:", error);
+          toast.error("Failed to save theme mode settings");
         })
         .finally(() => {
           setSaving(false);
@@ -101,7 +125,37 @@ export default function SettingsPage() {
                       Mode
                     </span>
                   </div>
-                  <ModeToggle />
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleModeChange("light")}
+                      className={theme === "light" ? "border-primary" : ""}
+                      disabled={saving}
+                    >
+                      <Sun className="h-4 w-4 mr-1" />
+                      Light
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleModeChange("dark")}
+                      className={theme === "dark" ? "border-primary" : ""}
+                      disabled={saving}
+                    >
+                      <Moon className="h-4 w-4 mr-1" />
+                      Dark
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleModeChange("system")}
+                      className={theme === "system" ? "border-primary" : ""}
+                      disabled={saving}
+                    >
+                      System
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -142,7 +196,7 @@ export default function SettingsPage() {
                   ))}
                 </div>
                 <p className="mt-4 text-xs text-muted-foreground">
-                  Your theme preferences will be saved to your account and
+                  Your theme preferences are saved to your account and
                   synchronized across devices.
                 </p>
               </CardContent>

@@ -182,14 +182,14 @@ export function AppSidebar() {
                   <>
                     <DropdownMenuItem
                       onClick={handleProfileClick}
-                      className="focus:bg-primary/10"
+                      className="focus:bg-primary/20"
                     >
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => navigate("/settings")}
-                      className="focus:bg-primary/10"
+                      className="focus:bg-primary/20"
                     >
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Settings</span>
@@ -197,7 +197,7 @@ export function AppSidebar() {
                     <DropdownMenuSeparator className="bg-primary/20" />
                     <DropdownMenuItem
                       onClick={handleSignOut}
-                      className="focus:bg-primary/10"
+                      className="focus:bg-primary/20"
                     >
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Log out</span>

@@ -5,7 +5,6 @@ import {
   ThemeProviderContext,
 } from "@/contexts/theme-context";
 import { useAuth } from "@/hooks/use-auth";
-import themeService from "@/services/themeService";
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -24,7 +23,6 @@ export function ThemeProvider({
   ...props
 }: ThemeProviderProps) {
   const { user } = useAuth();
-  const [initializing, setInitializing] = useState(true);
   const [theme, setTheme] = useState<Theme>(() => {
     const storedTheme = localStorage.getItem(storageKey) as Theme;
     return storedTheme || defaultTheme;
@@ -39,7 +37,7 @@ export function ThemeProvider({
 
   // Load theme from database when user logs in
   useEffect(() => {
-    if (user && initializing) {
+    if (user) {
       // If user has theme settings in database (attached as user metadata)
       if (user.user_metadata?.theme || user.user_metadata?.colorTheme) {
         const userTheme = user.user_metadata.theme as Theme | undefined;
@@ -47,22 +45,26 @@ export function ThemeProvider({
           | ColorTheme
           | undefined;
 
-        if (userTheme) setTheme(userTheme);
-        if (userColorTheme) setColorTheme(userColorTheme);
+        if (userTheme) {
+          setTheme(userTheme);
+          localStorage.setItem(storageKey, userTheme);
+        }
+        if (userColorTheme) {
+          setColorTheme(userColorTheme);
+          localStorage.setItem(colorStorageKey, userColorTheme);
+        }
       }
-      setInitializing(false);
     }
-  }, [user, initializing]);
+  }, [user, storageKey, colorStorageKey]);
 
   // Reset to default theme when user signs out
   useEffect(() => {
-    if (!user && !initializing) {
+    if (!user) {
       // Reset to default themes
       setTheme(defaultTheme);
       setColorTheme(defaultColorTheme);
-      setInitializing(false);
     }
-  }, [user, defaultTheme, defaultColorTheme, initializing]);
+  }, [user, defaultTheme, defaultColorTheme]);
 
   // Handle light/dark theme changes
   useEffect(() => {
@@ -85,12 +87,7 @@ export function ThemeProvider({
     if (theme !== "system") {
       localStorage.setItem(storageKey, theme);
     }
-
-    // If user is logged in, save to database
-    if (user && !initializing) {
-      themeService.updateTheme({ theme }).catch(console.error);
-    }
-  }, [theme, storageKey, user, initializing]);
+  }, [theme, storageKey]);
 
   // Handle color theme changes
   useEffect(() => {
@@ -113,12 +110,7 @@ export function ThemeProvider({
 
     // Save to localStorage
     localStorage.setItem(colorStorageKey, colorTheme);
-
-    // If user is logged in, save to database
-    if (user && !initializing) {
-      themeService.updateTheme({ colorTheme }).catch(console.error);
-    }
-  }, [colorTheme, colorStorageKey, user, initializing]);
+  }, [colorTheme, colorStorageKey]);
 
   const value = {
     theme,
