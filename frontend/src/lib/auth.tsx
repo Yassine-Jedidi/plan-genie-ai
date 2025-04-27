@@ -33,6 +33,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       sessionStorage.setItem("intentionalSignOut", "true");
+
+      // Clear theme settings from localStorage
+      localStorage.removeItem("vite-ui-theme");
+      localStorage.removeItem("vite-ui-color-theme");
+
       await api.post("/auth/signout");
       setUser(null);
     } catch (error) {

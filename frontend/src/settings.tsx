@@ -12,6 +12,10 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { Check, Sun, Moon } from "lucide-react";
 import { ColorTheme } from "@/contexts/theme-context";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { useAuth } from "@/hooks/use-auth";
+import { useState } from "react";
+import { toast } from "sonner";
+import themeService from "@/services/themeService";
 
 const colorThemes = [
   { name: "Default", primary: "hsl(222.2, 47.4%, 11.2%)", color: "#1e293b" },
@@ -27,12 +31,39 @@ const colorThemes = [
 export default function SettingsPage() {
   const { theme, colorTheme, setColorTheme } = useTheme();
   const { isMobile } = useSidebar();
+  const { user } = useAuth();
+  const [saving, setSaving] = useState(false);
+
+  const handleThemeChange = (newTheme: ColorTheme) => {
+    setSaving(true);
+
+    // Update local theme immediately for responsive UI
+    setColorTheme(newTheme);
+
+    // If user is logged in, save to database
+    if (user) {
+      themeService
+        .updateTheme({ colorTheme: newTheme })
+        .then(() => {
+          toast.success("Theme updated successfully!");
+        })
+        .catch((error) => {
+          console.error("Failed to save theme:", error);
+          toast.error("Failed to save theme settings");
+        })
+        .finally(() => {
+          setSaving(false);
+        });
+    } else {
+      setSaving(false);
+    }
+  };
 
   return (
-    <div className="flex flex-col items-center py-12 w-full px-10">
+    <div className="flex flex-col items-center py-6 w-full">
       <div className="space-y-6 w-full max-w-2xl">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Settings</h1>
+          <span className="text-primary text-3xl font-bold">Settings</span>
           {isMobile && <SidebarTrigger className="h-9 w-9 border rounded-md" />}
         </div>
         <p className="text-muted-foreground">
@@ -48,7 +79,7 @@ export default function SettingsPage() {
           <TabsContent value="appearance" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Theme Mode</CardTitle>
+                <CardTitle className="text-primary">Theme Mode</CardTitle>
                 <CardDescription>
                   Choose between light and dark mode
                 </CardDescription>
@@ -90,10 +121,11 @@ export default function SettingsPage() {
                       variant="outline"
                       className="flex flex-col items-center justify-center h-24 p-4 gap-2 hover:border-primary"
                       onClick={() =>
-                        setColorTheme(
+                        handleThemeChange(
                           colorScheme.name.toLowerCase() as ColorTheme
                         )
                       }
+                      disabled={saving}
                     >
                       <div
                         className="w-10 h-10 rounded-full border"
@@ -109,6 +141,10 @@ export default function SettingsPage() {
                     </Button>
                   ))}
                 </div>
+                <p className="mt-4 text-xs text-muted-foreground">
+                  Your theme preferences will be saved to your account and
+                  synchronized across devices.
+                </p>
               </CardContent>
             </Card>
           </TabsContent>

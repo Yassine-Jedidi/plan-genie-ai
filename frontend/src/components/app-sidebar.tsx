@@ -91,10 +91,12 @@ export function AppSidebar() {
 
   return (
     <>
-      <Sidebar>
+      <Sidebar className="border-r border-r-primary/30">
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>Application</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-primary">
+              Application
+            </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {items.map((item) => {
@@ -106,8 +108,8 @@ export function AppSidebar() {
                         tooltip={item.title}
                         className={`transition-all duration-200 hover:scale-105 ${
                           isActive
-                            ? "bg-foreground/30 text-primary font-semibold"
-                            : "hover:bg-foreground/20"
+                            ? "bg-primary/30 text-primary/90 font-semibold border-l-4 border-primary/30"
+                            : "hover:bg-primary/20"
                         }`}
                       >
                         <a href={item.url}>
@@ -122,11 +124,11 @@ export function AppSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
-        <SidebarFooter>
+        <SidebarFooter className="border-t border-t-primary/30">
           <SidebarGroup>
             <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton className="w-full justify-between gap-3 h-12">
+                <SidebarMenuButton className="w-full justify-between gap-3 h-12 hover:bg-primary/10">
                   {loading ? (
                     <div className="flex items-center gap-2 w-full">
                       <Skeleton className="h-8 w-8 rounded-full" />
@@ -144,21 +146,19 @@ export function AppSidebar() {
                           className="h-8 w-8 rounded-full object-cover"
                         />
                       ) : (
-                        <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
-                          <User className="h-5 w-5 text-muted-foreground" />
+                        <div className="h-8 w-8 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
+                          <User className="h-5 w-5 text-primary" />
                         </div>
                       )}
                       <div className="flex flex-col items-start">
                         <span className="text-sm font-medium">
                           {user?.user_metadata?.full_name}
                         </span>
-                        <span className="text-xs text-muted-foreground">
-                          {user?.email}
-                        </span>
+                        <span className="text-xs">{user?.email}</span>
                       </div>
                     </div>
                   )}
-                  <ChevronsUpDown className="h-5 w-5 rounded-md shrink-0" />
+                  <ChevronsUpDown className="h-5 w-5 rounded-md shrink-0 text-primary" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
@@ -180,16 +180,25 @@ export function AppSidebar() {
                   </div>
                 ) : (
                   <>
-                    <DropdownMenuItem onClick={handleProfileClick}>
+                    <DropdownMenuItem
+                      onClick={handleProfileClick}
+                      className="focus:bg-primary/10"
+                    >
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/settings")}>
+                    <DropdownMenuItem
+                      onClick={() => navigate("/settings")}
+                      className="focus:bg-primary/10"
+                    >
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Settings</span>
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleSignOut}>
+                    <DropdownMenuSeparator className="bg-primary/20" />
+                    <DropdownMenuItem
+                      onClick={handleSignOut}
+                      className="focus:bg-primary/10"
+                    >
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Log out</span>
                     </DropdownMenuItem>

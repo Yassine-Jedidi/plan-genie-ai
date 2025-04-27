@@ -21,6 +21,8 @@ model User {
   email      String   @unique
   full_name  String?
   avatar_url String?
+  theme      String?  @default("system") // 'light', 'dark', or 'system'
+  colorTheme String?  @default("default") // 'default', 'red', 'blue', etc.
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   tasks      Task[]

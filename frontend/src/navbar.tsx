@@ -17,17 +17,14 @@ function Navbar() {
           <div className="md:hidden">
             <MenuBar />
           </div>
-          <a
-            href="/"
-            className="hidden md:block text-2xl font-bold text-primary"
-          >
+          <a href="/" className="hidden md:block text-2xl font-bold">
             Plan Genie AI
           </a>
         </div>
 
         {/* Center Column - Logo on mobile only */}
         <div className="flex items-center justify-center md:hidden">
-          <a href="/" className="justify-start font-bold text-primary">
+          <a href="/" className="justify-start font-bold">
             Plan Genie AI
           </a>
         </div>

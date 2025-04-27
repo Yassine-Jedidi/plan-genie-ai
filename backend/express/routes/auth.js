@@ -365,7 +365,6 @@ router.post("/signout", async (req, res) => {
     // Clear auth cookies with appropriate options
     res.clearCookie("sb-access-token", getCookieOptions(req));
     res.clearCookie("sb-refresh-token", getCookieOptions(req));
-
     // Send successful response
     res.json({ message: "Signed out successfully" });
   } catch (error) {
@@ -574,6 +573,21 @@ router.get("/me", async (req, res) => {
         user.user_metadata?.full_name ||
         user.user_metadata?.name,
     };
+
+    // Add theme properties from Prisma to the user metadata
+    if (prismaUser) {
+      if (!mergedUser.user_metadata) {
+        mergedUser.user_metadata = {};
+      }
+
+      if (prismaUser.theme) {
+        mergedUser.user_metadata.theme = prismaUser.theme;
+      }
+
+      if (prismaUser.colorTheme) {
+        mergedUser.user_metadata.colorTheme = prismaUser.colorTheme;
+      }
+    }
 
     res.json({ user: mergedUser });
   } catch (error) {
@@ -796,6 +810,53 @@ router.put("/update-profile", handleMulterError, async (req, res) => {
     res
       .status(500)
       .json({ error: error.message || "Failed to update profile" });
+  }
+});
+
+// Add update theme settings route
+router.put("/update-theme", async (req, res) => {
+  try {
+    const accessToken = req.cookies["sb-access-token"];
+    if (!accessToken) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const { theme, colorTheme } = req.body;
+    if (!theme && !colorTheme) {
+      return res.status(400).json({ error: "Theme or colorTheme is required" });
+    }
+
+    // Get current user
+    const { data: userData, error: userError } = await supabase.auth.getUser(
+      accessToken
+    );
+    if (userError) throw userError;
+
+    const user = userData.user;
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Update theme settings in Prisma database
+    const updateData = {};
+    if (theme) updateData.theme = theme;
+    if (colorTheme) updateData.colorTheme = colorTheme;
+
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: updateData,
+    });
+
+    res.json({
+      success: true,
+      theme: updatedUser.theme,
+      colorTheme: updatedUser.colorTheme,
+    });
+  } catch (error) {
+    console.error("Update theme error:", error);
+    res
+      .status(500)
+      .json({ error: error.message || "Failed to update theme settings" });
   }
 });
 

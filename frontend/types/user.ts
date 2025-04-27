@@ -22,6 +22,8 @@ export interface User {
       picture: string;
       provider_id: string;
       sub: string;
+      theme?: string;
+      colorTheme?: string;
     };
     identities: {
       identity_id: string;
