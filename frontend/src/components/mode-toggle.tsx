@@ -7,33 +7,14 @@ interface ThemeToggleProps {
 }
 
 export function ModeToggle({ className }: ThemeToggleProps) {
-  const { theme, setTheme, colorTheme } = useTheme();
-  const isDark = theme === "dark";
+  const { theme, setTheme } = useTheme();
+  const isDark =
+    theme === "dark" ||
+    (theme === "system" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   const toggleTheme = () => {
     setTheme(isDark ? "light" : "dark");
-  };
-
-  // Get the color based on the current color theme
-  const getThemeColor = () => {
-    switch (colorTheme) {
-      case "red":
-        return isDark ? "#ef4444" : "#ef4444";
-      case "blue":
-        return isDark ? "#3b82f6" : "#3b82f6";
-      case "green":
-        return isDark ? "#10b981" : "#10b981";
-      case "purple":
-        return isDark ? "#a855f7" : "#a855f7";
-      case "orange":
-        return isDark ? "#f97316" : "#f97316";
-      case "pink":
-        return isDark ? "#ec4899" : "#ec4899";
-      case "teal":
-        return isDark ? "#14b8a6" : "#14b8a6";
-      default:
-        return isDark ? "#ffffff" : "#000000";
-    }
   };
 
   return (
@@ -52,14 +33,11 @@ export function ModeToggle({ className }: ThemeToggleProps) {
       <div className="flex justify-between items-center w-full">
         <div
           className={cn(
-            "flex justify-center items-center w-6 h-6 rounded-full transition-transform duration-300",
-            isDark ? "transform translate-x-0" : "transform translate-x-8"
+            "flex justify-center items-center w-6 h-6 rounded-full transition-transform duration-300 border border-primary",
+            isDark
+              ? "transform translate-x-0 bg-[#1e293b]"
+              : "transform translate-x-8 bg-[#f8fafc]"
           )}
-          style={{
-            backgroundColor: isDark ? "#1e293b" : "#f8fafc",
-            borderColor: getThemeColor(),
-            borderWidth: "1px",
-          }}
         >
           {isDark ? (
             <Moon className="w-4 h-4 text-white" strokeWidth={1.5} />
