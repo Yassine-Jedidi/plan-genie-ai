@@ -1,6 +1,7 @@
 import api from "@/components/api/api";
 import { AxiosError } from "axios";
 import { AnalysisResult } from "./nlpService";
+import { priorityService } from "./priorityService";
 
 export interface Task {
   id: string;
@@ -24,8 +25,28 @@ export interface Event {
 export const taskService = {
   async saveTask(analysisResult: AnalysisResult): Promise<Task | Event> {
     try {
-      const { data } = await api.post("/tasks/save", analysisResult);
-      return data;
+      // If it's a task, standardize the priority before saving
+      if (analysisResult.type === "Tâche") {
+        const priorityText = analysisResult.entities["PRIORITE"]?.[0];
+        const priorityLevel = priorityService.classifyPriority(priorityText);
+        const standardizedPriority = priorityService.getPriorityLabel(priorityLevel);
+        
+        // Create a deep copy of the analysis result to avoid modifying the original
+        const processedResult = {
+          ...analysisResult,
+          entities: {
+            ...analysisResult.entities,
+            PRIORITE: standardizedPriority ? [standardizedPriority] : []
+          }
+        };
+        
+        const { data } = await api.post("/tasks/save", processedResult);
+        return data;
+      } else {
+        // For events, pass through unchanged
+        const { data } = await api.post("/tasks/save", analysisResult);
+        return data;
+      }
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         throw new Error(error.response.data?.error || "Failed to save task");
