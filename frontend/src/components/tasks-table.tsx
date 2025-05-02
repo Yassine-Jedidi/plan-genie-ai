@@ -145,7 +145,37 @@ const columns: ColumnDef<Task>[] = [
     accessorKey: "deadline",
     cell: ({ row }) => {
       const deadline = row.getValue("deadline") as string | null;
-      return deadline;
+      const deadlineText = row.original.deadline_text;
+
+      if (!deadline) return <span className="text-muted-foreground">None</span>;
+
+      try {
+        // Try to format the date nicely
+        const date = new Date(deadline);
+        const formattedDate = new Intl.DateTimeFormat("fr-FR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }).format(date);
+
+        // If we have the original text, display it with the formatted date
+        if (deadlineText) {
+          return (
+            <div className="flex flex-col">
+              <span>{formattedDate}</span>
+              <span className="text-xs text-muted-foreground">
+                {deadlineText}
+              </span>
+            </div>
+          );
+        }
+
+        return formattedDate;
+        // eslint-disable-next-line no-empty
+      } catch {
+        // If parsing fails, just return the raw deadline
+        return deadline;
+      }
     },
     size: 120,
   },

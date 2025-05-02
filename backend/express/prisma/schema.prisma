@@ -30,14 +30,15 @@ model User {
 }
 
 model Task {
-  id         String   @id @default(uuid())
-  title      String
-  deadline   String?
-  priority   String?
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  user_id    String
-  user       User     @relation(fields: [user_id], references: [id])
+  id            String   @id @default(uuid())
+  title         String
+  deadline      String?
+  deadline_text String?
+  priority      String?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  user_id       String
+  user          User     @relation(fields: [user_id], references: [id])
 }
 
 model Event {

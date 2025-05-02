@@ -2,11 +2,14 @@ import api from "@/components/api/api";
 import { AxiosError } from "axios";
 import { AnalysisResult } from "./nlpService";
 import { priorityService } from "./priorityService";
+import * as chrono from 'chrono-node';
+import { format } from 'date-fns';
 
 export interface Task {
   id: string;
   title: string;
   deadline: string | null;
+  deadline_text?: string | null;
   priority: string | null;
   created_at: string;
   updated_at: string;
@@ -17,6 +20,9 @@ export interface Event {
   id: string;
   title: string;
   date_time: string;
+  parsed_date?: Date;
+  formatted_date?: string;
+  chrono_parsed_result?: chrono.ParsedResult;
   created_at: string;
   updated_at: string;
   user_id: string;
@@ -25,26 +31,46 @@ export interface Event {
 export const taskService = {
   async saveTask(analysisResult: AnalysisResult): Promise<Task | Event> {
     try {
+      // Create a deep copy of the analysis result to avoid modifying the original
+      const processedResult = {
+        ...analysisResult,
+        entities: { ...analysisResult.entities }
+      };
+      
+      // Handle deadline parsing for tasks
+      if (analysisResult.type === "Tâche" && processedResult.entities["DELAI"]?.length > 0) {
+        const delaiValue = processedResult.entities["DELAI"][0];
+        
+        try {
+          // Check if the delai is already in our JSON format
+          const parsedDelai = JSON.parse(delaiValue);
+          if (parsedDelai.originalText && parsedDelai.parsedDate) {
+            // Keep the JSON format, but ensure it's properly structured
+            processedResult.entities["DELAI"] = [parsedDelai.parsedDate];
+            // Store the original text in a new property
+            processedResult.entities["DELAI_TEXT"] = [parsedDelai.originalText];
+          }
+        // eslint-disable-next-line no-empty
+        } catch {
+          // Not in JSON format, keep as is
+        }
+      }
+      
       // If it's a task, standardize the priority before saving
       if (analysisResult.type === "Tâche") {
         const priorityText = analysisResult.entities["PRIORITE"]?.[0];
         const priorityLevel = priorityService.classifyPriority(priorityText);
         const standardizedPriority = priorityService.getPriorityLabel(priorityLevel);
         
-        // Create a deep copy of the analysis result to avoid modifying the original
-        const processedResult = {
-          ...analysisResult,
-          entities: {
-            ...analysisResult.entities,
-            PRIORITE: standardizedPriority ? [standardizedPriority] : []
-          }
-        };
+        if (standardizedPriority) {
+          processedResult.entities.PRIORITE = [standardizedPriority];
+        }
         
         const { data } = await api.post("/tasks/save", processedResult);
         return data;
       } else {
         // For events, pass through unchanged
-        const { data } = await api.post("/tasks/save", analysisResult);
+        const { data } = await api.post("/tasks/save", processedResult);
         return data;
       }
     } catch (error) {

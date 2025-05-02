@@ -51,6 +51,7 @@ router.post("/save", async (req, res) => {
       // Create task
       const title = entities.TITRE?.[0] || "Untitled Task";
       const deadline = entities.DELAI?.[0] || null;
+      const deadline_text = entities.DELAI_TEXT?.[0] || null;
       const priority = entities.PRIORITE?.[0] || null;
 
       // Check if user exists in the database
@@ -72,6 +73,7 @@ router.post("/save", async (req, res) => {
         data: {
           title,
           deadline,
+          deadline_text,
           priority,
           user_id: req.user.id,
         },
