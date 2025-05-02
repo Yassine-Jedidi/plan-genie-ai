@@ -19,13 +19,14 @@ export interface Event {
   id: string;
   title: string;
   date_time: string;
-  parsed_date?: Date;
-  formatted_date?: string;
-  chrono_parsed_result?: chrono.ParsedResult;
   created_at: string;
   updated_at: string;
   user_id: string;
 }
+
+// Use the built-in French parser as demonstrated by the user
+const frenchParser = chrono.fr;
+const englishParser = chrono.en;
 
 export const taskService = {
   async saveTask(analysisResult: AnalysisResult): Promise<Task | Event> {
@@ -50,9 +51,17 @@ export const taskService = {
             processedResult.entities["DELAI_TEXT"] = [parsedDelai.originalText];
           }
         } catch {
-          // Not in JSON format, try to parse it using chrono
-          // This handles the case when text analysis directly extracts a date string
-          const parsedDate = chrono.parseDate(delaiValue);
+          // Not in JSON format, try to parse using French first, then English
+          // First try with French parser
+          let parsedDate = frenchParser.parseDate(delaiValue);
+          
+          // If French parsing failed, try with English parser
+          if (!parsedDate) {
+            parsedDate = englishParser.parseDate(delaiValue);
+          }
+          
+          console.log(`Parsing in taskService: "${delaiValue}" → ${parsedDate ? parsedDate.toLocaleDateString() : 'null'}`);
+          
           if (parsedDate) {
             // Store the parsed date and keep the original text
             processedResult.entities["DELAI"] = [parsedDate.toISOString()];

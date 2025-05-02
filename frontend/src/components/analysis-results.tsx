@@ -99,6 +99,10 @@ interface AnalysisResultsProps {
   setResults: React.Dispatch<React.SetStateAction<AnalysisResult | null>>;
 }
 
+// Use the French parser as demonstrated by the user
+const frenchParser = chrono.fr;
+const englishParser = chrono.en;
+
 export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
   const [editingEntity, setEditingEntity] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -106,14 +110,31 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
 
   if (!results) return null;
 
-  // Function to parse date from text using chrono-node
+  // Function to parse date from text using chrono-node with French priority
   const parseDate = (
     text: string
   ): { originalText: string; parsedDate: Date | null } => {
     if (!text) return { originalText: text, parsedDate: null };
 
     try {
-      const parsedDate = chrono.parseDate(text);
+      // First try with French parser
+      let parsedDate = frenchParser.parseDate(text);
+      console.log(
+        `French parser: "${text}" → ${
+          parsedDate ? parsedDate.toLocaleDateString() : "null"
+        }`
+      );
+
+      // Fall back to English parser if French fails
+      if (!parsedDate) {
+        parsedDate = englishParser.parseDate(text);
+        console.log(
+          `English parser: "${text}" → ${
+            parsedDate ? parsedDate.toLocaleDateString() : "null"
+          }`
+        );
+      }
+
       return {
         originalText: text,
         parsedDate: parsedDate,
@@ -329,11 +350,25 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
                   parsedDate = new Date(parsed.parsedDate);
                 }
               } catch {
-                // If not JSON, parse it as a normal date string
-                const dateInfo = parseDate(value);
-                originalText = dateInfo.originalText;
-                parsedDate = dateInfo.parsedDate;
+                // If not JSON, try to parse with French first, then English
+                console.log(`Trying to parse raw value: "${value}"`);
+                // First try with French parser
+                parsedDate = frenchParser.parseDate(value);
+
+                // If French fails, try English
+                if (!parsedDate) {
+                  parsedDate = englishParser.parseDate(value);
+                }
+
+                originalText = value;
               }
+
+              // Log the parsing result for debugging
+              console.log(
+                `Parsed date for "${originalText}": ${
+                  parsedDate ? formatDate(parsedDate) : "No date found"
+                }`
+              );
 
               return (
                 <div key={index} className="flex items-center gap-2">
@@ -387,18 +422,17 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
                           <Edit className="h-3 w-3" />
                         </Button>
                       </div>
-                      {parsedDate && (
-                        <div className="px-3 pb-1.5 text-xs text-muted-foreground">
-                          Interpreted as: {formatDate(parsedDate)}
-                        </div>
-                      )}
+                      <div className="px-3 pb-1.5 text-xs text-muted-foreground">
+                        {parsedDate
+                          ? `Interprété comme: ${formatDate(parsedDate)}`
+                          : "Date non reconnue"}
+                      </div>
                     </div>
                   )}
                 </div>
               );
             })
           ) : (
-            // ... existing code for empty state ...
             <div className="flex items-center gap-2">
               {editingEntity === `${entityType}_0` ? (
                 <div className="flex items-center gap-1 w-full">
@@ -413,7 +447,7 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
                     }}
                     autoFocus
                     className="flex-1 h-8 text-sm focus-visible:ring-primary/30"
-                    placeholder="e.g., tomorrow, next week, 05/05/2025"
+                    placeholder="ex: demain, la semaine prochaine, 05/05/2025"
                   />
                   <Button
                     variant="ghost"
