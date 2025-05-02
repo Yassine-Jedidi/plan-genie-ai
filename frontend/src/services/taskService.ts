@@ -3,7 +3,6 @@ import { AxiosError } from "axios";
 import { AnalysisResult } from "./nlpService";
 import { priorityService } from "./priorityService";
 import * as chrono from 'chrono-node';
-import { format } from 'date-fns';
 
 export interface Task {
   id: string;
@@ -42,7 +41,7 @@ export const taskService = {
         const delaiValue = processedResult.entities["DELAI"][0];
         
         try {
-          // Check if the delai is already in our JSON format
+          // First try to parse as JSON (this happens when edited through UI)
           const parsedDelai = JSON.parse(delaiValue);
           if (parsedDelai.originalText && parsedDelai.parsedDate) {
             // Keep the JSON format, but ensure it's properly structured
@@ -50,9 +49,18 @@ export const taskService = {
             // Store the original text in a new property
             processedResult.entities["DELAI_TEXT"] = [parsedDelai.originalText];
           }
-        // eslint-disable-next-line no-empty
         } catch {
-          // Not in JSON format, keep as is
+          // Not in JSON format, try to parse it using chrono
+          // This handles the case when text analysis directly extracts a date string
+          const parsedDate = chrono.parseDate(delaiValue);
+          if (parsedDate) {
+            // Store the parsed date and keep the original text
+            processedResult.entities["DELAI"] = [parsedDate.toISOString()];
+            processedResult.entities["DELAI_TEXT"] = [delaiValue];
+          } else {
+            // If parsing fails, keep as is
+            processedResult.entities["DELAI_TEXT"] = [delaiValue];
+          }
         }
       }
       
