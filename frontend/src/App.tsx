@@ -26,6 +26,7 @@ function AppContent() {
   const showNavbar =
     location.pathname !== "/home" &&
     location.pathname !== "/tasks" &&
+    location.pathname !== "/auth/callback" &&
     location.pathname !== "/settings";
   const showSidebar =
     location.pathname === "/home" ||
