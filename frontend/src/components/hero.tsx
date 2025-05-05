@@ -26,7 +26,7 @@ function Hero() {
           {/* CTA Button */}
           <div>
             <Button variant="outline" className="flex items-center gap-2">
-              Discover how it works <MoveRight className="w-4 h-4" />
+              Discover how it works now <MoveRight className="w-4 h-4" />
             </Button>
           </div>
 
