@@ -158,11 +158,11 @@ export const priorityService = {
    */
   getPriorityLabel(priority: PriorityLevel): string {
     const labels: Record<PriorityLevel, string> = {
-      high: 'Haute',
-      medium: 'Moyenne',
-      low: 'Basse'
+      high: 'High',
+      medium: 'Medium',
+      low: 'Low'
     };
-    return labels[priority] || 'Moyenne';
+    return labels[priority] || 'Medium';
   },
   
   /**

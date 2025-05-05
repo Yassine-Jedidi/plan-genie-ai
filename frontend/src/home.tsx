@@ -20,7 +20,11 @@ function HomePage() {
     setAnalyzing(true);
     try {
       const data = await nlpService.analyzeText(inputText);
-      setResults(data);
+      const typeMap: Record<string, string> = {
+        Tâche: "Task",
+        Événement: "Event",
+      };
+      setResults({ ...data, type: typeMap[data.type as string] || data.type });
       toast.success("Text analysis complete!");
       setInputText("");
     } catch (error) {

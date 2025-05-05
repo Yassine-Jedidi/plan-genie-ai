@@ -187,16 +187,20 @@ const columns: ColumnDef<Task>[] = [
       if (!priority) return <span className="text-muted-foreground">None</span>;
 
       const priorityColors: Record<string, string> = {
-        Haute: "bg-red-100 text-red-800 border-red-300",
-        Moyenne: "bg-yellow-100 text-yellow-800 border-yellow-300",
-        Basse: "bg-green-100 text-green-800 border-green-300",
+        High: "bg-red-100 text-red-800 border-red-300",
+        Medium: "bg-yellow-100 text-yellow-800 border-yellow-300",
+        Low: "bg-green-100 text-green-800 border-green-300",
       };
 
       const colorClass =
         priorityColors[priority] ||
         "bg-muted-foreground/60 text-primary-foreground";
 
-      return <Badge className={cn(colorClass)}>{priority}</Badge>;
+      return (
+        <Badge className={cn(colorClass)} variant="outline">
+          {priority}
+        </Badge>
+      );
     },
     size: 100,
     filterFn: priorityFilterFn,

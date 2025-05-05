@@ -38,11 +38,11 @@ const Select = ({ value, onValueChange }: SelectProps) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem onSelect={() => onValueChange("Tâche")}>
-          Tâche
+        <DropdownMenuItem onSelect={() => onValueChange("Task")}>
+          Task
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => onValueChange("Événement")}>
-          Événement
+        <DropdownMenuItem onSelect={() => onValueChange("Event")}>
+          Event
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -75,19 +75,19 @@ const PrioritySelect = ({
           onSelect={() => onValueChange("high")}
           className="text-red-500"
         >
-          Haute
+          High
         </DropdownMenuItem>
         <DropdownMenuItem
           onSelect={() => onValueChange("medium")}
           className="text-amber-500"
         >
-          Moyenne
+          Medium
         </DropdownMenuItem>
         <DropdownMenuItem
           onSelect={() => onValueChange("low")}
           className="text-green-500"
         >
-          Basse
+          Low
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -156,13 +156,13 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
       // Create a new entities object with the appropriate structure for the new type
       const newEntities: Record<string, string[]> = {};
 
-      if (newType === "Tâche") {
-        // For Tâche type, ensure TITRE, DELAI, and PRIORITE exist
+      if (newType === "Task") {
+        // For Task type, ensure TITRE, DELAI, and PRIORITE exist
         newEntities["TITRE"] = results.entities["TITRE"] || [];
         newEntities["DELAI"] = results.entities["DELAI"] || [];
         newEntities["PRIORITE"] = results.entities["PRIORITE"] || [];
-      } else if (newType === "Événement") {
-        // For Événement type, ensure TITRE and DATE_HEURE exist
+      } else if (newType === "Event") {
+        // For Event type, ensure TITRE and DATE_HEURE exist
         newEntities["TITRE"] = results.entities["TITRE"] || [];
         newEntities["DATE_HEURE"] = results.entities["DATE_HEURE"] || [];
       }
@@ -227,7 +227,7 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
 
   // Function to update priority level
   const handlePriorityChange = (priorityLevel: PriorityLevel) => {
-    if (results && results.type === "Tâche") {
+    if (results && results.type === "Task") {
       const updatedEntities = { ...results.entities };
       // Store the standardized priority value
       updatedEntities["PRIORITE"] = [
@@ -256,7 +256,16 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
 
     setSaving(true);
     try {
-      await taskService.saveTask(results);
+      // Map type back to French for backend compatibility
+      const typeMap: Record<string, string> = {
+        Task: "Tâche",
+        Event: "Événement",
+      };
+      const payload = {
+        ...results,
+        type: typeMap[results.type] || results.type,
+      };
+      await taskService.saveTask(payload);
       toast.success(`${results.type} saved successfully!`);
       setResults(null); // Clear the form after saving
     } catch (error) {
@@ -274,9 +283,9 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
   // Helper function to get a display-friendly name for entity types
   const getEntityDisplayName = (entityType: string) => {
     const displayNames: Record<string, string> = {
-      TITRE: "Titre",
-      DELAI: "Délai",
-      PRIORITE: "Priorité",
+      TITRE: "Title",
+      DELAI: "Deadline",
+      PRIORITE: "Priority",
       DATE_HEURE: "Date",
     };
     return displayNames[entityType] || entityType;
@@ -290,7 +299,7 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
     // Clone entities to avoid modifying the original
     const result = { ...entities };
 
-    if (type === "Tâche") {
+    if (type === "Task") {
       // Ensure all required properties exist
       if (!result["TITRE"]) result["TITRE"] = [];
       if (!result["DELAI"]) result["DELAI"] = [];
@@ -302,7 +311,7 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
         ["DELAI", result["DELAI"]],
         ["PRIORITE", result["PRIORITE"]],
       ];
-    } else if (type === "Événement") {
+    } else if (type === "Event") {
       // Ensure all required properties exist
       if (!result["TITRE"]) result["TITRE"] = [];
       if (!result["DATE_HEURE"]) result["DATE_HEURE"] = [];
@@ -320,7 +329,7 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
 
   // Render priority selector or regular field editor based on entity type
   const renderEntityEditor = (entityType: string, values: string[]) => {
-    if (entityType === "PRIORITE" && results.type === "Tâche") {
+    if (entityType === "PRIORITE" && results.type === "Task") {
       return (
         <div className="flex items-center gap-3 mt-2">
           <PrioritySelect
@@ -329,12 +338,12 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
           />
           <span className="text-xs text-muted-foreground">
             {values.length > 0
-              ? `Détecté: ${values[0]}`
-              : "Non détecté (défaut: Moyenne)"}
+              ? `Detected: ${values[0]}`
+              : "Not detected (default: Medium)"}
           </span>
         </div>
       );
-    } else if (entityType === "DELAI" && results.type === "Tâche") {
+    } else if (entityType === "DELAI" && results.type === "Task") {
       return (
         <div className="space-y-2">
           {values.length > 0 ? (
@@ -424,8 +433,8 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
                       </div>
                       <div className="px-3 pb-1.5 text-xs text-muted-foreground">
                         {parsedDate
-                          ? `Interprété comme: ${formatDate(parsedDate)}`
-                          : "Date non reconnue"}
+                          ? `Interpreted as: ${formatDate(parsedDate)}`
+                          : "Date not recognized"}
                       </div>
                     </div>
                   )}
@@ -447,7 +456,7 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
                     }}
                     autoFocus
                     className="flex-1 h-8 text-sm focus-visible:ring-primary/30"
-                    placeholder="ex: demain, la semaine prochaine, 05/05/2025"
+                    placeholder="ex: tomorrow, next week, 05/05/2025"
                   />
                   <Button
                     variant="ghost"
@@ -472,7 +481,7 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
                   onClick={() => startEditEntity(entityType, "", 0)}
                 >
                   <div className="flex-1 px-3 py-1.5 rounded-md text-sm text-muted-foreground cursor-pointer">
-                    Cliquez pour ajouter
+                    Click to add
                   </div>
                   <Button
                     variant="ghost"
@@ -583,7 +592,7 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
                 onClick={() => startEditEntity(entityType, "", 0)}
               >
                 <div className="flex-1 px-3 py-1.5 rounded-md text-sm text-muted-foreground cursor-pointer">
-                  Cliquez pour ajouter
+                  Click to add
                 </div>
                 <Button
                   variant="ghost"
@@ -609,7 +618,7 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
       </CardHeader>
       <CardContent className="p-3 space-y-4">
         <div className="flex items-center gap-3">
-          <h3 className="text-sm font-medium">Task Type:</h3>
+          <h3 className="text-sm font-medium">Type:</h3>
           <Select value={results.type} onValueChange={handleTypeChange} />
         </div>
 
