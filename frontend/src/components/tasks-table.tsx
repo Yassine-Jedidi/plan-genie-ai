@@ -218,7 +218,7 @@ const columns: ColumnDef<Task>[] = [
   {
     id: "actions",
     header: () => <span className="sr-only">Actions</span>,
-    cell: ({ row }) => <RowActions row={row} />,
+    cell: () => null,
     size: 60,
     enableHiding: false,
   },
