@@ -167,4 +167,45 @@ router.get("/events/:userId", async (req, res) => {
   }
 });
 
+// DELETE endpoint to delete a task
+router.delete("/tasks/:taskId", async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    const userId = req.user.id;
+
+    if (!taskId) {
+      return res.status(400).json({ error: "Task ID is required" });
+    }
+
+    // Verify that the task belongs to the authenticated user
+    const task = await prisma.task.findUnique({
+      where: {
+        id: taskId,
+      },
+    });
+
+    if (!task) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    if (task.user_id !== userId) {
+      return res
+        .status(403)
+        .json({ error: "Unauthorized: This task doesn't belong to you" });
+    }
+
+    // Delete the task
+    await prisma.task.delete({
+      where: {
+        id: taskId,
+      },
+    });
+
+    return res.status(200).json({ message: "Task deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting task:", error);
+    res.status(500).json({ error: "Failed to delete task: " + error.message });
+  }
+});
+
 module.exports = router;

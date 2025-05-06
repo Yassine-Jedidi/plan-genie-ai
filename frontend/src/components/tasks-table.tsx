@@ -83,9 +83,10 @@ import {
   Plus,
   Trash,
 } from "lucide-react";
-import { useId, useMemo, useRef, useState } from "react";
-import { Task } from "@/services/taskService";
+import { useId, useMemo, useRef, useState, useEffect } from "react";
+import { Task, taskService } from "@/services/taskService";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 // Custom filter function for multi-column searching
 const multiColumnFilterFn: FilterFn<Task> = (row, _columnId, filterValue) => {
@@ -237,6 +238,28 @@ export default function TasksTable({ tasks }: TasksTableProps) {
     pageSize: 10,
   });
   const inputRef = useRef<HTMLInputElement>(null);
+  const [localTasks, setLocalTasks] = useState<Task[]>(tasks);
+
+  useMemo(() => {
+    setLocalTasks(tasks);
+  }, [tasks]);
+
+  // Add event listener for task deletion from row actions
+  useEffect(() => {
+    const handleTaskDeleted = (event: CustomEvent<string>) => {
+      const taskId = event.detail;
+      setLocalTasks((prev) => prev.filter((task) => task.id !== taskId));
+    };
+
+    window.addEventListener("taskDeleted", handleTaskDeleted as EventListener);
+
+    return () => {
+      window.removeEventListener(
+        "taskDeleted",
+        handleTaskDeleted as EventListener
+      );
+    };
+  }, []);
 
   const [sorting, setSorting] = useState<SortingState>([
     {
@@ -247,18 +270,45 @@ export default function TasksTable({ tasks }: TasksTableProps) {
 
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows;
-    // Here you would integrate with your task deletion API
-    // For now we'll just log the selected task ids
-    console.log(
-      "Deleting tasks:",
-      selectedRows.map((row) => row.original.id)
+    if (selectedRows.length === 0) return;
+
+    // Collect task IDs to delete
+    const taskIds = selectedRows.map((row) => row.original.id);
+
+    // Create array of deletion promises without updating UI for each one
+    const deletePromises = taskIds.map((taskId) =>
+      taskService.deleteTask(taskId)
     );
-    table.resetRowSelection();
+
+    Promise.all(deletePromises)
+      .then(() => {
+        // Update UI once after all tasks are deleted
+        setLocalTasks((prev) =>
+          prev.filter((task) => !taskIds.includes(task.id))
+        );
+        table.resetRowSelection();
+        if (selectedRows.length === 1)
+          toast.success(`1 task deleted successfully`);
+        else toast.success(`${selectedRows.length} tasks deleted successfully`);
+      })
+      .catch((error) => {
+        toast.error("Failed to delete tasks");
+        console.error("Error deleting tasks:", error);
+      });
   };
 
   const table = useReactTable({
-    data: tasks,
-    columns,
+    data: localTasks,
+    columns: useMemo(
+      () => [
+        ...columns.slice(0, -1),
+        {
+          ...columns[columns.length - 1],
+          cell: ({ row }) => <RowActions row={row} />,
+        },
+      ],
+      []
+    ),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
@@ -323,6 +373,113 @@ export default function TasksTable({ tasks }: TasksTableProps) {
       .getColumn("priority")
       ?.setFilterValue(newFilterValue.length ? newFilterValue : undefined);
   };
+
+  // Define the RowActions component inside TasksTable to access table state
+  function RowActions({ row }: { row: Row<Task> }) {
+    const task = row.original;
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+
+    const handleDelete = async () => {
+      try {
+        await taskService.deleteTask(task.id);
+        // Update the local tasks directly using the TasksTable component's state setter
+        window.dispatchEvent(
+          new CustomEvent("taskDeleted", { detail: task.id })
+        );
+        // Reset row selection after deleting the task
+        table.resetRowSelection();
+        // Close the delete confirmation dialog and dropdown menu
+        setDeleteConfirmOpen(false);
+        setDropdownOpen(false);
+        toast.success("Task deleted successfully");
+      } catch (error) {
+        toast.error("Failed to delete task");
+        console.error("Error deleting task:", error);
+      }
+    };
+
+    return (
+      <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+        <DropdownMenuTrigger asChild>
+          <div className="flex justify-end">
+            <Button
+              size="icon"
+              variant="ghost"
+              className="shadow-none"
+              aria-label="Edit task"
+            >
+              <Ellipsis size={16} strokeWidth={2} aria-hidden="true" />
+            </Button>
+          </div>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuGroup>
+            <DropdownMenuItem>
+              <span>Edit</span>
+              <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <span>Mark as complete</span>
+              <DropdownMenuShortcut>⌘C</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem>
+              <span>Archive</span>
+              <DropdownMenuShortcut>⌘A</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <AlertDialog
+            open={deleteConfirmOpen}
+            onOpenChange={setDeleteConfirmOpen}
+          >
+            <AlertDialogTrigger asChild>
+              <DropdownMenuItem
+                className="text-destructive focus:text-destructive"
+                onSelect={(e) => {
+                  e.preventDefault();
+                  setDeleteConfirmOpen(true);
+                }}
+              >
+                <span>Delete</span>
+                <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
+                <div
+                  className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border"
+                  aria-hidden="true"
+                >
+                  <CircleAlert
+                    className="opacity-80"
+                    size={16}
+                    strokeWidth={2}
+                  />
+                </div>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    this task.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete}>
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  }
 
   return (
     <div className="space-y-4 max-w-5xl mx-auto border border-primary/30 rounded-lg p-2 sm:p-4 shadow-sm">
@@ -740,49 +897,3 @@ export default function TasksTable({ tasks }: TasksTableProps) {
     </div>
   );
 }
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function RowActions({ row: _row }: { row: Row<Task> }) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <div className="flex justify-end">
-          <Button
-            size="icon"
-            variant="ghost"
-            className="shadow-none"
-            aria-label="Edit task"
-          >
-            <Ellipsis size={16} strokeWidth={2} aria-hidden="true" />
-          </Button>
-        </div>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <span>Edit</span>
-            <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <span>Mark as complete</span>
-            <DropdownMenuShortcut>⌘C</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <span>Archive</span>
-            <DropdownMenuShortcut>⌘A</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive focus:text-destructive">
-          <span>Delete</span>
-          <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
-
-export { TasksTable };

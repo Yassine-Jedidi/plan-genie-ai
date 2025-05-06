@@ -110,6 +110,17 @@ export const taskService = {
     }
   },
 
+  async deleteTask(taskId: string): Promise<void> {
+    try {
+      await api.delete(`/tasks/tasks/${taskId}`);
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        throw new Error(error.response.data?.error || "Failed to delete task");
+      }
+      throw new Error("Failed to delete task");
+    }
+  },
+
   async getEvents(userId: string): Promise<Event[]> {
     try {
       const { data } = await api.get(`/tasks/events/${userId}`);
