@@ -97,13 +97,20 @@ const PrioritySelect = ({
 interface AnalysisResultsProps {
   results: AnalysisResult | null;
   setResults: React.Dispatch<React.SetStateAction<AnalysisResult | null>>;
+  onSave?: () => void; // Add optional onSave callback
+  isSaved?: boolean; // Add optional isSaved flag
 }
 
 // Use the French parser as demonstrated by the user
 const frenchParser = chrono.fr;
 const englishParser = chrono.en;
 
-export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
+export function AnalysisResults({
+  results,
+  setResults,
+  onSave,
+  isSaved = false,
+}: AnalysisResultsProps) {
   const [editingEntity, setEditingEntity] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [saving, setSaving] = useState(false);
@@ -250,7 +257,16 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
   // Function to save task to the database
   const saveTask = async () => {
     if (!results) {
-      toast.error("No task to save");
+      toast.error("No task to save", {
+        position: "top-right",
+      });
+      return;
+    }
+
+    if (isSaved) {
+      toast.info("This task has already been saved", {
+        position: "top-right",
+      });
       return;
     }
 
@@ -266,14 +282,26 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
         type: typeMap[results.type] || results.type,
       };
       await taskService.saveTask(payload);
-      toast.success(`${results.type} saved successfully!`);
-      setResults(null); // Clear the form after saving
+      toast.success(`${results.type} saved successfully!`, {
+        position: "top-right",
+      });
+
+      // If onSave callback is provided, call it to move to next result
+      if (onSave) {
+        onSave();
+      } else {
+        // Default behavior if no onSave provided
+        setResults(null);
+      }
     } catch (error) {
       console.error("Error saving task:", error);
       toast.error(
         error instanceof Error
           ? error.message
-          : "Failed to save task. Please try again."
+          : "Failed to save task. Please try again.",
+        {
+          position: "top-right",
+        }
       );
     } finally {
       setSaving(false);
@@ -651,10 +679,14 @@ export function AnalysisResults({ results, setResults }: AnalysisResultsProps) {
           <Button
             size="sm"
             onClick={saveTask}
-            disabled={saving}
-            className="text-xs h-8"
+            disabled={saving || isSaved}
+            className={`text-xs h-8 ${
+              isSaved
+                ? "bg-green-500/70 hover:bg-green-500/70 cursor-not-allowed"
+                : ""
+            }`}
           >
-            {saving ? "Saving..." : "Save"}
+            {saving ? "Saving..." : isSaved ? "Saved" : "Save"}
           </Button>
         </CardFooter>
       </div>

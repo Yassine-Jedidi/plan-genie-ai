@@ -6,14 +6,20 @@ import {
 } from "@/components/ui/prompt-input";
 import { Button } from "@/components/ui/button";
 import { ArrowUp, Paperclip, Square, X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import { toast } from "sonner";
 
 interface PromptInputWithActionsProps {
-  onSubmit?: () => void;
+  onSubmit?: (
+    text: string,
+    fileContents: { name: string; content: string }[]
+  ) => void;
   value?: string;
   onValueChange?: (value: string) => void;
   isLoading?: boolean;
   placeholder?: string;
+  resetFile?: boolean;
+  onFileReset?: () => void;
 }
 
 export function PromptInputWithActions({
@@ -22,16 +28,34 @@ export function PromptInputWithActions({
   onValueChange: externalValueChange,
   isLoading: externalLoading,
   placeholder,
+  resetFile = false,
+  onFileReset,
 }: PromptInputWithActionsProps) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [files, setFiles] = useState<File[]>([]);
+  const [file, setFile] = useState<File | null>(null);
   const uploadInputRef = useRef<HTMLInputElement>(null);
 
   // Use external values if provided, otherwise use internal state
   const currentValue = externalValue !== undefined ? externalValue : input;
   const currentLoading =
     externalLoading !== undefined ? externalLoading : isLoading;
+
+  // Effect to reset file when resetFile prop changes to true
+  useEffect(() => {
+    if (resetFile && file) {
+      console.log("Resetting file input");
+      setFile(null);
+      if (uploadInputRef?.current) {
+        uploadInputRef.current.value = "";
+      }
+
+      // Notify parent that file has been reset
+      if (onFileReset) {
+        onFileReset();
+      }
+    }
+  }, [resetFile, file, onFileReset]);
 
   const handleValueChange = (value: string) => {
     if (externalValueChange) {
@@ -41,32 +65,139 @@ export function PromptInputWithActions({
     }
   };
 
-  const handleSubmit = () => {
-    if (externalSubmit) {
-      externalSubmit();
-    } else if (currentValue.trim() || files.length > 0) {
+  const extractTextFromFile = async (file: File): Promise<string> => {
+    console.log(`Extracting text from file: ${file.name}, type: ${file.type}`);
+
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          const content = e.target.result as string;
+          console.log(
+            `Successfully extracted content from ${file.name}, length: ${content.length}`
+          );
+          resolve(content);
+        } else {
+          console.error(`Failed to extract content from ${file.name}`);
+          resolve("");
+        }
+      };
+
+      reader.onerror = (e) => {
+        console.error(`Error reading file ${file.name}:`, e);
+        resolve("");
+      };
+
+      reader.readAsText(file);
+    });
+  };
+
+  const processFile = async () => {
+    if (!file) return [];
+
+    console.log(`Processing file: ${file.name}`);
+    const contents: { name: string; content: string }[] = [];
+
+    try {
+      const content = await extractTextFromFile(file);
+      contents.push({
+        name: file.name,
+        content,
+      });
+    } catch (error) {
+      console.error(`Error processing file ${file.name}:`, error);
+    }
+
+    console.log(`Processed file successfully`);
+    return contents;
+  };
+
+  const handleSubmit = async () => {
+    console.log(
+      `Submit triggered. Input: "${currentValue}", File: ${
+        file?.name || "none"
+      }`
+    );
+
+    if (currentValue.trim() || file) {
       setIsLoading(true);
-      setTimeout(() => {
+
+      try {
+        const contents = await processFile();
+
+        if (externalSubmit) {
+          console.log(
+            `Calling external submit with ${contents.length} file content`
+          );
+          externalSubmit(currentValue, contents);
+        } else {
+          console.log(`No external submit handler, running mock submission`);
+          // Display file contents in the console for debugging
+          if (contents.length > 0) {
+            console.log("File content:");
+            contents.forEach(({ name, content }) => {
+              console.log(`---${name}---`);
+              console.log(
+                content.substring(0, 200) + (content.length > 200 ? "..." : "")
+              );
+            });
+          }
+
+          // Mock submission for demonstration
+          setTimeout(() => {
+            setIsLoading(false);
+            setInput("");
+            setFile(null);
+
+            // Alert for demonstration purposes
+            if (contents.length > 0) {
+              alert(`Processed file successfully. Check console for details.`);
+            }
+          }, 2000);
+        }
+      } catch (error) {
+        console.error("Error during submission:", error);
         setIsLoading(false);
-        setInput("");
-        setFiles([]);
-      }, 2000);
+      }
     }
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      const newFiles = Array.from(event.target.files);
-      setFiles((prev) => [...prev, ...newFiles]);
+    if (event.target.files && event.target.files.length > 0) {
+      const newFile = event.target.files[0];
+      console.log(`Added file: ${newFile.name}`);
+
+      // Remove previous file if exists
+      if (file) {
+        console.log(`Replacing previous file: ${file.name}`);
+      }
+
+      setFile(newFile);
+      toast.success(`File "${newFile.name}" uploaded successfully`, {
+        position: "top-right",
+      });
     }
   };
 
-  const handleRemoveFile = (index: number) => {
-    setFiles((prev) => prev.filter((_, i) => i !== index));
+  const handleRemoveFile = () => {
+    if (file) {
+      const removedFile = file;
+      setFile(null);
+      console.log(`Removed file: ${removedFile.name}`);
+
+      toast.info(`File "${removedFile.name}" removed`, {
+        position: "top-right",
+      });
+    }
+
     if (uploadInputRef?.current) {
       uploadInputRef.current.value = "";
     }
   };
+
+  // Only allow text-based file formats
+  const acceptedFileTypes = ".txt,.md,.csv";
 
   return (
     <PromptInput
@@ -76,40 +207,41 @@ export function PromptInputWithActions({
       onSubmit={handleSubmit}
       className="w-full max-w-4xl"
     >
-      {files.length > 0 && (
+      {file && (
         <div className="flex flex-wrap gap-2 pb-2">
-          {files.map((file, index) => (
-            <div
-              key={index}
-              className="bg-secondary flex items-center gap-2 rounded-lg px-3 py-2 text-sm"
+          <div className="bg-secondary flex items-center gap-2 rounded-lg px-3 py-2 text-sm">
+            <Paperclip className="size-4" />
+            <span className="max-w-[120px] truncate">{file.name}</span>
+            <button
+              onClick={handleRemoveFile}
+              className="hover:bg-secondary/50 rounded-full p-1"
+              type="button"
             >
-              <Paperclip className="size-4" />
-              <span className="max-w-[120px] truncate">{file.name}</span>
-              <button
-                onClick={() => handleRemoveFile(index)}
-                className="hover:bg-secondary/50 rounded-full p-1"
-              >
-                <X className="size-4" />
-              </button>
-            </div>
-          ))}
+              <X className="size-4" />
+            </button>
+          </div>
         </div>
       )}
 
-      <PromptInputTextarea placeholder={placeholder || "Ask me anything..."} />
+      <PromptInputTextarea
+        placeholder={
+          placeholder || "Ask me anything or upload a file to analyze..."
+        }
+      />
 
       <PromptInputActions className="flex items-center justify-between gap-2 pt-2">
-        <PromptInputAction tooltip="Attach files">
+        <PromptInputAction tooltip="Attach a text file (.txt, .md, .csv)">
           <label
             htmlFor="file-upload"
             className="hover:bg-secondary-foreground/10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-2xl"
           >
             <input
               type="file"
-              multiple
+              accept={acceptedFileTypes}
               onChange={handleFileChange}
               className="hidden"
               id="file-upload"
+              ref={uploadInputRef}
             />
             <Paperclip className="text-primary size-5" />
           </label>
@@ -123,7 +255,8 @@ export function PromptInputWithActions({
             size="icon"
             className="h-8 w-8 rounded-full"
             onClick={handleSubmit}
-            disabled={currentLoading && !currentValue.trim()}
+            disabled={currentLoading && !(currentValue.trim() || file)}
+            type="button"
           >
             {currentLoading ? (
               <Square className="size-5 fill-current" />
