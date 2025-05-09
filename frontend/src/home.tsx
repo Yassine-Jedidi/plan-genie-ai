@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { nlpService, AnalysisResult } from "@/services/nlpService";
 import { PromptInputWithActions } from "./components/input";
 import { AnalysisResults } from "@/components/analysis-results";
+import { ShiningText } from "./components/ui/shining-text";
 
 function HomePage() {
   const [inputText, setInputText] = useState("");
@@ -327,6 +328,11 @@ function HomePage() {
                 />
               </>
             )}
+            {analyzing && (
+              <div className="flex justify-center items-center h-full">
+                <ShiningText text={"Plan Genie AI is thinking..."} />
+              </div>
+            )}
           </div>
         </div>
 
@@ -338,7 +344,7 @@ function HomePage() {
             isLoading={analyzing}
             resetFile={shouldResetFile}
             onFileReset={handleFileReset}
-            placeholder="Enter your task text here... e.g., 'I need to prepare a presentation for the marketing team by next Friday.'"
+            placeholder="Enter your task text here... e.g., 'I need to prepare a presentation for the marketing team by next Friday. It's urgent!'"
           />
         </div>
       </div>
