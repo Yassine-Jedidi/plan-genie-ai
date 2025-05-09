@@ -4,7 +4,7 @@ import { MoveRight } from "lucide-react";
 import { Button } from "@/components/ui/button"; // shadcn button component
 import { GetStartedButton } from "./get-started-button";
 import { Link } from "react-router-dom";
-
+import { HeroSection } from "./hero-section";
 function Hero() {
   const [titleNumber, setTitleNumber] = useState(0);
   const titles = useMemo(
@@ -69,11 +69,7 @@ function Hero() {
             </Link>
           </div>
 
-          <div className="text-center mt-8">
-            <p className="text-sm text-muted-foreground">
-              ⭐️⭐️⭐️⭐️⭐️ Rated 4.9/5 by 1,000+ users
-            </p>
-          </div>
+          <HeroSection />
         </div>
       </div>
     </div>
