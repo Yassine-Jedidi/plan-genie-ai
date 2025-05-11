@@ -244,22 +244,6 @@ function HomePage() {
     // Check if this is a multi-sentence file upload or just a single sentence
     const isMultiSentenceFile = isFromFileUpload && allResults.length > 1;
 
-    // Show appropriate toast based on content source and number of sentences
-    if (isMultiSentenceFile) {
-      // For multi-sentence file uploads, show detailed toast with result number
-      toast.success(
-        `${resultType} ${currentResultIndex + 1} saved successfully!`,
-        {
-          position: "top-right",
-        }
-      );
-    } else {
-      // For text input or single-sentence files, show simple toast
-      toast.success(`${resultType} saved successfully`, {
-        position: "top-right",
-      });
-    }
-
     // Check if we've saved all results after this save
     if (savedResults.size + 1 >= allResults.length) {
       // All results are now saved, clear everything
