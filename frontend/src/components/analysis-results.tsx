@@ -155,7 +155,7 @@ export function AnalysisResults({
   // Format date to display in a readable format
   const formatDate = (date: Date | null): string => {
     if (!date) return "Invalid date";
-    return format(date, "dd/MM/yyyy");
+    return format(date, "EEEE, MMMM dd, yyyy 'at' HH:mm");
   };
 
   const handleTypeChange = (newType: string) => {

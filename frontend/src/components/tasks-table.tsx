@@ -153,10 +153,14 @@ const columns: ColumnDef<Task>[] = [
       try {
         // Try to format the date nicely
         const date = new Date(deadline);
-        const formattedDate = new Intl.DateTimeFormat("fr-FR", {
+        const formattedDate = new Intl.DateTimeFormat("en-US", {
+          weekday: "long",
+          month: "long",
           day: "2-digit",
-          month: "2-digit",
           year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: false,
         }).format(date);
 
         // If we have the original text, display it with the formatted date
@@ -178,7 +182,7 @@ const columns: ColumnDef<Task>[] = [
         return deadline;
       }
     },
-    size: 120,
+    size: 200,
   },
   {
     header: "Priority",
@@ -211,9 +215,16 @@ const columns: ColumnDef<Task>[] = [
     accessorKey: "created_at",
     cell: ({ row }) => {
       const date = new Date(row.getValue("created_at"));
-      return date.toLocaleDateString();
+      const formattedDate = new Intl.DateTimeFormat("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "2-digit",
+        year: "numeric",
+      }).format(date);
+
+      return formattedDate;
     },
-    size: 120,
+    size: 160,
   },
   {
     id: "actions",
