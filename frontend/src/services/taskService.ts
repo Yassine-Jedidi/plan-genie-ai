@@ -10,6 +10,7 @@ export interface Task {
   deadline: string | null;
   deadline_text?: string | null;
   priority: string | null;
+  status: string | null;
   created_at: string;
   updated_at: string;
   user_id: string;
@@ -133,19 +134,14 @@ export const taskService = {
     }
   },
 
-  async getAllItems(userId: string): Promise<{ tasks: Task[], events: Event[] }> {
+  async updateTask(taskId: string, status: string): Promise<void> {
     try {
-      const [tasksResponse, eventsResponse] = await Promise.all([
-        this.getTasks(),
-        this.getEvents(userId)
-      ]);
-      
-      return {
-        tasks: tasksResponse,
-        events: eventsResponse
-      };
-    } catch {
-      throw new Error("Failed to fetch all items");
+      await api.put(`/tasks/tasks/${taskId}`, { status });
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        throw new Error(error.response.data?.error || "Failed to update task");
+      }
+      throw new Error("Failed to update task");
     }
-  }
+  },
 }; 

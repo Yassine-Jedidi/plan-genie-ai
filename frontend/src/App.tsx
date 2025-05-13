@@ -20,6 +20,7 @@ import TasksPage from "./tasks";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import SettingsPage from "./settings";
+import { TasksKanban } from "./tasks-kanban";
 
 function AppContent() {
   const location = useLocation();
@@ -27,10 +28,12 @@ function AppContent() {
     location.pathname !== "/home" &&
     location.pathname !== "/tasks" &&
     location.pathname !== "/auth/callback" &&
-    location.pathname !== "/settings";
+    location.pathname !== "/settings" &&
+    location.pathname !== "/tasks-kanban";
   const showSidebar =
     location.pathname === "/home" ||
     location.pathname === "/tasks" ||
+    location.pathname === "/tasks-kanban" ||
     location.pathname === "/settings";
 
   return (
@@ -70,6 +73,15 @@ function AppContent() {
                   <>
                     <AppSidebar />
                     <SettingsPage />
+                  </>
+                }
+              />
+              <Route
+                path="/tasks-kanban"
+                element={
+                  <>
+                    <AppSidebar />
+                    <TasksKanban />
                   </>
                 }
               />

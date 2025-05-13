@@ -53,6 +53,7 @@ router.post("/save", async (req, res) => {
       const deadline = entities.DELAI?.[0] || null;
       const deadline_text = entities.DELAI_TEXT?.[0] || null;
       const priority = entities.PRIORITE?.[0] || null;
+      const status = "Planned";
 
       // Check if user exists in the database
       let dbUser = await prisma.user.findUnique({
@@ -75,6 +76,7 @@ router.post("/save", async (req, res) => {
           deadline,
           deadline_text,
           priority,
+          status,
           user_id: req.user.id,
         },
       });
@@ -205,6 +207,51 @@ router.delete("/tasks/:taskId", async (req, res) => {
   } catch (error) {
     console.error("Error deleting task:", error);
     res.status(500).json({ error: "Failed to delete task: " + error.message });
+  }
+});
+
+// PUT endpoint to update a task
+router.put("/tasks/:taskId", async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    const userId = req.user.id;
+    const { status } = req.body;
+
+    if (!taskId || !status) {
+      return res.status(400).json({ error: "Task ID and status are required" });
+    }
+
+    // Verify that the task belongs to the authenticated user
+    const task = await prisma.task.findUnique({
+      where: {
+        id: taskId,
+      },
+    });
+
+    if (!task) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    if (task.user_id !== userId) {
+      return res
+        .status(403)
+        .json({ error: "Unauthorized: This task doesn't belong to you" });
+    }
+
+    // Update the task
+    await prisma.task.update({
+      where: {
+        id: taskId,
+      },
+      data: {
+        status,
+      },
+    });
+
+    return res.status(200).json({ message: "Task updated successfully" });
+  } catch (error) {
+    console.error("Error updating task:", error);
+    res.status(500).json({ error: "Failed to update task: " + error.message });
   }
 });
 
