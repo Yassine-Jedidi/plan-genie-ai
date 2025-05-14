@@ -107,6 +107,16 @@ const priorityFilterFn: FilterFn<Task> = (
   return filterValue.includes(priority);
 };
 
+const statusFilterFn: FilterFn<Task> = (
+  row,
+  columnId,
+  filterValue: string[]
+) => {
+  if (!filterValue?.length) return true;
+  const status = row.getValue(columnId) as string;
+  return filterValue.includes(status);
+};
+
 const columns: ColumnDef<Task>[] = [
   {
     id: "select",
@@ -209,6 +219,32 @@ const columns: ColumnDef<Task>[] = [
     },
     size: 100,
     filterFn: priorityFilterFn,
+  },
+  {
+    header: "Status",
+    accessorKey: "status",
+    cell: ({ row }) => {
+      const status = row.getValue("status") as string | null;
+      if (!status)
+        return <span className="text-muted-foreground">Planned</span>;
+
+      const statusColors: Record<string, string> = {
+        Done: "bg-green-100 text-green-800 border-green-300",
+        "In Progress": "bg-blue-100 text-blue-800 border-blue-300",
+        Planned: "bg-amber-100 text-amber-800 border-amber-300",
+      };
+
+      const colorClass =
+        statusColors[status] || "bg-amber-100 text-amber-800 border-amber-300"; // Default to Planned style
+
+      return (
+        <Badge className={cn(colorClass)} variant="outline">
+          {status || "Planned"}
+        </Badge>
+      );
+    },
+    size: 120,
+    filterFn: statusFilterFn,
   },
   {
     header: "Created",
@@ -351,6 +387,19 @@ export default function TasksTable({ tasks }: TasksTableProps) {
     return values.sort();
   }, [table.getColumn("priority")?.getFacetedUniqueValues()]);
 
+  // Get unique status values
+  const uniqueStatusValues = useMemo(() => {
+    const statusColumn = table.getColumn("status");
+
+    if (!statusColumn) return [];
+
+    const values = Array.from(
+      statusColumn.getFacetedUniqueValues().keys()
+    ).filter((value) => value !== null && value !== undefined);
+
+    return values.sort();
+  }, [table.getColumn("status")?.getFacetedUniqueValues()]);
+
   // Get counts for each priority
   const priorityCounts = useMemo(() => {
     const priorityColumn = table.getColumn("priority");
@@ -358,12 +407,24 @@ export default function TasksTable({ tasks }: TasksTableProps) {
     return priorityColumn.getFacetedUniqueValues();
   }, [table.getColumn("priority")?.getFacetedUniqueValues()]);
 
+  // Get counts for each status
+  const statusCounts = useMemo(() => {
+    const statusColumn = table.getColumn("status");
+    if (!statusColumn) return new Map();
+    return statusColumn.getFacetedUniqueValues();
+  }, [table.getColumn("status")?.getFacetedUniqueValues()]);
+
   const selectedPriorities = useMemo(() => {
     const filterValue = table
       .getColumn("priority")
       ?.getFilterValue() as string[];
     return filterValue ?? [];
   }, [table.getColumn("priority")?.getFilterValue()]);
+
+  const selectedStatuses = useMemo(() => {
+    const filterValue = table.getColumn("status")?.getFilterValue() as string[];
+    return filterValue ?? [];
+  }, [table.getColumn("status")?.getFilterValue()]);
 
   const handlePriorityChange = (checked: boolean, value: string) => {
     const filterValue = table
@@ -382,6 +443,24 @@ export default function TasksTable({ tasks }: TasksTableProps) {
 
     table
       .getColumn("priority")
+      ?.setFilterValue(newFilterValue.length ? newFilterValue : undefined);
+  };
+
+  const handleStatusChange = (checked: boolean, value: string) => {
+    const filterValue = table.getColumn("status")?.getFilterValue() as string[];
+    const newFilterValue = filterValue ? [...filterValue] : [];
+
+    if (checked) {
+      newFilterValue.push(value);
+    } else {
+      const index = newFilterValue.indexOf(value);
+      if (index > -1) {
+        newFilterValue.splice(index, 1);
+      }
+    }
+
+    table
+      .getColumn("status")
       ?.setFilterValue(newFilterValue.length ? newFilterValue : undefined);
   };
 
@@ -494,6 +573,88 @@ export default function TasksTable({ tasks }: TasksTableProps) {
 
   return (
     <div className="space-y-4 max-w-5xl mx-auto border border-primary/30 rounded-lg p-2 sm:p-4 shadow-sm">
+      {/* Status filter buttons */}
+      <div className="flex flex-wrap gap-1 mb-1">
+        <Button
+          size="sm"
+          variant="outline"
+          className={cn(
+            "bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200 text-xs",
+            selectedStatuses.includes("Planned") && "ring-2 ring-amber-400"
+          )}
+          onClick={() => {
+            // Toggle filter for "Planned" status
+            const currentFilter =
+              (table.getColumn("status")?.getFilterValue() as string[]) || [];
+            const isSelected = currentFilter.includes("Planned");
+            const newFilter = isSelected
+              ? currentFilter.filter((s) => s !== "Planned")
+              : [...currentFilter, "Planned"];
+
+            table
+              .getColumn("status")
+              ?.setFilterValue(newFilter.length ? newFilter : undefined);
+          }}
+        >
+          Planned
+          <span className="ml-1 inline-flex h-4 items-center rounded bg-background-200 px-1 text-xs font-medium text-amber-800">
+            {`(${statusCounts.get("Planned") || 0})`}
+          </span>
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          className={cn(
+            "bg-blue-100 text-blue-800 border-blue-300 hover:bg-blue-200 text-xs",
+            selectedStatuses.includes("In Progress") && "ring-2 ring-blue-400"
+          )}
+          onClick={() => {
+            // Toggle filter for "In Progress" status
+            const currentFilter =
+              (table.getColumn("status")?.getFilterValue() as string[]) || [];
+            const isSelected = currentFilter.includes("In Progress");
+            const newFilter = isSelected
+              ? currentFilter.filter((s) => s !== "In Progress")
+              : [...currentFilter, "In Progress"];
+
+            table
+              .getColumn("status")
+              ?.setFilterValue(newFilter.length ? newFilter : undefined);
+          }}
+        >
+          In Progress
+          <span className="ml-1 inline-flex h-4 items-center rounded bg-background-200 px-1 text-xs font-medium text-blue-800">
+            {`(${statusCounts.get("In Progress") || 0})`}
+          </span>
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          className={cn(
+            "bg-green-100 text-green-800 border-green-300 hover:bg-green-200 text-xs",
+            selectedStatuses.includes("Done") && "ring-2 ring-green-400"
+          )}
+          onClick={() => {
+            // Toggle filter for "Done" status
+            const currentFilter =
+              (table.getColumn("status")?.getFilterValue() as string[]) || [];
+            const isSelected = currentFilter.includes("Done");
+            const newFilter = isSelected
+              ? currentFilter.filter((s) => s !== "Done")
+              : [...currentFilter, "Done"];
+
+            table
+              .getColumn("status")
+              ?.setFilterValue(newFilter.length ? newFilter : undefined);
+          }}
+        >
+          Done
+          <span className="ml-1 inline-flex h-4 items-center rounded bg-background-200 px-1 text-xs font-medium text-green-800">
+            {`(${statusCounts.get("Done") || 0})`}
+          </span>
+        </Button>
+      </div>
+
       {/* Filters */}
       <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
@@ -575,6 +736,54 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                           {value}{" "}
                           <span className="ms-2 text-xs text-muted-foreground">
                             {priorityCounts.get(value)}
+                          </span>
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+            {/* Filter by status */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="w-full sm:w-auto">
+                  <Filter
+                    className="-ms-1 me-2 opacity-60"
+                    size={16}
+                    strokeWidth={2}
+                    aria-hidden="true"
+                  />
+                  Status
+                  {selectedStatuses.length > 0 && (
+                    <span className="-me-1 ms-3 inline-flex h-5 max-h-full items-center rounded border border-border bg-background px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
+                      {selectedStatuses.length}
+                    </span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="min-w-36 p-3" align="start">
+                <div className="space-y-3">
+                  <div className="text-xs font-medium text-muted-foreground">
+                    Filters
+                  </div>
+                  <div className="space-y-3">
+                    {uniqueStatusValues.map((value, i) => (
+                      <div key={value} className="flex items-center gap-2">
+                        <Checkbox
+                          id={`${id}-status-${i}`}
+                          checked={selectedStatuses.includes(value)}
+                          onCheckedChange={(checked: boolean) =>
+                            handleStatusChange(checked, value)
+                          }
+                        />
+                        <Label
+                          htmlFor={`${id}-status-${i}`}
+                          className="flex grow justify-between gap-2 font-normal"
+                        >
+                          {value}{" "}
+                          <span className="ms-2 text-xs text-muted-foreground">
+                            {statusCounts.get(value)}
                           </span>
                         </Label>
                       </div>
