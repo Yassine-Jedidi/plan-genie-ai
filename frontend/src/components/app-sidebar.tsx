@@ -56,7 +56,7 @@ const items = [
   },
   {
     title: "Calendar",
-    url: "#",
+    url: "/events",
     icon: Calendar,
   },
   {

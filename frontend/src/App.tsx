@@ -21,6 +21,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import SettingsPage from "./settings";
 import { TasksKanban } from "./tasks-kanban";
+import { EventsCalendar } from "./events-calendar";
 
 function AppContent() {
   const location = useLocation();
@@ -29,12 +30,14 @@ function AppContent() {
     location.pathname !== "/tasks" &&
     location.pathname !== "/auth/callback" &&
     location.pathname !== "/settings" &&
-    location.pathname !== "/tasks-kanban";
+    location.pathname !== "/tasks-kanban" &&
+    location.pathname !== "/events";
   const showSidebar =
     location.pathname === "/home" ||
     location.pathname === "/tasks" ||
     location.pathname === "/tasks-kanban" ||
-    location.pathname === "/settings";
+    location.pathname === "/settings" ||
+    location.pathname === "/events";
 
   return (
     <ThemeProvider
@@ -82,6 +85,15 @@ function AppContent() {
                   <>
                     <AppSidebar />
                     <TasksKanban />
+                  </>
+                }
+              />
+              <Route
+                path="/events"
+                element={
+                  <>
+                    <AppSidebar />
+                    <EventsCalendar />
                   </>
                 }
               />
