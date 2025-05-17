@@ -24,7 +24,22 @@ router.post("/save", async (req, res) => {
     if (type === "Événement") {
       // Create event
       const title = entities.TITRE?.[0] || "Untitled Event";
-      const date_time = entities.DATE_HEURE?.[0] || new Date().toISOString();
+      let date_time = entities.DATE_HEURE?.[0] || new Date().toISOString();
+      let date_time_text = null;
+
+      // Try to parse as JSON with originalText and parsedDate
+      if (entities.DATE_HEURE?.[0]) {
+        try {
+          const parsed = JSON.parse(entities.DATE_HEURE[0]);
+          if (parsed.originalText && parsed.parsedDate) {
+            date_time = parsed.parsedDate;
+            date_time_text = parsed.originalText;
+          }
+        } catch (e) {
+          // Not JSON, keep as is
+          date_time_text = entities.DATE_HEURE[0];
+        }
+      }
 
       // Check if user exists in the database
       let dbUser = await prisma.user.findUnique({
@@ -45,6 +60,7 @@ router.post("/save", async (req, res) => {
         data: {
           title,
           date_time,
+          date_time_text,
           user_id: req.user.id,
         },
       });

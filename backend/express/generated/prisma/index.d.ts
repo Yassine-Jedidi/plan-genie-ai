@@ -3351,6 +3351,7 @@ export namespace Prisma {
     id: string | null
     title: string | null
     date_time: string | null
+    date_time_text: string | null
     created_at: Date | null
     updated_at: Date | null
     user_id: string | null
@@ -3360,6 +3361,7 @@ export namespace Prisma {
     id: string | null
     title: string | null
     date_time: string | null
+    date_time_text: string | null
     created_at: Date | null
     updated_at: Date | null
     user_id: string | null
@@ -3369,6 +3371,7 @@ export namespace Prisma {
     id: number
     title: number
     date_time: number
+    date_time_text: number
     created_at: number
     updated_at: number
     user_id: number
@@ -3380,6 +3383,7 @@ export namespace Prisma {
     id?: true
     title?: true
     date_time?: true
+    date_time_text?: true
     created_at?: true
     updated_at?: true
     user_id?: true
@@ -3389,6 +3393,7 @@ export namespace Prisma {
     id?: true
     title?: true
     date_time?: true
+    date_time_text?: true
     created_at?: true
     updated_at?: true
     user_id?: true
@@ -3398,6 +3403,7 @@ export namespace Prisma {
     id?: true
     title?: true
     date_time?: true
+    date_time_text?: true
     created_at?: true
     updated_at?: true
     user_id?: true
@@ -3480,6 +3486,7 @@ export namespace Prisma {
     id: string
     title: string
     date_time: string
+    date_time_text: string | null
     created_at: Date
     updated_at: Date
     user_id: string
@@ -3506,6 +3513,7 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     date_time?: boolean
+    date_time_text?: boolean
     created_at?: boolean
     updated_at?: boolean
     user_id?: boolean
@@ -3516,6 +3524,7 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     date_time?: boolean
+    date_time_text?: boolean
     created_at?: boolean
     updated_at?: boolean
     user_id?: boolean
@@ -3526,6 +3535,7 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     date_time?: boolean
+    date_time_text?: boolean
     created_at?: boolean
     updated_at?: boolean
     user_id?: boolean
@@ -3536,12 +3546,13 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     date_time?: boolean
+    date_time_text?: boolean
     created_at?: boolean
     updated_at?: boolean
     user_id?: boolean
   }
 
-  export type EventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "date_time" | "created_at" | "updated_at" | "user_id", ExtArgs["result"]["event"]>
+  export type EventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "date_time" | "date_time_text" | "created_at" | "updated_at" | "user_id", ExtArgs["result"]["event"]>
   export type EventInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -3561,6 +3572,7 @@ export namespace Prisma {
       id: string
       title: string
       date_time: string
+      date_time_text: string | null
       created_at: Date
       updated_at: Date
       user_id: string
@@ -3991,6 +4003,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Event", 'String'>
     readonly title: FieldRef<"Event", 'String'>
     readonly date_time: FieldRef<"Event", 'String'>
+    readonly date_time_text: FieldRef<"Event", 'String'>
     readonly created_at: FieldRef<"Event", 'DateTime'>
     readonly updated_at: FieldRef<"Event", 'DateTime'>
     readonly user_id: FieldRef<"Event", 'String'>
@@ -4455,6 +4468,7 @@ export namespace Prisma {
     id: 'id',
     title: 'title',
     date_time: 'date_time',
+    date_time_text: 'date_time_text',
     created_at: 'created_at',
     updated_at: 'updated_at',
     user_id: 'user_id'
@@ -4692,6 +4706,7 @@ export namespace Prisma {
     id?: StringFilter<"Event"> | string
     title?: StringFilter<"Event"> | string
     date_time?: StringFilter<"Event"> | string
+    date_time_text?: StringNullableFilter<"Event"> | string | null
     created_at?: DateTimeFilter<"Event"> | Date | string
     updated_at?: DateTimeFilter<"Event"> | Date | string
     user_id?: StringFilter<"Event"> | string
@@ -4702,6 +4717,7 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     date_time?: SortOrder
+    date_time_text?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     user_id?: SortOrder
@@ -4715,6 +4731,7 @@ export namespace Prisma {
     NOT?: EventWhereInput | EventWhereInput[]
     title?: StringFilter<"Event"> | string
     date_time?: StringFilter<"Event"> | string
+    date_time_text?: StringNullableFilter<"Event"> | string | null
     created_at?: DateTimeFilter<"Event"> | Date | string
     updated_at?: DateTimeFilter<"Event"> | Date | string
     user_id?: StringFilter<"Event"> | string
@@ -4725,6 +4742,7 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     date_time?: SortOrder
+    date_time_text?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     user_id?: SortOrder
@@ -4740,6 +4758,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Event"> | string
     title?: StringWithAggregatesFilter<"Event"> | string
     date_time?: StringWithAggregatesFilter<"Event"> | string
+    date_time_text?: StringNullableWithAggregatesFilter<"Event"> | string | null
     created_at?: DateTimeWithAggregatesFilter<"Event"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"Event"> | Date | string
     user_id?: StringWithAggregatesFilter<"Event"> | string
@@ -4917,6 +4936,7 @@ export namespace Prisma {
     id?: string
     title: string
     date_time: string
+    date_time_text?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     user: UserCreateNestedOneWithoutEventsInput
@@ -4926,6 +4946,7 @@ export namespace Prisma {
     id?: string
     title: string
     date_time: string
+    date_time_text?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     user_id: string
@@ -4935,6 +4956,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     date_time?: StringFieldUpdateOperationsInput | string
+    date_time_text?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEventsNestedInput
@@ -4944,6 +4966,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     date_time?: StringFieldUpdateOperationsInput | string
+    date_time_text?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user_id?: StringFieldUpdateOperationsInput | string
@@ -4953,6 +4976,7 @@ export namespace Prisma {
     id?: string
     title: string
     date_time: string
+    date_time_text?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     user_id: string
@@ -4962,6 +4986,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     date_time?: StringFieldUpdateOperationsInput | string
+    date_time_text?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4970,6 +4995,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     date_time?: StringFieldUpdateOperationsInput | string
+    date_time_text?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user_id?: StringFieldUpdateOperationsInput | string
@@ -5169,6 +5195,7 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     date_time?: SortOrder
+    date_time_text?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     user_id?: SortOrder
@@ -5178,6 +5205,7 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     date_time?: SortOrder
+    date_time_text?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     user_id?: SortOrder
@@ -5187,6 +5215,7 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     date_time?: SortOrder
+    date_time_text?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     user_id?: SortOrder
@@ -5461,6 +5490,7 @@ export namespace Prisma {
     id?: string
     title: string
     date_time: string
+    date_time_text?: string | null
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -5469,6 +5499,7 @@ export namespace Prisma {
     id?: string
     title: string
     date_time: string
+    date_time_text?: string | null
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -5537,6 +5568,7 @@ export namespace Prisma {
     id?: StringFilter<"Event"> | string
     title?: StringFilter<"Event"> | string
     date_time?: StringFilter<"Event"> | string
+    date_time_text?: StringNullableFilter<"Event"> | string | null
     created_at?: DateTimeFilter<"Event"> | Date | string
     updated_at?: DateTimeFilter<"Event"> | Date | string
     user_id?: StringFilter<"Event"> | string
@@ -5685,6 +5717,7 @@ export namespace Prisma {
     id?: string
     title: string
     date_time: string
+    date_time_text?: string | null
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -5726,6 +5759,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     date_time?: StringFieldUpdateOperationsInput | string
+    date_time_text?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -5734,6 +5768,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     date_time?: StringFieldUpdateOperationsInput | string
+    date_time_text?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -5742,6 +5777,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     date_time?: StringFieldUpdateOperationsInput | string
+    date_time_text?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
