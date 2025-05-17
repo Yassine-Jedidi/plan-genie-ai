@@ -25,13 +25,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
-
-interface Event {
-  id: number;
-  name: string;
-  time: string;
-  datetime: string;
-}
+import { Event } from "@/services/eventService";
 
 interface CalendarData {
   day: Date;
@@ -225,10 +219,13 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
                               className="flex flex-col items-start gap-1 rounded-lg border bg-muted/50 p-2 text-xs leading-tight"
                             >
                               <p className="font-medium leading-none">
-                                {event.name}
+                                {event.title}
                               </p>
                               <p className="leading-none text-muted-foreground">
-                                {event.time}
+                                {new Date(event.date_time).toLocaleTimeString(
+                                  [],
+                                  { hour: "2-digit", minute: "2-digit" }
+                                )}
                               </p>
                             </div>
                           ))}
@@ -289,6 +286,12 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
                               <span
                                 key={event.id}
                                 className="mx-0.5 mt-1 h-1.5 w-1.5 rounded-full bg-muted-foreground"
+                                title={`${event.title} @ ${new Date(
+                                  event.date_time
+                                ).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}`}
                               />
                             ))}
                           </div>
@@ -348,6 +351,12 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
                             <span
                               key={event.id}
                               className="mx-0.5 mt-1 h-1.5 w-1.5 rounded-full bg-muted-foreground"
+                              title={`${event.title} @ ${new Date(
+                                event.date_time
+                              ).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}`}
                             />
                           ))}
                         </div>
