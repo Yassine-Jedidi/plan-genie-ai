@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Event } from "@/services/eventService";
+import { EventDialog } from "@/components/event-dialog";
 
 interface CalendarData {
   day: Date;
@@ -52,6 +53,7 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
   const [currentMonth, setCurrentMonth] = React.useState(
     format(today, "MMM-yyyy")
   );
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const firstDayCurrentMonth = parse(currentMonth, "MMM-yyyy", new Date());
   const isMobile = useIsMobile();
 
@@ -73,6 +75,14 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
   function goToToday() {
     setCurrentMonth(format(today, "MMM-yyyy"));
   }
+
+  const handleDayClick = (day: Date) => {
+    setSelectedDay(day);
+    setIsDialogOpen(true);
+  };
+
+  const selectedDayEvents =
+    data.find((d) => isSameDay(d.day, selectedDay))?.events || [];
 
   return (
     <div className="flex flex-1 flex-col">
@@ -117,11 +127,7 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
             >
               <ChevronLeftIcon size={16} strokeWidth={2} aria-hidden="true" />
             </Button>
-            <Button
-              onClick={goToToday}
-              className="w-full rounded-none shadow-none first:rounded-s-lg last:rounded-e-lg focus-visible:z-10 md:w-auto"
-              variant="outline"
-            >
+            <Button onClick={goToToday} variant="outline">
               Today
             </Button>
             <Button
@@ -168,14 +174,14 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
               !isMobile ? (
                 <div
                   key={dayIdx}
-                  onClick={() => setSelectedDay(day)}
+                  onClick={() => handleDayClick(day)}
                   className={cn(
                     dayIdx === 0 && colStartClasses[getDay(day)],
                     !isEqual(day, selectedDay) &&
                       !isToday(day) &&
                       !isSameMonth(day, firstDayCurrentMonth) &&
                       "bg-accent/50 text-muted-foreground",
-                    "relative flex flex-col border-b border-r hover:bg-muted focus:z-10",
+                    "relative flex flex-col border-b border-r hover:bg-muted focus:z-10 cursor-pointer",
                     !isEqual(day, selectedDay) && "hover:bg-accent/75"
                   )}
                 >
@@ -240,7 +246,7 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
                 </div>
               ) : (
                 <button
-                  onClick={() => setSelectedDay(day)}
+                  onClick={() => handleDayClick(day)}
                   key={dayIdx}
                   type="button"
                   className={cn(
@@ -306,7 +312,7 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
           <div className="isolate grid w-full grid-cols-7 grid-rows-5 border-x lg:hidden">
             {days.map((day, dayIdx) => (
               <button
-                onClick={() => setSelectedDay(day)}
+                onClick={() => handleDayClick(day)}
                 key={dayIdx}
                 type="button"
                 className={cn(
@@ -368,6 +374,13 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
           </div>
         </div>
       </div>
+
+      <EventDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        selectedDate={selectedDay}
+        events={selectedDayEvents}
+      />
     </div>
   );
 }
