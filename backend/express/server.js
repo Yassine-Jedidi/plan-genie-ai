@@ -16,11 +16,13 @@ app.use(cookieParser());
 const authRoutes = require("./routes/auth");
 const fastApiRoutes = require("./routes/fastapi");
 const tasksRoutes = require("./routes/tasks");
+const eventsRoutes = require("./routes/events");
 
 // Apply routes
 app.use("/auth", authRoutes);
 app.use("/api", fastApiRoutes);
 app.use("/tasks", tasksRoutes);
+app.use("/events", eventsRoutes);
 
 // Handle OPTIONS preflight
 app.options("*", corsMiddleware());

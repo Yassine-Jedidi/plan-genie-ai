@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { AnalysisResult } from "@/services/nlpService";
 import { taskService } from "@/services/taskService";
+import { eventService } from "@/services/eventService";
 import { priorityService, PriorityLevel } from "@/services/priorityService";
 import {
   DropdownMenu,
@@ -281,7 +282,13 @@ export function AnalysisResults({
         ...results,
         type: typeMap[results.type] || results.type,
       };
-      await taskService.saveTask(payload);
+
+      if (results.type === "Event") {
+        await eventService.saveEvent(payload);
+      } else {
+        await taskService.saveTask(payload);
+      }
+
       toast.success(`${results.type} saved successfully!`, {
         position: "top-right",
       });
@@ -294,11 +301,11 @@ export function AnalysisResults({
         setResults(null);
       }
     } catch (error) {
-      console.error("Error saving task:", error);
+      console.error("Error saving:", error);
       toast.error(
         error instanceof Error
           ? error.message
-          : "Failed to save task. Please try again.",
+          : "Failed to save. Please try again.",
         {
           position: "top-right",
         }

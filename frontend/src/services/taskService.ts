@@ -16,21 +16,12 @@ export interface Task {
   user_id: string;
 }
 
-export interface Event {
-  id: string;
-  title: string;
-  date_time: string;
-  created_at: string;
-  updated_at: string;
-  user_id: string;
-}
-
 // Use the built-in French parser as demonstrated by the user
 const frenchParser = chrono.fr;
 const englishParser = chrono.en;
 
 export const taskService = {
-  async saveTask(analysisResult: AnalysisResult): Promise<Task | Event> {
+  async saveTask(analysisResult: AnalysisResult): Promise<Task> {
     try {
       // Create a deep copy of the analysis result to avoid modifying the original
       const processedResult = {
@@ -39,7 +30,7 @@ export const taskService = {
       };
       
       // Handle deadline parsing for tasks
-      if (analysisResult.type === "Tâche" && processedResult.entities["DELAI"]?.length > 0) {
+      if (processedResult.entities["DELAI"]?.length > 0) {
         const delaiValue = processedResult.entities["DELAI"][0];
         
         try {
@@ -74,23 +65,17 @@ export const taskService = {
         }
       }
       
-      // If it's a task, standardize the priority before saving
-      if (analysisResult.type === "Tâche") {
-        const priorityText = analysisResult.entities["PRIORITE"]?.[0];
-        const priorityLevel = priorityService.classifyPriority(priorityText);
-        const standardizedPriority = priorityService.getPriorityLabel(priorityLevel);
-        
-        if (standardizedPriority) {
-          processedResult.entities.PRIORITE = [standardizedPriority];
-        }
-        
-        const { data } = await api.post("/tasks/save", processedResult);
-        return data;
-      } else {
-        // For events, pass through unchanged
-        const { data } = await api.post("/tasks/save", processedResult);
-        return data;
+      // Standardize the priority before saving
+      const priorityText = analysisResult.entities["PRIORITE"]?.[0];
+      const priorityLevel = priorityService.classifyPriority(priorityText);
+      const standardizedPriority = priorityService.getPriorityLabel(priorityLevel);
+      
+      if (standardizedPriority) {
+        processedResult.entities.PRIORITE = [standardizedPriority];
       }
+      
+      const { data } = await api.post("/tasks/save", processedResult);
+      return data;
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         throw new Error(error.response.data?.error || "Failed to save task");
@@ -101,7 +86,7 @@ export const taskService = {
 
   async getTasks(): Promise<Task[]> {
     try {
-      const { data } = await api.get("/tasks/tasks");
+      const { data } = await api.get("/tasks");
       return data;
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
@@ -113,7 +98,7 @@ export const taskService = {
 
   async deleteTask(taskId: string): Promise<void> {
     try {
-      await api.delete(`/tasks/tasks/${taskId}`);
+      await api.delete(`/tasks/${taskId}`);
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         throw new Error(error.response.data?.error || "Failed to delete task");
@@ -122,21 +107,9 @@ export const taskService = {
     }
   },
 
-  async getEvents(userId: string): Promise<Event[]> {
-    try {
-      const { data } = await api.get(`/tasks/events/${userId}`);
-      return data;
-    } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        throw new Error(error.response.data?.error || "Failed to fetch events");
-      }
-      throw new Error("Failed to fetch events");
-    }
-  },
-
   async updateTask(taskId: string, status: string): Promise<void> {
     try {
-      await api.put(`/tasks/tasks/${taskId}`, { status });
+      await api.put(`/tasks/${taskId}`, { status });
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         throw new Error(error.response.data?.error || "Failed to update task");
