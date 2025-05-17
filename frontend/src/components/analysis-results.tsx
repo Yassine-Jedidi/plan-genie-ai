@@ -201,8 +201,8 @@ export function AnalysisResults({
         updatedEntities[entityType] = [];
       }
 
-      // If editing a deadline, parse the date
-      if (entityType === "DELAI") {
+      // If editing a deadline or date_time, parse the date
+      if (entityType === "DELAI" || entityType === "DATE_HEURE") {
         const { originalText, parsedDate } = parseDate(editValue);
 
         // Store both the original text and the parsed date if available
@@ -378,7 +378,10 @@ export function AnalysisResults({
           </span>
         </div>
       );
-    } else if (entityType === "DELAI" && results.type === "Task") {
+    } else if (
+      (entityType === "DELAI" && results.type === "Task") ||
+      (entityType === "DATE_HEURE" && results.type === "Event")
+    ) {
       return (
         <div className="space-y-2">
           {values.length > 0 ? (
@@ -429,6 +432,11 @@ export function AnalysisResults({
                         }}
                         autoFocus
                         className="flex-1 h-8 text-sm focus-visible:ring-primary/30"
+                        placeholder={
+                          entityType === "DELAI"
+                            ? "ex: tomorrow, next week, 05/05/2025"
+                            : "ex: tomorrow at 3pm, next Monday at 10am"
+                        }
                       />
                       <Button
                         variant="ghost"
@@ -491,7 +499,11 @@ export function AnalysisResults({
                     }}
                     autoFocus
                     className="flex-1 h-8 text-sm focus-visible:ring-primary/30"
-                    placeholder="ex: tomorrow, next week, 05/05/2025"
+                    placeholder={
+                      entityType === "DELAI"
+                        ? "ex: tomorrow, next week, 05/05/2025"
+                        : "ex: tomorrow at 3pm, next Monday at 10am"
+                    }
                   />
                   <Button
                     variant="ghost"
