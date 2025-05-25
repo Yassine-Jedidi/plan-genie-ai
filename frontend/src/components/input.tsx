@@ -5,9 +5,10 @@ import {
   PromptInputTextarea,
 } from "@/components/ui/prompt-input";
 import { Button } from "@/components/ui/button";
-import { ArrowUp, Paperclip, Square, X } from "lucide-react";
+import { ArrowUp, Paperclip, Square, X, Mic, MicOff } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import { toast } from "sonner";
+import { audioService } from "@/services/audioService";
 
 interface PromptInputWithActionsProps {
   onSubmit?: (
@@ -33,6 +34,7 @@ export function PromptInputWithActions({
 }: PromptInputWithActionsProps) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const uploadInputRef = useRef<HTMLInputElement>(null);
 
@@ -199,6 +201,52 @@ export function PromptInputWithActions({
   // Only allow text-based file formats
   const acceptedFileTypes = ".txt,.md,.csv";
 
+  const handleStartRecording = async () => {
+    try {
+      await audioService.startRecording();
+      setIsRecording(true);
+      toast.info("Recording started...", {
+        position: "top-right",
+      });
+    } catch (error) {
+      console.error("Error starting recording:", error);
+      toast.error("Failed to start recording", {
+        position: "top-right",
+      });
+    }
+  };
+
+  const handleStopRecording = async () => {
+    try {
+      const audioBlob = await audioService.stopRecording();
+      setIsRecording(false);
+
+      // Show loading toast
+      const loadingToast = toast.loading("Transcribing audio...", {
+        position: "top-right",
+      });
+
+      // Transcribe the audio
+      const transcription = await audioService.transcribeAudio(audioBlob);
+
+      // Dismiss loading toast and show success
+      toast.dismiss(loadingToast);
+      toast.success("Recording transcribed successfully", {
+        position: "top-right",
+      });
+
+      // Update the input with the transcription
+      handleValueChange(
+        currentValue + (currentValue ? " " : "") + transcription
+      );
+    } catch (error) {
+      console.error("Error stopping recording:", error);
+      toast.error("Failed to transcribe recording", {
+        position: "top-right",
+      });
+    }
+  };
+
   return (
     <PromptInput
       value={currentValue}
@@ -225,27 +273,47 @@ export function PromptInputWithActions({
 
       <PromptInputTextarea
         placeholder={
-          placeholder || "Ask me anything or upload a file to analyze..."
+          placeholder || "Ask me anything, upload a file, or use voice input..."
         }
       />
 
       <PromptInputActions className="flex items-center justify-between gap-2 pt-2">
-        <PromptInputAction tooltip="Attach a text file (.txt, .md, .csv)">
-          <label
-            htmlFor="file-upload"
-            className="hover:bg-secondary-foreground/10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-2xl"
+        <div className="flex items-center gap-2">
+          <PromptInputAction tooltip="Attach a text file (.txt, .md, .csv)">
+            <label
+              htmlFor="file-upload"
+              className="hover:bg-secondary-foreground/10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-2xl"
+            >
+              <input
+                type="file"
+                accept={acceptedFileTypes}
+                onChange={handleFileChange}
+                className="hidden"
+                id="file-upload"
+                ref={uploadInputRef}
+              />
+              <Paperclip className="text-primary size-5" />
+            </label>
+          </PromptInputAction>
+
+          <PromptInputAction
+            tooltip={isRecording ? "Stop recording" : "Start recording"}
           >
-            <input
-              type="file"
-              accept={acceptedFileTypes}
-              onChange={handleFileChange}
-              className="hidden"
-              id="file-upload"
-              ref={uploadInputRef}
-            />
-            <Paperclip className="text-primary size-5" />
-          </label>
-        </PromptInputAction>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-full"
+              onClick={isRecording ? handleStopRecording : handleStartRecording}
+              type="button"
+            >
+              {isRecording ? (
+                <MicOff className="text-red-500 size-6" />
+              ) : (
+                <Mic className="text-primary size-6" />
+              )}
+            </Button>
+          </PromptInputAction>
+        </div>
 
         <PromptInputAction
           tooltip={currentLoading ? "Stop generation" : "Send message"}
