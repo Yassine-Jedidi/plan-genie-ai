@@ -54,7 +54,7 @@ class AudioService {
       const formData = new FormData();
       formData.append('file', audioBlob, 'recording.wav');
 
-      const response = await api.post('/api/transcribe', formData, {
+      const response = await api.post('/audio/transcribe', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

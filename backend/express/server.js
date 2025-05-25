@@ -17,12 +17,14 @@ const authRoutes = require("./routes/auth");
 const fastApiRoutes = require("./routes/fastapi");
 const tasksRoutes = require("./routes/tasks");
 const eventsRoutes = require("./routes/events");
+const audioRoutes = require("./routes/audio");
 
 // Apply routes
 app.use("/auth", authRoutes);
 app.use("/api", fastApiRoutes);
 app.use("/tasks", tasksRoutes);
 app.use("/events", eventsRoutes);
+app.use("/audio", audioRoutes);
 
 // Handle OPTIONS preflight
 app.options("*", corsMiddleware());
