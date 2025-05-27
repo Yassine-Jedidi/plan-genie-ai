@@ -27,19 +27,21 @@ model User {
   updated_at DateTime @updatedAt
   tasks      Task[]
   events     Event[]
+  bilans     Bilan[]
 }
 
 model Task {
-  id            String   @id @default(uuid())
+  id            String       @id @default(uuid())
   title         String
   deadline      String?
   deadline_text String?
   priority      String?
   status        String?
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
   user_id       String
-  user          User     @relation(fields: [user_id], references: [id])
+  user          User         @relation(fields: [user_id], references: [id])
+  bilanEntries  BilanEntry[]
 }
 
 model Event {
@@ -51,4 +53,26 @@ model Event {
   updated_at     DateTime @updatedAt
   user_id        String
   user           User     @relation(fields: [user_id], references: [id])
+}
+
+model Bilan {
+  id         String       @id @default(uuid())
+  date       DateTime     @default(now())
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+  user_id    String
+  user       User         @relation(fields: [user_id], references: [id])
+  entries    BilanEntry[]
+}
+
+model BilanEntry {
+  id            String   @id @default(uuid())
+  minutes_spent Int      @default(0)
+  notes         String?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  bilan_id      String
+  bilan         Bilan    @relation(fields: [bilan_id], references: [id], onDelete: Cascade)
+  task_id       String
+  task          Task     @relation(fields: [task_id], references: [id], onDelete: Cascade)
 }

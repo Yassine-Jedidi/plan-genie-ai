@@ -150,6 +150,24 @@ exports.Prisma.EventScalarFieldEnum = {
   user_id: 'user_id'
 };
 
+exports.Prisma.BilanScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  user_id: 'user_id'
+};
+
+exports.Prisma.BilanEntryScalarFieldEnum = {
+  id: 'id',
+  minutes_spent: 'minutes_spent',
+  notes: 'notes',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  bilan_id: 'bilan_id',
+  task_id: 'task_id'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -169,7 +187,9 @@ exports.Prisma.NullsOrder = {
 exports.Prisma.ModelName = {
   User: 'User',
   Task: 'Task',
-  Event: 'Event'
+  Event: 'Event',
+  Bilan: 'Bilan',
+  BilanEntry: 'BilanEntry'
 };
 
 /**

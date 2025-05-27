@@ -1,6 +1,6 @@
 "use client";
 
-import { FullScreenCalendar } from "@/components/ui/calendar";
+import { FullScreenCalendar } from "@/components/calendar";
 import { SidebarTrigger } from "./components/ui/sidebar";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";

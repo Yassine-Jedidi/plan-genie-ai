@@ -1,386 +1,74 @@
-import * as React from "react";
-import {
-  add,
-  eachDayOfInterval,
-  endOfMonth,
-  endOfWeek,
-  format,
-  getDay,
-  isEqual,
-  isSameDay,
-  isSameMonth,
-  isToday,
-  parse,
-  startOfToday,
-  startOfWeek,
-} from "date-fns";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  PlusCircleIcon,
-  SearchIcon,
-} from "lucide-react";
+import * as React from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { DayPicker } from "react-day-picker"
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Event } from "@/services/eventService";
-import { EventDialog } from "@/components/event-dialog";
+import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button"
 
-interface CalendarData {
-  day: Date;
-  events: Event[];
-}
+export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
-interface FullScreenCalendarProps {
-  data: CalendarData[];
-}
-
-const colStartClasses = [
-  "",
-  "col-start-2",
-  "col-start-3",
-  "col-start-4",
-  "col-start-5",
-  "col-start-6",
-  "col-start-7",
-];
-
-export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
-  const today = startOfToday();
-  const [selectedDay, setSelectedDay] = React.useState(today);
-  const [currentMonth, setCurrentMonth] = React.useState(
-    format(today, "MMM-yyyy")
-  );
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const firstDayCurrentMonth = parse(currentMonth, "MMM-yyyy", new Date());
-  const isMobile = useIsMobile();
-
-  const days = eachDayOfInterval({
-    start: startOfWeek(firstDayCurrentMonth),
-    end: endOfWeek(endOfMonth(firstDayCurrentMonth)),
-  });
-
-  function previousMonth() {
-    const firstDayNextMonth = add(firstDayCurrentMonth, { months: -1 });
-    setCurrentMonth(format(firstDayNextMonth, "MMM-yyyy"));
-  }
-
-  function nextMonth() {
-    const firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
-    setCurrentMonth(format(firstDayNextMonth, "MMM-yyyy"));
-  }
-
-  function goToToday() {
-    setCurrentMonth(format(today, "MMM-yyyy"));
-  }
-
-  const handleDayClick = (day: Date) => {
-    setSelectedDay(day);
-    setIsDialogOpen(true);
-  };
-
-  const selectedDayEvents =
-    data.find((d) => isSameDay(d.day, selectedDay))?.events || [];
-
+function Calendar({
+  className,
+  classNames,
+  showOutsideDays = true,
+  ...props
+}: CalendarProps) {
   return (
-    <div className="flex flex-1 flex-col">
-      {/* Calendar Header */}
-      <div className="flex flex-col space-y-4 p-4 md:flex-row md:items-center md:justify-between md:space-y-0 lg:flex-none">
-        <div className="flex flex-auto">
-          <div className="flex items-center gap-4">
-            <div className="hidden w-20 flex-col items-center justify-center rounded-lg border bg-muted p-0.5 md:flex">
-              <h1 className="p-1 text-xs uppercase text-muted-foreground">
-                {format(today, "MMM")}
-              </h1>
-              <div className="flex w-full items-center justify-center rounded-lg border bg-background p-0.5 text-lg font-bold">
-                <span>{format(today, "d")}</span>
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <h2 className="text-lg font-semibold text-foreground">
-                {format(firstDayCurrentMonth, "MMMM, yyyy")}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {format(firstDayCurrentMonth, "MMM d, yyyy")} -{" "}
-                {format(endOfMonth(firstDayCurrentMonth), "MMM d, yyyy")}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center gap-4 md:flex-row md:gap-6">
-          <Button variant="outline" size="icon" className="hidden lg:flex">
-            <SearchIcon size={16} strokeWidth={2} aria-hidden="true" />
-          </Button>
-
-          <Separator orientation="vertical" className="hidden h-6 lg:block" />
-
-          <div className="inline-flex w-full -space-x-px rounded-lg shadow-sm shadow-black/5 md:w-auto rtl:space-x-reverse">
-            <Button
-              onClick={previousMonth}
-              className="rounded-none shadow-none first:rounded-s-lg last:rounded-e-lg focus-visible:z-10"
-              variant="outline"
-              size="icon"
-              aria-label="Navigate to previous month"
-            >
-              <ChevronLeftIcon size={16} strokeWidth={2} aria-hidden="true" />
-            </Button>
-            <Button onClick={goToToday} variant="outline">
-              Today
-            </Button>
-            <Button
-              onClick={nextMonth}
-              className="rounded-none shadow-none first:rounded-s-lg last:rounded-e-lg focus-visible:z-10"
-              variant="outline"
-              size="icon"
-              aria-label="Navigate to next month"
-            >
-              <ChevronRightIcon size={16} strokeWidth={2} aria-hidden="true" />
-            </Button>
-          </div>
-
-          <Separator orientation="vertical" className="hidden h-6 md:block" />
-          <Separator
-            orientation="horizontal"
-            className="block w-full md:hidden"
-          />
-
-          <Button className="w-full gap-2 md:w-auto">
-            <PlusCircleIcon size={16} strokeWidth={2} aria-hidden="true" />
-            <span>New Event</span>
-          </Button>
-        </div>
-      </div>
-
-      {/* Calendar Grid */}
-      <div className="lg:flex lg:flex-auto lg:flex-col">
-        {/* Week Days Header */}
-        <div className="grid grid-cols-7 border text-center text-xs font-semibold leading-6 lg:flex-none">
-          <div className="border-r py-2.5">Sun</div>
-          <div className="border-r py-2.5">Mon</div>
-          <div className="border-r py-2.5">Tue</div>
-          <div className="border-r py-2.5">Wed</div>
-          <div className="border-r py-2.5">Thu</div>
-          <div className="border-r py-2.5">Fri</div>
-          <div className="py-2.5">Sat</div>
-        </div>
-
-        {/* Calendar Days */}
-        <div className="flex text-xs leading-6 lg:flex-auto">
-          <div className="hidden w-full border-x lg:grid lg:grid-cols-7 lg:grid-rows-5">
-            {days.map((day, dayIdx) =>
-              !isMobile ? (
-                <div
-                  key={dayIdx}
-                  onClick={() => handleDayClick(day)}
-                  className={cn(
-                    dayIdx === 0 && colStartClasses[getDay(day)],
-                    !isEqual(day, selectedDay) &&
-                      !isToday(day) &&
-                      !isSameMonth(day, firstDayCurrentMonth) &&
-                      "bg-accent/50 text-muted-foreground",
-                    "relative flex flex-col border-b border-r hover:bg-muted focus:z-10 cursor-pointer",
-                    !isEqual(day, selectedDay) && "hover:bg-accent/75"
-                  )}
-                >
-                  <header className="flex items-center justify-between p-2.5">
-                    <button
-                      type="button"
-                      className={cn(
-                        isEqual(day, selectedDay) && "text-primary-foreground",
-                        !isEqual(day, selectedDay) &&
-                          !isToday(day) &&
-                          isSameMonth(day, firstDayCurrentMonth) &&
-                          "text-foreground",
-                        !isEqual(day, selectedDay) &&
-                          !isToday(day) &&
-                          !isSameMonth(day, firstDayCurrentMonth) &&
-                          "text-muted-foreground",
-                        isEqual(day, selectedDay) &&
-                          isToday(day) &&
-                          "border-none bg-primary",
-                        isEqual(day, selectedDay) &&
-                          !isToday(day) &&
-                          "bg-foreground",
-                        (isEqual(day, selectedDay) || isToday(day)) &&
-                          "font-semibold",
-                        "flex h-7 w-7 items-center justify-center rounded-full text-xs hover:border"
-                      )}
-                    >
-                      <time dateTime={format(day, "yyyy-MM-dd")}>
-                        {format(day, "d")}
-                      </time>
-                    </button>
-                  </header>
-                  <div className="flex-1 p-2.5">
-                    {data
-                      .filter((event) => isSameDay(event.day, day))
-                      .map((day) => (
-                        <div key={day.day.toString()} className="space-y-1.5">
-                          {day.events.slice(0, 1).map((event) => (
-                            <div
-                              key={event.id}
-                              className="flex flex-col items-start gap-1 rounded-lg border bg-muted/50 p-2 text-xs leading-tight"
-                            >
-                              <p className="font-medium leading-none">
-                                {event.title}
-                              </p>
-                              <p className="leading-none text-muted-foreground">
-                                {new Date(event.date_time).toLocaleTimeString(
-                                  [],
-                                  { hour: "2-digit", minute: "2-digit" }
-                                )}
-                              </p>
-                            </div>
-                          ))}
-                          {day.events.length > 1 && (
-                            <div className="text-xs text-muted-foreground">
-                              + {day.events.length - 1} more
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              ) : (
-                <button
-                  onClick={() => handleDayClick(day)}
-                  key={dayIdx}
-                  type="button"
-                  className={cn(
-                    isEqual(day, selectedDay) && "text-primary-foreground",
-                    !isEqual(day, selectedDay) &&
-                      !isToday(day) &&
-                      isSameMonth(day, firstDayCurrentMonth) &&
-                      "text-foreground",
-                    !isEqual(day, selectedDay) &&
-                      !isToday(day) &&
-                      !isSameMonth(day, firstDayCurrentMonth) &&
-                      "text-muted-foreground",
-                    (isEqual(day, selectedDay) || isToday(day)) &&
-                      "font-semibold",
-                    "flex h-14 flex-col border-b border-r px-3 py-2 hover:bg-muted focus:z-10"
-                  )}
-                >
-                  <time
-                    dateTime={format(day, "yyyy-MM-dd")}
-                    className={cn(
-                      "ml-auto flex size-6 items-center justify-center rounded-full",
-                      isEqual(day, selectedDay) &&
-                        isToday(day) &&
-                        "bg-primary text-primary-foreground",
-                      isEqual(day, selectedDay) &&
-                        !isToday(day) &&
-                        "bg-primary text-primary-foreground"
-                    )}
-                  >
-                    {format(day, "d")}
-                  </time>
-                  {data.filter((date) => isSameDay(date.day, day)).length >
-                    0 && (
-                    <div>
-                      {data
-                        .filter((date) => isSameDay(date.day, day))
-                        .map((date) => (
-                          <div
-                            key={date.day.toString()}
-                            className="-mx-0.5 mt-auto flex flex-wrap-reverse"
-                          >
-                            {date.events.map((event) => (
-                              <span
-                                key={event.id}
-                                className="mx-0.5 mt-1 h-1.5 w-1.5 rounded-full bg-muted-foreground"
-                                title={`${event.title} @ ${new Date(
-                                  event.date_time
-                                ).toLocaleTimeString([], {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })}`}
-                              />
-                            ))}
-                          </div>
-                        ))}
-                    </div>
-                  )}
-                </button>
-              )
-            )}
-          </div>
-
-          <div className="isolate grid w-full grid-cols-7 grid-rows-5 border-x lg:hidden">
-            {days.map((day, dayIdx) => (
-              <button
-                onClick={() => handleDayClick(day)}
-                key={dayIdx}
-                type="button"
-                className={cn(
-                  isEqual(day, selectedDay) && "text-primary-foreground",
-                  !isEqual(day, selectedDay) &&
-                    !isToday(day) &&
-                    isSameMonth(day, firstDayCurrentMonth) &&
-                    "text-foreground",
-                  !isEqual(day, selectedDay) &&
-                    !isToday(day) &&
-                    !isSameMonth(day, firstDayCurrentMonth) &&
-                    "text-muted-foreground",
-                  (isEqual(day, selectedDay) || isToday(day)) &&
-                    "font-semibold",
-                  "flex h-14 flex-col border-b border-r px-3 py-2 hover:bg-muted focus:z-10"
-                )}
-              >
-                <time
-                  dateTime={format(day, "yyyy-MM-dd")}
-                  className={cn(
-                    "ml-auto flex size-6 items-center justify-center rounded-full",
-                    isEqual(day, selectedDay) &&
-                      isToday(day) &&
-                      "bg-primary text-primary-foreground",
-                    isEqual(day, selectedDay) &&
-                      !isToday(day) &&
-                      "bg-primary text-primary-foreground"
-                  )}
-                >
-                  {format(day, "d")}
-                </time>
-                {data.filter((date) => isSameDay(date.day, day)).length > 0 && (
-                  <div>
-                    {data
-                      .filter((date) => isSameDay(date.day, day))
-                      .map((date) => (
-                        <div
-                          key={date.day.toString()}
-                          className="-mx-0.5 mt-auto flex flex-wrap-reverse"
-                        >
-                          {date.events.map((event) => (
-                            <span
-                              key={event.id}
-                              className="mx-0.5 mt-1 h-1.5 w-1.5 rounded-full bg-muted-foreground"
-                              title={`${event.title} @ ${new Date(
-                                event.date_time
-                              ).toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}`}
-                            />
-                          ))}
-                        </div>
-                      ))}
-                  </div>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <EventDialog
-        isOpen={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
-        selectedDate={selectedDay}
-        events={selectedDayEvents}
-      />
-    </div>
-  );
+    <DayPicker
+      showOutsideDays={showOutsideDays}
+      className={cn("p-3", className)}
+      classNames={{
+        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+        month: "space-y-4",
+        caption: "flex justify-center pt-1 relative items-center",
+        caption_label: "text-sm font-medium",
+        nav: "space-x-1 flex items-center",
+        nav_button: cn(
+          buttonVariants({ variant: "outline" }),
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
+        ),
+        nav_button_previous: "absolute left-1",
+        nav_button_next: "absolute right-1",
+        table: "w-full border-collapse space-y-1",
+        head_row: "flex",
+        head_cell:
+          "text-muted-foreground rounded-md w-8 font-normal text-[0.8rem]",
+        row: "flex w-full mt-2",
+        cell: cn(
+          "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected].day-range-end)]:rounded-r-md",
+          props.mode === "range"
+            ? "[&:has(>.day-range-end)]:rounded-r-md [&:has(>.day-range-start)]:rounded-l-md first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md"
+            : "[&:has([aria-selected])]:rounded-md"
+        ),
+        day: cn(
+          buttonVariants({ variant: "ghost" }),
+          "h-8 w-8 p-0 font-normal aria-selected:opacity-100"
+        ),
+        day_range_start: "day-range-start",
+        day_range_end: "day-range-end",
+        day_selected:
+          "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+        day_today: "bg-accent text-accent-foreground",
+        day_outside:
+          "day-outside text-muted-foreground aria-selected:bg-accent/50 aria-selected:text-muted-foreground",
+        day_disabled: "text-muted-foreground opacity-50",
+        day_range_middle:
+          "aria-selected:bg-accent aria-selected:text-accent-foreground",
+        day_hidden: "invisible",
+        ...classNames,
+      }}
+      components={{
+        IconLeft: ({ className, ...props }) => (
+          <ChevronLeft className={cn("h-4 w-4", className)} {...props} />
+        ),
+        IconRight: ({ className, ...props }) => (
+          <ChevronRight className={cn("h-4 w-4", className)} {...props} />
+        ),
+      }}
+      {...props}
+    />
+  )
 }
+Calendar.displayName = "Calendar"
+
+export { Calendar }

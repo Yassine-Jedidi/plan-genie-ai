@@ -18,6 +18,7 @@ const fastApiRoutes = require("./routes/fastapi");
 const tasksRoutes = require("./routes/tasks");
 const eventsRoutes = require("./routes/events");
 const audioRoutes = require("./routes/audio");
+const bilanRoutes = require("./routes/bilan");
 
 // Apply routes
 app.use("/auth", authRoutes);
@@ -25,6 +26,7 @@ app.use("/api", fastApiRoutes);
 app.use("/tasks", tasksRoutes);
 app.use("/events", eventsRoutes);
 app.use("/audio", audioRoutes);
+app.use("/bilan", bilanRoutes);
 
 // Handle OPTIONS preflight
 app.options("*", corsMiddleware());

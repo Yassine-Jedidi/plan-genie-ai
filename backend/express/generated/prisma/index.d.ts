@@ -28,6 +28,16 @@ export type Task = $Result.DefaultSelection<Prisma.$TaskPayload>
  * 
  */
 export type Event = $Result.DefaultSelection<Prisma.$EventPayload>
+/**
+ * Model Bilan
+ * 
+ */
+export type Bilan = $Result.DefaultSelection<Prisma.$BilanPayload>
+/**
+ * Model BilanEntry
+ * 
+ */
+export type BilanEntry = $Result.DefaultSelection<Prisma.$BilanEntryPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -183,6 +193,26 @@ export class PrismaClient<
     * ```
     */
   get event(): Prisma.EventDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.bilan`: Exposes CRUD operations for the **Bilan** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Bilans
+    * const bilans = await prisma.bilan.findMany()
+    * ```
+    */
+  get bilan(): Prisma.BilanDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.bilanEntry`: Exposes CRUD operations for the **BilanEntry** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BilanEntries
+    * const bilanEntries = await prisma.bilanEntry.findMany()
+    * ```
+    */
+  get bilanEntry(): Prisma.BilanEntryDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -625,7 +655,9 @@ export namespace Prisma {
   export const ModelName: {
     User: 'User',
     Task: 'Task',
-    Event: 'Event'
+    Event: 'Event',
+    Bilan: 'Bilan',
+    BilanEntry: 'BilanEntry'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -644,7 +676,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "task" | "event"
+      modelProps: "user" | "task" | "event" | "bilan" | "bilanEntry"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -870,6 +902,154 @@ export namespace Prisma {
           }
         }
       }
+      Bilan: {
+        payload: Prisma.$BilanPayload<ExtArgs>
+        fields: Prisma.BilanFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BilanFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BilanFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanPayload>
+          }
+          findFirst: {
+            args: Prisma.BilanFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BilanFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanPayload>
+          }
+          findMany: {
+            args: Prisma.BilanFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanPayload>[]
+          }
+          create: {
+            args: Prisma.BilanCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanPayload>
+          }
+          createMany: {
+            args: Prisma.BilanCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BilanCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanPayload>[]
+          }
+          delete: {
+            args: Prisma.BilanDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanPayload>
+          }
+          update: {
+            args: Prisma.BilanUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanPayload>
+          }
+          deleteMany: {
+            args: Prisma.BilanDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BilanUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BilanUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanPayload>[]
+          }
+          upsert: {
+            args: Prisma.BilanUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanPayload>
+          }
+          aggregate: {
+            args: Prisma.BilanAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBilan>
+          }
+          groupBy: {
+            args: Prisma.BilanGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BilanGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BilanCountArgs<ExtArgs>
+            result: $Utils.Optional<BilanCountAggregateOutputType> | number
+          }
+        }
+      }
+      BilanEntry: {
+        payload: Prisma.$BilanEntryPayload<ExtArgs>
+        fields: Prisma.BilanEntryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BilanEntryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanEntryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BilanEntryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanEntryPayload>
+          }
+          findFirst: {
+            args: Prisma.BilanEntryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanEntryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BilanEntryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanEntryPayload>
+          }
+          findMany: {
+            args: Prisma.BilanEntryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanEntryPayload>[]
+          }
+          create: {
+            args: Prisma.BilanEntryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanEntryPayload>
+          }
+          createMany: {
+            args: Prisma.BilanEntryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BilanEntryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanEntryPayload>[]
+          }
+          delete: {
+            args: Prisma.BilanEntryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanEntryPayload>
+          }
+          update: {
+            args: Prisma.BilanEntryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanEntryPayload>
+          }
+          deleteMany: {
+            args: Prisma.BilanEntryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BilanEntryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BilanEntryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanEntryPayload>[]
+          }
+          upsert: {
+            args: Prisma.BilanEntryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BilanEntryPayload>
+          }
+          aggregate: {
+            args: Prisma.BilanEntryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBilanEntry>
+          }
+          groupBy: {
+            args: Prisma.BilanEntryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BilanEntryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BilanEntryCountArgs<ExtArgs>
+            result: $Utils.Optional<BilanEntryCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -957,6 +1137,8 @@ export namespace Prisma {
     user?: UserOmit
     task?: TaskOmit
     event?: EventOmit
+    bilan?: BilanOmit
+    bilanEntry?: BilanEntryOmit
   }
 
   /* Types for Logging */
@@ -1053,11 +1235,13 @@ export namespace Prisma {
   export type UserCountOutputType = {
     tasks: number
     events: number
+    bilans: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tasks?: boolean | UserCountOutputTypeCountTasksArgs
     events?: boolean | UserCountOutputTypeCountEventsArgs
+    bilans?: boolean | UserCountOutputTypeCountBilansArgs
   }
 
   // Custom InputTypes
@@ -1083,6 +1267,75 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountEventsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: EventWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountBilansArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BilanWhereInput
+  }
+
+
+  /**
+   * Count Type TaskCountOutputType
+   */
+
+  export type TaskCountOutputType = {
+    bilanEntries: number
+  }
+
+  export type TaskCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bilanEntries?: boolean | TaskCountOutputTypeCountBilanEntriesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * TaskCountOutputType without action
+   */
+  export type TaskCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaskCountOutputType
+     */
+    select?: TaskCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * TaskCountOutputType without action
+   */
+  export type TaskCountOutputTypeCountBilanEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BilanEntryWhereInput
+  }
+
+
+  /**
+   * Count Type BilanCountOutputType
+   */
+
+  export type BilanCountOutputType = {
+    entries: number
+  }
+
+  export type BilanCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    entries?: boolean | BilanCountOutputTypeCountEntriesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * BilanCountOutputType without action
+   */
+  export type BilanCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BilanCountOutputType
+     */
+    select?: BilanCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * BilanCountOutputType without action
+   */
+  export type BilanCountOutputTypeCountEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BilanEntryWhereInput
   }
 
 
@@ -1280,6 +1533,7 @@ export namespace Prisma {
     updated_at?: boolean
     tasks?: boolean | User$tasksArgs<ExtArgs>
     events?: boolean | User$eventsArgs<ExtArgs>
+    bilans?: boolean | User$bilansArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -1320,6 +1574,7 @@ export namespace Prisma {
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tasks?: boolean | User$tasksArgs<ExtArgs>
     events?: boolean | User$eventsArgs<ExtArgs>
+    bilans?: boolean | User$bilansArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1330,6 +1585,7 @@ export namespace Prisma {
     objects: {
       tasks: Prisma.$TaskPayload<ExtArgs>[]
       events: Prisma.$EventPayload<ExtArgs>[]
+      bilans: Prisma.$BilanPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -1736,6 +1992,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     tasks<T extends User$tasksArgs<ExtArgs> = {}>(args?: Subset<T, User$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     events<T extends User$eventsArgs<ExtArgs> = {}>(args?: Subset<T, User$eventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    bilans<T extends User$bilansArgs<ExtArgs> = {}>(args?: Subset<T, User$bilansArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BilanPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2209,6 +2466,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.bilans
+   */
+  export type User$bilansArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bilan
+     */
+    select?: BilanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Bilan
+     */
+    omit?: BilanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanInclude<ExtArgs> | null
+    where?: BilanWhereInput
+    orderBy?: BilanOrderByWithRelationInput | BilanOrderByWithRelationInput[]
+    cursor?: BilanWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BilanScalarFieldEnum | BilanScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2424,6 +2705,8 @@ export namespace Prisma {
     updated_at?: boolean
     user_id?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    bilanEntries?: boolean | Task$bilanEntriesArgs<ExtArgs>
+    _count?: boolean | TaskCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["task"]>
 
   export type TaskSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2467,6 +2750,8 @@ export namespace Prisma {
   export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "deadline" | "deadline_text" | "priority" | "status" | "created_at" | "updated_at" | "user_id", ExtArgs["result"]["task"]>
   export type TaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    bilanEntries?: boolean | Task$bilanEntriesArgs<ExtArgs>
+    _count?: boolean | TaskCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TaskIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -2479,6 +2764,7 @@ export namespace Prisma {
     name: "Task"
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
+      bilanEntries: Prisma.$BilanEntryPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2885,6 +3171,7 @@ export namespace Prisma {
   export interface Prisma__TaskClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    bilanEntries<T extends Task$bilanEntriesArgs<ExtArgs> = {}>(args?: Subset<T, Task$bilanEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BilanEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3316,6 +3603,30 @@ export namespace Prisma {
      * Limit how many Tasks to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Task.bilanEntries
+   */
+  export type Task$bilanEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BilanEntry
+     */
+    select?: BilanEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BilanEntry
+     */
+    omit?: BilanEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanEntryInclude<ExtArgs> | null
+    where?: BilanEntryWhereInput
+    orderBy?: BilanEntryOrderByWithRelationInput | BilanEntryOrderByWithRelationInput[]
+    cursor?: BilanEntryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BilanEntryScalarFieldEnum | BilanEntryScalarFieldEnum[]
   }
 
   /**
@@ -4422,6 +4733,2220 @@ export namespace Prisma {
 
 
   /**
+   * Model Bilan
+   */
+
+  export type AggregateBilan = {
+    _count: BilanCountAggregateOutputType | null
+    _min: BilanMinAggregateOutputType | null
+    _max: BilanMaxAggregateOutputType | null
+  }
+
+  export type BilanMinAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    created_at: Date | null
+    updated_at: Date | null
+    user_id: string | null
+  }
+
+  export type BilanMaxAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    created_at: Date | null
+    updated_at: Date | null
+    user_id: string | null
+  }
+
+  export type BilanCountAggregateOutputType = {
+    id: number
+    date: number
+    created_at: number
+    updated_at: number
+    user_id: number
+    _all: number
+  }
+
+
+  export type BilanMinAggregateInputType = {
+    id?: true
+    date?: true
+    created_at?: true
+    updated_at?: true
+    user_id?: true
+  }
+
+  export type BilanMaxAggregateInputType = {
+    id?: true
+    date?: true
+    created_at?: true
+    updated_at?: true
+    user_id?: true
+  }
+
+  export type BilanCountAggregateInputType = {
+    id?: true
+    date?: true
+    created_at?: true
+    updated_at?: true
+    user_id?: true
+    _all?: true
+  }
+
+  export type BilanAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Bilan to aggregate.
+     */
+    where?: BilanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Bilans to fetch.
+     */
+    orderBy?: BilanOrderByWithRelationInput | BilanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BilanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Bilans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Bilans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Bilans
+    **/
+    _count?: true | BilanCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BilanMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BilanMaxAggregateInputType
+  }
+
+  export type GetBilanAggregateType<T extends BilanAggregateArgs> = {
+        [P in keyof T & keyof AggregateBilan]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBilan[P]>
+      : GetScalarType<T[P], AggregateBilan[P]>
+  }
+
+
+
+
+  export type BilanGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BilanWhereInput
+    orderBy?: BilanOrderByWithAggregationInput | BilanOrderByWithAggregationInput[]
+    by: BilanScalarFieldEnum[] | BilanScalarFieldEnum
+    having?: BilanScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BilanCountAggregateInputType | true
+    _min?: BilanMinAggregateInputType
+    _max?: BilanMaxAggregateInputType
+  }
+
+  export type BilanGroupByOutputType = {
+    id: string
+    date: Date
+    created_at: Date
+    updated_at: Date
+    user_id: string
+    _count: BilanCountAggregateOutputType | null
+    _min: BilanMinAggregateOutputType | null
+    _max: BilanMaxAggregateOutputType | null
+  }
+
+  type GetBilanGroupByPayload<T extends BilanGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BilanGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BilanGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BilanGroupByOutputType[P]>
+            : GetScalarType<T[P], BilanGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BilanSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    user_id?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    entries?: boolean | Bilan$entriesArgs<ExtArgs>
+    _count?: boolean | BilanCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["bilan"]>
+
+  export type BilanSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    user_id?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["bilan"]>
+
+  export type BilanSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    user_id?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["bilan"]>
+
+  export type BilanSelectScalar = {
+    id?: boolean
+    date?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    user_id?: boolean
+  }
+
+  export type BilanOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "date" | "created_at" | "updated_at" | "user_id", ExtArgs["result"]["bilan"]>
+  export type BilanInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    entries?: boolean | Bilan$entriesArgs<ExtArgs>
+    _count?: boolean | BilanCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type BilanIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type BilanIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $BilanPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Bilan"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      entries: Prisma.$BilanEntryPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      date: Date
+      created_at: Date
+      updated_at: Date
+      user_id: string
+    }, ExtArgs["result"]["bilan"]>
+    composites: {}
+  }
+
+  type BilanGetPayload<S extends boolean | null | undefined | BilanDefaultArgs> = $Result.GetResult<Prisma.$BilanPayload, S>
+
+  type BilanCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BilanFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BilanCountAggregateInputType | true
+    }
+
+  export interface BilanDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Bilan'], meta: { name: 'Bilan' } }
+    /**
+     * Find zero or one Bilan that matches the filter.
+     * @param {BilanFindUniqueArgs} args - Arguments to find a Bilan
+     * @example
+     * // Get one Bilan
+     * const bilan = await prisma.bilan.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BilanFindUniqueArgs>(args: SelectSubset<T, BilanFindUniqueArgs<ExtArgs>>): Prisma__BilanClient<$Result.GetResult<Prisma.$BilanPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Bilan that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BilanFindUniqueOrThrowArgs} args - Arguments to find a Bilan
+     * @example
+     * // Get one Bilan
+     * const bilan = await prisma.bilan.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BilanFindUniqueOrThrowArgs>(args: SelectSubset<T, BilanFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BilanClient<$Result.GetResult<Prisma.$BilanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Bilan that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BilanFindFirstArgs} args - Arguments to find a Bilan
+     * @example
+     * // Get one Bilan
+     * const bilan = await prisma.bilan.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BilanFindFirstArgs>(args?: SelectSubset<T, BilanFindFirstArgs<ExtArgs>>): Prisma__BilanClient<$Result.GetResult<Prisma.$BilanPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Bilan that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BilanFindFirstOrThrowArgs} args - Arguments to find a Bilan
+     * @example
+     * // Get one Bilan
+     * const bilan = await prisma.bilan.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BilanFindFirstOrThrowArgs>(args?: SelectSubset<T, BilanFindFirstOrThrowArgs<ExtArgs>>): Prisma__BilanClient<$Result.GetResult<Prisma.$BilanPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Bilans that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BilanFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Bilans
+     * const bilans = await prisma.bilan.findMany()
+     * 
+     * // Get first 10 Bilans
+     * const bilans = await prisma.bilan.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const bilanWithIdOnly = await prisma.bilan.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BilanFindManyArgs>(args?: SelectSubset<T, BilanFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BilanPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Bilan.
+     * @param {BilanCreateArgs} args - Arguments to create a Bilan.
+     * @example
+     * // Create one Bilan
+     * const Bilan = await prisma.bilan.create({
+     *   data: {
+     *     // ... data to create a Bilan
+     *   }
+     * })
+     * 
+     */
+    create<T extends BilanCreateArgs>(args: SelectSubset<T, BilanCreateArgs<ExtArgs>>): Prisma__BilanClient<$Result.GetResult<Prisma.$BilanPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Bilans.
+     * @param {BilanCreateManyArgs} args - Arguments to create many Bilans.
+     * @example
+     * // Create many Bilans
+     * const bilan = await prisma.bilan.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BilanCreateManyArgs>(args?: SelectSubset<T, BilanCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Bilans and returns the data saved in the database.
+     * @param {BilanCreateManyAndReturnArgs} args - Arguments to create many Bilans.
+     * @example
+     * // Create many Bilans
+     * const bilan = await prisma.bilan.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Bilans and only return the `id`
+     * const bilanWithIdOnly = await prisma.bilan.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BilanCreateManyAndReturnArgs>(args?: SelectSubset<T, BilanCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BilanPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Bilan.
+     * @param {BilanDeleteArgs} args - Arguments to delete one Bilan.
+     * @example
+     * // Delete one Bilan
+     * const Bilan = await prisma.bilan.delete({
+     *   where: {
+     *     // ... filter to delete one Bilan
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BilanDeleteArgs>(args: SelectSubset<T, BilanDeleteArgs<ExtArgs>>): Prisma__BilanClient<$Result.GetResult<Prisma.$BilanPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Bilan.
+     * @param {BilanUpdateArgs} args - Arguments to update one Bilan.
+     * @example
+     * // Update one Bilan
+     * const bilan = await prisma.bilan.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BilanUpdateArgs>(args: SelectSubset<T, BilanUpdateArgs<ExtArgs>>): Prisma__BilanClient<$Result.GetResult<Prisma.$BilanPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Bilans.
+     * @param {BilanDeleteManyArgs} args - Arguments to filter Bilans to delete.
+     * @example
+     * // Delete a few Bilans
+     * const { count } = await prisma.bilan.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BilanDeleteManyArgs>(args?: SelectSubset<T, BilanDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Bilans.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BilanUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Bilans
+     * const bilan = await prisma.bilan.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BilanUpdateManyArgs>(args: SelectSubset<T, BilanUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Bilans and returns the data updated in the database.
+     * @param {BilanUpdateManyAndReturnArgs} args - Arguments to update many Bilans.
+     * @example
+     * // Update many Bilans
+     * const bilan = await prisma.bilan.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Bilans and only return the `id`
+     * const bilanWithIdOnly = await prisma.bilan.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends BilanUpdateManyAndReturnArgs>(args: SelectSubset<T, BilanUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BilanPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Bilan.
+     * @param {BilanUpsertArgs} args - Arguments to update or create a Bilan.
+     * @example
+     * // Update or create a Bilan
+     * const bilan = await prisma.bilan.upsert({
+     *   create: {
+     *     // ... data to create a Bilan
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Bilan we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BilanUpsertArgs>(args: SelectSubset<T, BilanUpsertArgs<ExtArgs>>): Prisma__BilanClient<$Result.GetResult<Prisma.$BilanPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Bilans.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BilanCountArgs} args - Arguments to filter Bilans to count.
+     * @example
+     * // Count the number of Bilans
+     * const count = await prisma.bilan.count({
+     *   where: {
+     *     // ... the filter for the Bilans we want to count
+     *   }
+     * })
+    **/
+    count<T extends BilanCountArgs>(
+      args?: Subset<T, BilanCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BilanCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Bilan.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BilanAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BilanAggregateArgs>(args: Subset<T, BilanAggregateArgs>): Prisma.PrismaPromise<GetBilanAggregateType<T>>
+
+    /**
+     * Group by Bilan.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BilanGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BilanGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BilanGroupByArgs['orderBy'] }
+        : { orderBy?: BilanGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BilanGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBilanGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Bilan model
+   */
+  readonly fields: BilanFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Bilan.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BilanClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    entries<T extends Bilan$entriesArgs<ExtArgs> = {}>(args?: Subset<T, Bilan$entriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BilanEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Bilan model
+   */
+  interface BilanFieldRefs {
+    readonly id: FieldRef<"Bilan", 'String'>
+    readonly date: FieldRef<"Bilan", 'DateTime'>
+    readonly created_at: FieldRef<"Bilan", 'DateTime'>
+    readonly updated_at: FieldRef<"Bilan", 'DateTime'>
+    readonly user_id: FieldRef<"Bilan", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Bilan findUnique
+   */
+  export type BilanFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bilan
+     */
+    select?: BilanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Bilan
+     */
+    omit?: BilanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanInclude<ExtArgs> | null
+    /**
+     * Filter, which Bilan to fetch.
+     */
+    where: BilanWhereUniqueInput
+  }
+
+  /**
+   * Bilan findUniqueOrThrow
+   */
+  export type BilanFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bilan
+     */
+    select?: BilanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Bilan
+     */
+    omit?: BilanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanInclude<ExtArgs> | null
+    /**
+     * Filter, which Bilan to fetch.
+     */
+    where: BilanWhereUniqueInput
+  }
+
+  /**
+   * Bilan findFirst
+   */
+  export type BilanFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bilan
+     */
+    select?: BilanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Bilan
+     */
+    omit?: BilanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanInclude<ExtArgs> | null
+    /**
+     * Filter, which Bilan to fetch.
+     */
+    where?: BilanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Bilans to fetch.
+     */
+    orderBy?: BilanOrderByWithRelationInput | BilanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Bilans.
+     */
+    cursor?: BilanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Bilans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Bilans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Bilans.
+     */
+    distinct?: BilanScalarFieldEnum | BilanScalarFieldEnum[]
+  }
+
+  /**
+   * Bilan findFirstOrThrow
+   */
+  export type BilanFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bilan
+     */
+    select?: BilanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Bilan
+     */
+    omit?: BilanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanInclude<ExtArgs> | null
+    /**
+     * Filter, which Bilan to fetch.
+     */
+    where?: BilanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Bilans to fetch.
+     */
+    orderBy?: BilanOrderByWithRelationInput | BilanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Bilans.
+     */
+    cursor?: BilanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Bilans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Bilans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Bilans.
+     */
+    distinct?: BilanScalarFieldEnum | BilanScalarFieldEnum[]
+  }
+
+  /**
+   * Bilan findMany
+   */
+  export type BilanFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bilan
+     */
+    select?: BilanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Bilan
+     */
+    omit?: BilanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanInclude<ExtArgs> | null
+    /**
+     * Filter, which Bilans to fetch.
+     */
+    where?: BilanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Bilans to fetch.
+     */
+    orderBy?: BilanOrderByWithRelationInput | BilanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Bilans.
+     */
+    cursor?: BilanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Bilans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Bilans.
+     */
+    skip?: number
+    distinct?: BilanScalarFieldEnum | BilanScalarFieldEnum[]
+  }
+
+  /**
+   * Bilan create
+   */
+  export type BilanCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bilan
+     */
+    select?: BilanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Bilan
+     */
+    omit?: BilanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Bilan.
+     */
+    data: XOR<BilanCreateInput, BilanUncheckedCreateInput>
+  }
+
+  /**
+   * Bilan createMany
+   */
+  export type BilanCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Bilans.
+     */
+    data: BilanCreateManyInput | BilanCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Bilan createManyAndReturn
+   */
+  export type BilanCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bilan
+     */
+    select?: BilanSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Bilan
+     */
+    omit?: BilanOmit<ExtArgs> | null
+    /**
+     * The data used to create many Bilans.
+     */
+    data: BilanCreateManyInput | BilanCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Bilan update
+   */
+  export type BilanUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bilan
+     */
+    select?: BilanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Bilan
+     */
+    omit?: BilanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Bilan.
+     */
+    data: XOR<BilanUpdateInput, BilanUncheckedUpdateInput>
+    /**
+     * Choose, which Bilan to update.
+     */
+    where: BilanWhereUniqueInput
+  }
+
+  /**
+   * Bilan updateMany
+   */
+  export type BilanUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Bilans.
+     */
+    data: XOR<BilanUpdateManyMutationInput, BilanUncheckedUpdateManyInput>
+    /**
+     * Filter which Bilans to update
+     */
+    where?: BilanWhereInput
+    /**
+     * Limit how many Bilans to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Bilan updateManyAndReturn
+   */
+  export type BilanUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bilan
+     */
+    select?: BilanSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Bilan
+     */
+    omit?: BilanOmit<ExtArgs> | null
+    /**
+     * The data used to update Bilans.
+     */
+    data: XOR<BilanUpdateManyMutationInput, BilanUncheckedUpdateManyInput>
+    /**
+     * Filter which Bilans to update
+     */
+    where?: BilanWhereInput
+    /**
+     * Limit how many Bilans to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Bilan upsert
+   */
+  export type BilanUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bilan
+     */
+    select?: BilanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Bilan
+     */
+    omit?: BilanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Bilan to update in case it exists.
+     */
+    where: BilanWhereUniqueInput
+    /**
+     * In case the Bilan found by the `where` argument doesn't exist, create a new Bilan with this data.
+     */
+    create: XOR<BilanCreateInput, BilanUncheckedCreateInput>
+    /**
+     * In case the Bilan was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BilanUpdateInput, BilanUncheckedUpdateInput>
+  }
+
+  /**
+   * Bilan delete
+   */
+  export type BilanDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bilan
+     */
+    select?: BilanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Bilan
+     */
+    omit?: BilanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanInclude<ExtArgs> | null
+    /**
+     * Filter which Bilan to delete.
+     */
+    where: BilanWhereUniqueInput
+  }
+
+  /**
+   * Bilan deleteMany
+   */
+  export type BilanDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Bilans to delete
+     */
+    where?: BilanWhereInput
+    /**
+     * Limit how many Bilans to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Bilan.entries
+   */
+  export type Bilan$entriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BilanEntry
+     */
+    select?: BilanEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BilanEntry
+     */
+    omit?: BilanEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanEntryInclude<ExtArgs> | null
+    where?: BilanEntryWhereInput
+    orderBy?: BilanEntryOrderByWithRelationInput | BilanEntryOrderByWithRelationInput[]
+    cursor?: BilanEntryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BilanEntryScalarFieldEnum | BilanEntryScalarFieldEnum[]
+  }
+
+  /**
+   * Bilan without action
+   */
+  export type BilanDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bilan
+     */
+    select?: BilanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Bilan
+     */
+    omit?: BilanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model BilanEntry
+   */
+
+  export type AggregateBilanEntry = {
+    _count: BilanEntryCountAggregateOutputType | null
+    _avg: BilanEntryAvgAggregateOutputType | null
+    _sum: BilanEntrySumAggregateOutputType | null
+    _min: BilanEntryMinAggregateOutputType | null
+    _max: BilanEntryMaxAggregateOutputType | null
+  }
+
+  export type BilanEntryAvgAggregateOutputType = {
+    minutes_spent: number | null
+  }
+
+  export type BilanEntrySumAggregateOutputType = {
+    minutes_spent: number | null
+  }
+
+  export type BilanEntryMinAggregateOutputType = {
+    id: string | null
+    minutes_spent: number | null
+    notes: string | null
+    created_at: Date | null
+    updated_at: Date | null
+    bilan_id: string | null
+    task_id: string | null
+  }
+
+  export type BilanEntryMaxAggregateOutputType = {
+    id: string | null
+    minutes_spent: number | null
+    notes: string | null
+    created_at: Date | null
+    updated_at: Date | null
+    bilan_id: string | null
+    task_id: string | null
+  }
+
+  export type BilanEntryCountAggregateOutputType = {
+    id: number
+    minutes_spent: number
+    notes: number
+    created_at: number
+    updated_at: number
+    bilan_id: number
+    task_id: number
+    _all: number
+  }
+
+
+  export type BilanEntryAvgAggregateInputType = {
+    minutes_spent?: true
+  }
+
+  export type BilanEntrySumAggregateInputType = {
+    minutes_spent?: true
+  }
+
+  export type BilanEntryMinAggregateInputType = {
+    id?: true
+    minutes_spent?: true
+    notes?: true
+    created_at?: true
+    updated_at?: true
+    bilan_id?: true
+    task_id?: true
+  }
+
+  export type BilanEntryMaxAggregateInputType = {
+    id?: true
+    minutes_spent?: true
+    notes?: true
+    created_at?: true
+    updated_at?: true
+    bilan_id?: true
+    task_id?: true
+  }
+
+  export type BilanEntryCountAggregateInputType = {
+    id?: true
+    minutes_spent?: true
+    notes?: true
+    created_at?: true
+    updated_at?: true
+    bilan_id?: true
+    task_id?: true
+    _all?: true
+  }
+
+  export type BilanEntryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BilanEntry to aggregate.
+     */
+    where?: BilanEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BilanEntries to fetch.
+     */
+    orderBy?: BilanEntryOrderByWithRelationInput | BilanEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BilanEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BilanEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BilanEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BilanEntries
+    **/
+    _count?: true | BilanEntryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: BilanEntryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BilanEntrySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BilanEntryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BilanEntryMaxAggregateInputType
+  }
+
+  export type GetBilanEntryAggregateType<T extends BilanEntryAggregateArgs> = {
+        [P in keyof T & keyof AggregateBilanEntry]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBilanEntry[P]>
+      : GetScalarType<T[P], AggregateBilanEntry[P]>
+  }
+
+
+
+
+  export type BilanEntryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BilanEntryWhereInput
+    orderBy?: BilanEntryOrderByWithAggregationInput | BilanEntryOrderByWithAggregationInput[]
+    by: BilanEntryScalarFieldEnum[] | BilanEntryScalarFieldEnum
+    having?: BilanEntryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BilanEntryCountAggregateInputType | true
+    _avg?: BilanEntryAvgAggregateInputType
+    _sum?: BilanEntrySumAggregateInputType
+    _min?: BilanEntryMinAggregateInputType
+    _max?: BilanEntryMaxAggregateInputType
+  }
+
+  export type BilanEntryGroupByOutputType = {
+    id: string
+    minutes_spent: number
+    notes: string | null
+    created_at: Date
+    updated_at: Date
+    bilan_id: string
+    task_id: string
+    _count: BilanEntryCountAggregateOutputType | null
+    _avg: BilanEntryAvgAggregateOutputType | null
+    _sum: BilanEntrySumAggregateOutputType | null
+    _min: BilanEntryMinAggregateOutputType | null
+    _max: BilanEntryMaxAggregateOutputType | null
+  }
+
+  type GetBilanEntryGroupByPayload<T extends BilanEntryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BilanEntryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BilanEntryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BilanEntryGroupByOutputType[P]>
+            : GetScalarType<T[P], BilanEntryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BilanEntrySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    minutes_spent?: boolean
+    notes?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    bilan_id?: boolean
+    task_id?: boolean
+    bilan?: boolean | BilanDefaultArgs<ExtArgs>
+    task?: boolean | TaskDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["bilanEntry"]>
+
+  export type BilanEntrySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    minutes_spent?: boolean
+    notes?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    bilan_id?: boolean
+    task_id?: boolean
+    bilan?: boolean | BilanDefaultArgs<ExtArgs>
+    task?: boolean | TaskDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["bilanEntry"]>
+
+  export type BilanEntrySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    minutes_spent?: boolean
+    notes?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    bilan_id?: boolean
+    task_id?: boolean
+    bilan?: boolean | BilanDefaultArgs<ExtArgs>
+    task?: boolean | TaskDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["bilanEntry"]>
+
+  export type BilanEntrySelectScalar = {
+    id?: boolean
+    minutes_spent?: boolean
+    notes?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    bilan_id?: boolean
+    task_id?: boolean
+  }
+
+  export type BilanEntryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "minutes_spent" | "notes" | "created_at" | "updated_at" | "bilan_id" | "task_id", ExtArgs["result"]["bilanEntry"]>
+  export type BilanEntryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bilan?: boolean | BilanDefaultArgs<ExtArgs>
+    task?: boolean | TaskDefaultArgs<ExtArgs>
+  }
+  export type BilanEntryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bilan?: boolean | BilanDefaultArgs<ExtArgs>
+    task?: boolean | TaskDefaultArgs<ExtArgs>
+  }
+  export type BilanEntryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bilan?: boolean | BilanDefaultArgs<ExtArgs>
+    task?: boolean | TaskDefaultArgs<ExtArgs>
+  }
+
+  export type $BilanEntryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BilanEntry"
+    objects: {
+      bilan: Prisma.$BilanPayload<ExtArgs>
+      task: Prisma.$TaskPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      minutes_spent: number
+      notes: string | null
+      created_at: Date
+      updated_at: Date
+      bilan_id: string
+      task_id: string
+    }, ExtArgs["result"]["bilanEntry"]>
+    composites: {}
+  }
+
+  type BilanEntryGetPayload<S extends boolean | null | undefined | BilanEntryDefaultArgs> = $Result.GetResult<Prisma.$BilanEntryPayload, S>
+
+  type BilanEntryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BilanEntryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BilanEntryCountAggregateInputType | true
+    }
+
+  export interface BilanEntryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BilanEntry'], meta: { name: 'BilanEntry' } }
+    /**
+     * Find zero or one BilanEntry that matches the filter.
+     * @param {BilanEntryFindUniqueArgs} args - Arguments to find a BilanEntry
+     * @example
+     * // Get one BilanEntry
+     * const bilanEntry = await prisma.bilanEntry.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BilanEntryFindUniqueArgs>(args: SelectSubset<T, BilanEntryFindUniqueArgs<ExtArgs>>): Prisma__BilanEntryClient<$Result.GetResult<Prisma.$BilanEntryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one BilanEntry that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BilanEntryFindUniqueOrThrowArgs} args - Arguments to find a BilanEntry
+     * @example
+     * // Get one BilanEntry
+     * const bilanEntry = await prisma.bilanEntry.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BilanEntryFindUniqueOrThrowArgs>(args: SelectSubset<T, BilanEntryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BilanEntryClient<$Result.GetResult<Prisma.$BilanEntryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BilanEntry that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BilanEntryFindFirstArgs} args - Arguments to find a BilanEntry
+     * @example
+     * // Get one BilanEntry
+     * const bilanEntry = await prisma.bilanEntry.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BilanEntryFindFirstArgs>(args?: SelectSubset<T, BilanEntryFindFirstArgs<ExtArgs>>): Prisma__BilanEntryClient<$Result.GetResult<Prisma.$BilanEntryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BilanEntry that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BilanEntryFindFirstOrThrowArgs} args - Arguments to find a BilanEntry
+     * @example
+     * // Get one BilanEntry
+     * const bilanEntry = await prisma.bilanEntry.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BilanEntryFindFirstOrThrowArgs>(args?: SelectSubset<T, BilanEntryFindFirstOrThrowArgs<ExtArgs>>): Prisma__BilanEntryClient<$Result.GetResult<Prisma.$BilanEntryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more BilanEntries that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BilanEntryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BilanEntries
+     * const bilanEntries = await prisma.bilanEntry.findMany()
+     * 
+     * // Get first 10 BilanEntries
+     * const bilanEntries = await prisma.bilanEntry.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const bilanEntryWithIdOnly = await prisma.bilanEntry.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BilanEntryFindManyArgs>(args?: SelectSubset<T, BilanEntryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BilanEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a BilanEntry.
+     * @param {BilanEntryCreateArgs} args - Arguments to create a BilanEntry.
+     * @example
+     * // Create one BilanEntry
+     * const BilanEntry = await prisma.bilanEntry.create({
+     *   data: {
+     *     // ... data to create a BilanEntry
+     *   }
+     * })
+     * 
+     */
+    create<T extends BilanEntryCreateArgs>(args: SelectSubset<T, BilanEntryCreateArgs<ExtArgs>>): Prisma__BilanEntryClient<$Result.GetResult<Prisma.$BilanEntryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many BilanEntries.
+     * @param {BilanEntryCreateManyArgs} args - Arguments to create many BilanEntries.
+     * @example
+     * // Create many BilanEntries
+     * const bilanEntry = await prisma.bilanEntry.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BilanEntryCreateManyArgs>(args?: SelectSubset<T, BilanEntryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BilanEntries and returns the data saved in the database.
+     * @param {BilanEntryCreateManyAndReturnArgs} args - Arguments to create many BilanEntries.
+     * @example
+     * // Create many BilanEntries
+     * const bilanEntry = await prisma.bilanEntry.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BilanEntries and only return the `id`
+     * const bilanEntryWithIdOnly = await prisma.bilanEntry.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BilanEntryCreateManyAndReturnArgs>(args?: SelectSubset<T, BilanEntryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BilanEntryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a BilanEntry.
+     * @param {BilanEntryDeleteArgs} args - Arguments to delete one BilanEntry.
+     * @example
+     * // Delete one BilanEntry
+     * const BilanEntry = await prisma.bilanEntry.delete({
+     *   where: {
+     *     // ... filter to delete one BilanEntry
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BilanEntryDeleteArgs>(args: SelectSubset<T, BilanEntryDeleteArgs<ExtArgs>>): Prisma__BilanEntryClient<$Result.GetResult<Prisma.$BilanEntryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one BilanEntry.
+     * @param {BilanEntryUpdateArgs} args - Arguments to update one BilanEntry.
+     * @example
+     * // Update one BilanEntry
+     * const bilanEntry = await prisma.bilanEntry.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BilanEntryUpdateArgs>(args: SelectSubset<T, BilanEntryUpdateArgs<ExtArgs>>): Prisma__BilanEntryClient<$Result.GetResult<Prisma.$BilanEntryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more BilanEntries.
+     * @param {BilanEntryDeleteManyArgs} args - Arguments to filter BilanEntries to delete.
+     * @example
+     * // Delete a few BilanEntries
+     * const { count } = await prisma.bilanEntry.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BilanEntryDeleteManyArgs>(args?: SelectSubset<T, BilanEntryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BilanEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BilanEntryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BilanEntries
+     * const bilanEntry = await prisma.bilanEntry.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BilanEntryUpdateManyArgs>(args: SelectSubset<T, BilanEntryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BilanEntries and returns the data updated in the database.
+     * @param {BilanEntryUpdateManyAndReturnArgs} args - Arguments to update many BilanEntries.
+     * @example
+     * // Update many BilanEntries
+     * const bilanEntry = await prisma.bilanEntry.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more BilanEntries and only return the `id`
+     * const bilanEntryWithIdOnly = await prisma.bilanEntry.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends BilanEntryUpdateManyAndReturnArgs>(args: SelectSubset<T, BilanEntryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BilanEntryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one BilanEntry.
+     * @param {BilanEntryUpsertArgs} args - Arguments to update or create a BilanEntry.
+     * @example
+     * // Update or create a BilanEntry
+     * const bilanEntry = await prisma.bilanEntry.upsert({
+     *   create: {
+     *     // ... data to create a BilanEntry
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BilanEntry we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BilanEntryUpsertArgs>(args: SelectSubset<T, BilanEntryUpsertArgs<ExtArgs>>): Prisma__BilanEntryClient<$Result.GetResult<Prisma.$BilanEntryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of BilanEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BilanEntryCountArgs} args - Arguments to filter BilanEntries to count.
+     * @example
+     * // Count the number of BilanEntries
+     * const count = await prisma.bilanEntry.count({
+     *   where: {
+     *     // ... the filter for the BilanEntries we want to count
+     *   }
+     * })
+    **/
+    count<T extends BilanEntryCountArgs>(
+      args?: Subset<T, BilanEntryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BilanEntryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BilanEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BilanEntryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BilanEntryAggregateArgs>(args: Subset<T, BilanEntryAggregateArgs>): Prisma.PrismaPromise<GetBilanEntryAggregateType<T>>
+
+    /**
+     * Group by BilanEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BilanEntryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BilanEntryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BilanEntryGroupByArgs['orderBy'] }
+        : { orderBy?: BilanEntryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BilanEntryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBilanEntryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BilanEntry model
+   */
+  readonly fields: BilanEntryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BilanEntry.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BilanEntryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    bilan<T extends BilanDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BilanDefaultArgs<ExtArgs>>): Prisma__BilanClient<$Result.GetResult<Prisma.$BilanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    task<T extends TaskDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TaskDefaultArgs<ExtArgs>>): Prisma__TaskClient<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BilanEntry model
+   */
+  interface BilanEntryFieldRefs {
+    readonly id: FieldRef<"BilanEntry", 'String'>
+    readonly minutes_spent: FieldRef<"BilanEntry", 'Int'>
+    readonly notes: FieldRef<"BilanEntry", 'String'>
+    readonly created_at: FieldRef<"BilanEntry", 'DateTime'>
+    readonly updated_at: FieldRef<"BilanEntry", 'DateTime'>
+    readonly bilan_id: FieldRef<"BilanEntry", 'String'>
+    readonly task_id: FieldRef<"BilanEntry", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BilanEntry findUnique
+   */
+  export type BilanEntryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BilanEntry
+     */
+    select?: BilanEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BilanEntry
+     */
+    omit?: BilanEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which BilanEntry to fetch.
+     */
+    where: BilanEntryWhereUniqueInput
+  }
+
+  /**
+   * BilanEntry findUniqueOrThrow
+   */
+  export type BilanEntryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BilanEntry
+     */
+    select?: BilanEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BilanEntry
+     */
+    omit?: BilanEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which BilanEntry to fetch.
+     */
+    where: BilanEntryWhereUniqueInput
+  }
+
+  /**
+   * BilanEntry findFirst
+   */
+  export type BilanEntryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BilanEntry
+     */
+    select?: BilanEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BilanEntry
+     */
+    omit?: BilanEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which BilanEntry to fetch.
+     */
+    where?: BilanEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BilanEntries to fetch.
+     */
+    orderBy?: BilanEntryOrderByWithRelationInput | BilanEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BilanEntries.
+     */
+    cursor?: BilanEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BilanEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BilanEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BilanEntries.
+     */
+    distinct?: BilanEntryScalarFieldEnum | BilanEntryScalarFieldEnum[]
+  }
+
+  /**
+   * BilanEntry findFirstOrThrow
+   */
+  export type BilanEntryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BilanEntry
+     */
+    select?: BilanEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BilanEntry
+     */
+    omit?: BilanEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which BilanEntry to fetch.
+     */
+    where?: BilanEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BilanEntries to fetch.
+     */
+    orderBy?: BilanEntryOrderByWithRelationInput | BilanEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BilanEntries.
+     */
+    cursor?: BilanEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BilanEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BilanEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BilanEntries.
+     */
+    distinct?: BilanEntryScalarFieldEnum | BilanEntryScalarFieldEnum[]
+  }
+
+  /**
+   * BilanEntry findMany
+   */
+  export type BilanEntryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BilanEntry
+     */
+    select?: BilanEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BilanEntry
+     */
+    omit?: BilanEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which BilanEntries to fetch.
+     */
+    where?: BilanEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BilanEntries to fetch.
+     */
+    orderBy?: BilanEntryOrderByWithRelationInput | BilanEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BilanEntries.
+     */
+    cursor?: BilanEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BilanEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BilanEntries.
+     */
+    skip?: number
+    distinct?: BilanEntryScalarFieldEnum | BilanEntryScalarFieldEnum[]
+  }
+
+  /**
+   * BilanEntry create
+   */
+  export type BilanEntryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BilanEntry
+     */
+    select?: BilanEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BilanEntry
+     */
+    omit?: BilanEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BilanEntry.
+     */
+    data: XOR<BilanEntryCreateInput, BilanEntryUncheckedCreateInput>
+  }
+
+  /**
+   * BilanEntry createMany
+   */
+  export type BilanEntryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BilanEntries.
+     */
+    data: BilanEntryCreateManyInput | BilanEntryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BilanEntry createManyAndReturn
+   */
+  export type BilanEntryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BilanEntry
+     */
+    select?: BilanEntrySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BilanEntry
+     */
+    omit?: BilanEntryOmit<ExtArgs> | null
+    /**
+     * The data used to create many BilanEntries.
+     */
+    data: BilanEntryCreateManyInput | BilanEntryCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanEntryIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BilanEntry update
+   */
+  export type BilanEntryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BilanEntry
+     */
+    select?: BilanEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BilanEntry
+     */
+    omit?: BilanEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BilanEntry.
+     */
+    data: XOR<BilanEntryUpdateInput, BilanEntryUncheckedUpdateInput>
+    /**
+     * Choose, which BilanEntry to update.
+     */
+    where: BilanEntryWhereUniqueInput
+  }
+
+  /**
+   * BilanEntry updateMany
+   */
+  export type BilanEntryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BilanEntries.
+     */
+    data: XOR<BilanEntryUpdateManyMutationInput, BilanEntryUncheckedUpdateManyInput>
+    /**
+     * Filter which BilanEntries to update
+     */
+    where?: BilanEntryWhereInput
+    /**
+     * Limit how many BilanEntries to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BilanEntry updateManyAndReturn
+   */
+  export type BilanEntryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BilanEntry
+     */
+    select?: BilanEntrySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BilanEntry
+     */
+    omit?: BilanEntryOmit<ExtArgs> | null
+    /**
+     * The data used to update BilanEntries.
+     */
+    data: XOR<BilanEntryUpdateManyMutationInput, BilanEntryUncheckedUpdateManyInput>
+    /**
+     * Filter which BilanEntries to update
+     */
+    where?: BilanEntryWhereInput
+    /**
+     * Limit how many BilanEntries to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanEntryIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BilanEntry upsert
+   */
+  export type BilanEntryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BilanEntry
+     */
+    select?: BilanEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BilanEntry
+     */
+    omit?: BilanEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanEntryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BilanEntry to update in case it exists.
+     */
+    where: BilanEntryWhereUniqueInput
+    /**
+     * In case the BilanEntry found by the `where` argument doesn't exist, create a new BilanEntry with this data.
+     */
+    create: XOR<BilanEntryCreateInput, BilanEntryUncheckedCreateInput>
+    /**
+     * In case the BilanEntry was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BilanEntryUpdateInput, BilanEntryUncheckedUpdateInput>
+  }
+
+  /**
+   * BilanEntry delete
+   */
+  export type BilanEntryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BilanEntry
+     */
+    select?: BilanEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BilanEntry
+     */
+    omit?: BilanEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanEntryInclude<ExtArgs> | null
+    /**
+     * Filter which BilanEntry to delete.
+     */
+    where: BilanEntryWhereUniqueInput
+  }
+
+  /**
+   * BilanEntry deleteMany
+   */
+  export type BilanEntryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BilanEntries to delete
+     */
+    where?: BilanEntryWhereInput
+    /**
+     * Limit how many BilanEntries to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * BilanEntry without action
+   */
+  export type BilanEntryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BilanEntry
+     */
+    select?: BilanEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BilanEntry
+     */
+    omit?: BilanEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BilanEntryInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -4475,6 +7000,30 @@ export namespace Prisma {
   };
 
   export type EventScalarFieldEnum = (typeof EventScalarFieldEnum)[keyof typeof EventScalarFieldEnum]
+
+
+  export const BilanScalarFieldEnum: {
+    id: 'id',
+    date: 'date',
+    created_at: 'created_at',
+    updated_at: 'updated_at',
+    user_id: 'user_id'
+  };
+
+  export type BilanScalarFieldEnum = (typeof BilanScalarFieldEnum)[keyof typeof BilanScalarFieldEnum]
+
+
+  export const BilanEntryScalarFieldEnum: {
+    id: 'id',
+    minutes_spent: 'minutes_spent',
+    notes: 'notes',
+    created_at: 'created_at',
+    updated_at: 'updated_at',
+    bilan_id: 'bilan_id',
+    task_id: 'task_id'
+  };
+
+  export type BilanEntryScalarFieldEnum = (typeof BilanEntryScalarFieldEnum)[keyof typeof BilanEntryScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -4546,6 +7095,20 @@ export namespace Prisma {
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
+
+
+  /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
   /**
    * Deep Input Types
    */
@@ -4565,6 +7128,7 @@ export namespace Prisma {
     updated_at?: DateTimeFilter<"User"> | Date | string
     tasks?: TaskListRelationFilter
     events?: EventListRelationFilter
+    bilans?: BilanListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -4578,6 +7142,7 @@ export namespace Prisma {
     updated_at?: SortOrder
     tasks?: TaskOrderByRelationAggregateInput
     events?: EventOrderByRelationAggregateInput
+    bilans?: BilanOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -4594,6 +7159,7 @@ export namespace Prisma {
     updated_at?: DateTimeFilter<"User"> | Date | string
     tasks?: TaskListRelationFilter
     events?: EventListRelationFilter
+    bilans?: BilanListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -4638,6 +7204,7 @@ export namespace Prisma {
     updated_at?: DateTimeFilter<"Task"> | Date | string
     user_id?: StringFilter<"Task"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    bilanEntries?: BilanEntryListRelationFilter
   }
 
   export type TaskOrderByWithRelationInput = {
@@ -4651,6 +7218,7 @@ export namespace Prisma {
     updated_at?: SortOrder
     user_id?: SortOrder
     user?: UserOrderByWithRelationInput
+    bilanEntries?: BilanEntryOrderByRelationAggregateInput
   }
 
   export type TaskWhereUniqueInput = Prisma.AtLeast<{
@@ -4667,6 +7235,7 @@ export namespace Prisma {
     updated_at?: DateTimeFilter<"Task"> | Date | string
     user_id?: StringFilter<"Task"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    bilanEntries?: BilanEntryListRelationFilter
   }, "id">
 
   export type TaskOrderByWithAggregationInput = {
@@ -4764,6 +7333,134 @@ export namespace Prisma {
     user_id?: StringWithAggregatesFilter<"Event"> | string
   }
 
+  export type BilanWhereInput = {
+    AND?: BilanWhereInput | BilanWhereInput[]
+    OR?: BilanWhereInput[]
+    NOT?: BilanWhereInput | BilanWhereInput[]
+    id?: StringFilter<"Bilan"> | string
+    date?: DateTimeFilter<"Bilan"> | Date | string
+    created_at?: DateTimeFilter<"Bilan"> | Date | string
+    updated_at?: DateTimeFilter<"Bilan"> | Date | string
+    user_id?: StringFilter<"Bilan"> | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    entries?: BilanEntryListRelationFilter
+  }
+
+  export type BilanOrderByWithRelationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    user_id?: SortOrder
+    user?: UserOrderByWithRelationInput
+    entries?: BilanEntryOrderByRelationAggregateInput
+  }
+
+  export type BilanWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: BilanWhereInput | BilanWhereInput[]
+    OR?: BilanWhereInput[]
+    NOT?: BilanWhereInput | BilanWhereInput[]
+    date?: DateTimeFilter<"Bilan"> | Date | string
+    created_at?: DateTimeFilter<"Bilan"> | Date | string
+    updated_at?: DateTimeFilter<"Bilan"> | Date | string
+    user_id?: StringFilter<"Bilan"> | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    entries?: BilanEntryListRelationFilter
+  }, "id">
+
+  export type BilanOrderByWithAggregationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    user_id?: SortOrder
+    _count?: BilanCountOrderByAggregateInput
+    _max?: BilanMaxOrderByAggregateInput
+    _min?: BilanMinOrderByAggregateInput
+  }
+
+  export type BilanScalarWhereWithAggregatesInput = {
+    AND?: BilanScalarWhereWithAggregatesInput | BilanScalarWhereWithAggregatesInput[]
+    OR?: BilanScalarWhereWithAggregatesInput[]
+    NOT?: BilanScalarWhereWithAggregatesInput | BilanScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Bilan"> | string
+    date?: DateTimeWithAggregatesFilter<"Bilan"> | Date | string
+    created_at?: DateTimeWithAggregatesFilter<"Bilan"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"Bilan"> | Date | string
+    user_id?: StringWithAggregatesFilter<"Bilan"> | string
+  }
+
+  export type BilanEntryWhereInput = {
+    AND?: BilanEntryWhereInput | BilanEntryWhereInput[]
+    OR?: BilanEntryWhereInput[]
+    NOT?: BilanEntryWhereInput | BilanEntryWhereInput[]
+    id?: StringFilter<"BilanEntry"> | string
+    minutes_spent?: IntFilter<"BilanEntry"> | number
+    notes?: StringNullableFilter<"BilanEntry"> | string | null
+    created_at?: DateTimeFilter<"BilanEntry"> | Date | string
+    updated_at?: DateTimeFilter<"BilanEntry"> | Date | string
+    bilan_id?: StringFilter<"BilanEntry"> | string
+    task_id?: StringFilter<"BilanEntry"> | string
+    bilan?: XOR<BilanScalarRelationFilter, BilanWhereInput>
+    task?: XOR<TaskScalarRelationFilter, TaskWhereInput>
+  }
+
+  export type BilanEntryOrderByWithRelationInput = {
+    id?: SortOrder
+    minutes_spent?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    bilan_id?: SortOrder
+    task_id?: SortOrder
+    bilan?: BilanOrderByWithRelationInput
+    task?: TaskOrderByWithRelationInput
+  }
+
+  export type BilanEntryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: BilanEntryWhereInput | BilanEntryWhereInput[]
+    OR?: BilanEntryWhereInput[]
+    NOT?: BilanEntryWhereInput | BilanEntryWhereInput[]
+    minutes_spent?: IntFilter<"BilanEntry"> | number
+    notes?: StringNullableFilter<"BilanEntry"> | string | null
+    created_at?: DateTimeFilter<"BilanEntry"> | Date | string
+    updated_at?: DateTimeFilter<"BilanEntry"> | Date | string
+    bilan_id?: StringFilter<"BilanEntry"> | string
+    task_id?: StringFilter<"BilanEntry"> | string
+    bilan?: XOR<BilanScalarRelationFilter, BilanWhereInput>
+    task?: XOR<TaskScalarRelationFilter, TaskWhereInput>
+  }, "id">
+
+  export type BilanEntryOrderByWithAggregationInput = {
+    id?: SortOrder
+    minutes_spent?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    bilan_id?: SortOrder
+    task_id?: SortOrder
+    _count?: BilanEntryCountOrderByAggregateInput
+    _avg?: BilanEntryAvgOrderByAggregateInput
+    _max?: BilanEntryMaxOrderByAggregateInput
+    _min?: BilanEntryMinOrderByAggregateInput
+    _sum?: BilanEntrySumOrderByAggregateInput
+  }
+
+  export type BilanEntryScalarWhereWithAggregatesInput = {
+    AND?: BilanEntryScalarWhereWithAggregatesInput | BilanEntryScalarWhereWithAggregatesInput[]
+    OR?: BilanEntryScalarWhereWithAggregatesInput[]
+    NOT?: BilanEntryScalarWhereWithAggregatesInput | BilanEntryScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"BilanEntry"> | string
+    minutes_spent?: IntWithAggregatesFilter<"BilanEntry"> | number
+    notes?: StringNullableWithAggregatesFilter<"BilanEntry"> | string | null
+    created_at?: DateTimeWithAggregatesFilter<"BilanEntry"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"BilanEntry"> | Date | string
+    bilan_id?: StringWithAggregatesFilter<"BilanEntry"> | string
+    task_id?: StringWithAggregatesFilter<"BilanEntry"> | string
+  }
+
   export type UserCreateInput = {
     id: string
     email: string
@@ -4775,6 +7472,7 @@ export namespace Prisma {
     updated_at?: Date | string
     tasks?: TaskCreateNestedManyWithoutUserInput
     events?: EventCreateNestedManyWithoutUserInput
+    bilans?: BilanCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -4788,6 +7486,7 @@ export namespace Prisma {
     updated_at?: Date | string
     tasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     events?: EventUncheckedCreateNestedManyWithoutUserInput
+    bilans?: BilanUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -4801,6 +7500,7 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     tasks?: TaskUpdateManyWithoutUserNestedInput
     events?: EventUpdateManyWithoutUserNestedInput
+    bilans?: BilanUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -4814,6 +7514,7 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     tasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     events?: EventUncheckedUpdateManyWithoutUserNestedInput
+    bilans?: BilanUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -4859,6 +7560,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     user: UserCreateNestedOneWithoutTasksInput
+    bilanEntries?: BilanEntryCreateNestedManyWithoutTaskInput
   }
 
   export type TaskUncheckedCreateInput = {
@@ -4871,6 +7573,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     user_id: string
+    bilanEntries?: BilanEntryUncheckedCreateNestedManyWithoutTaskInput
   }
 
   export type TaskUpdateInput = {
@@ -4883,6 +7586,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutTasksNestedInput
+    bilanEntries?: BilanEntryUpdateManyWithoutTaskNestedInput
   }
 
   export type TaskUncheckedUpdateInput = {
@@ -4895,6 +7599,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user_id?: StringFieldUpdateOperationsInput | string
+    bilanEntries?: BilanEntryUncheckedUpdateManyWithoutTaskNestedInput
   }
 
   export type TaskCreateManyInput = {
@@ -5001,6 +7706,133 @@ export namespace Prisma {
     user_id?: StringFieldUpdateOperationsInput | string
   }
 
+  export type BilanCreateInput = {
+    id?: string
+    date?: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
+    user: UserCreateNestedOneWithoutBilansInput
+    entries?: BilanEntryCreateNestedManyWithoutBilanInput
+  }
+
+  export type BilanUncheckedCreateInput = {
+    id?: string
+    date?: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
+    user_id: string
+    entries?: BilanEntryUncheckedCreateNestedManyWithoutBilanInput
+  }
+
+  export type BilanUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutBilansNestedInput
+    entries?: BilanEntryUpdateManyWithoutBilanNestedInput
+  }
+
+  export type BilanUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    entries?: BilanEntryUncheckedUpdateManyWithoutBilanNestedInput
+  }
+
+  export type BilanCreateManyInput = {
+    id?: string
+    date?: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
+    user_id: string
+  }
+
+  export type BilanUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BilanUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    user_id?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type BilanEntryCreateInput = {
+    id?: string
+    minutes_spent?: number
+    notes?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    bilan: BilanCreateNestedOneWithoutEntriesInput
+    task: TaskCreateNestedOneWithoutBilanEntriesInput
+  }
+
+  export type BilanEntryUncheckedCreateInput = {
+    id?: string
+    minutes_spent?: number
+    notes?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    bilan_id: string
+    task_id: string
+  }
+
+  export type BilanEntryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes_spent?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    bilan?: BilanUpdateOneRequiredWithoutEntriesNestedInput
+    task?: TaskUpdateOneRequiredWithoutBilanEntriesNestedInput
+  }
+
+  export type BilanEntryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes_spent?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    bilan_id?: StringFieldUpdateOperationsInput | string
+    task_id?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type BilanEntryCreateManyInput = {
+    id?: string
+    minutes_spent?: number
+    notes?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    bilan_id: string
+    task_id: string
+  }
+
+  export type BilanEntryUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes_spent?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BilanEntryUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes_spent?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    bilan_id?: StringFieldUpdateOperationsInput | string
+    task_id?: StringFieldUpdateOperationsInput | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -5054,6 +7886,12 @@ export namespace Prisma {
     none?: EventWhereInput
   }
 
+  export type BilanListRelationFilter = {
+    every?: BilanWhereInput
+    some?: BilanWhereInput
+    none?: BilanWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -5064,6 +7902,10 @@ export namespace Prisma {
   }
 
   export type EventOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type BilanOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -5155,6 +7997,16 @@ export namespace Prisma {
     isNot?: UserWhereInput
   }
 
+  export type BilanEntryListRelationFilter = {
+    every?: BilanEntryWhereInput
+    some?: BilanEntryWhereInput
+    none?: BilanEntryWhereInput
+  }
+
+  export type BilanEntryOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type TaskCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
@@ -5221,6 +8073,105 @@ export namespace Prisma {
     user_id?: SortOrder
   }
 
+  export type BilanCountOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    user_id?: SortOrder
+  }
+
+  export type BilanMaxOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    user_id?: SortOrder
+  }
+
+  export type BilanMinOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    user_id?: SortOrder
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type BilanScalarRelationFilter = {
+    is?: BilanWhereInput
+    isNot?: BilanWhereInput
+  }
+
+  export type TaskScalarRelationFilter = {
+    is?: TaskWhereInput
+    isNot?: TaskWhereInput
+  }
+
+  export type BilanEntryCountOrderByAggregateInput = {
+    id?: SortOrder
+    minutes_spent?: SortOrder
+    notes?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    bilan_id?: SortOrder
+    task_id?: SortOrder
+  }
+
+  export type BilanEntryAvgOrderByAggregateInput = {
+    minutes_spent?: SortOrder
+  }
+
+  export type BilanEntryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    minutes_spent?: SortOrder
+    notes?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    bilan_id?: SortOrder
+    task_id?: SortOrder
+  }
+
+  export type BilanEntryMinOrderByAggregateInput = {
+    id?: SortOrder
+    minutes_spent?: SortOrder
+    notes?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    bilan_id?: SortOrder
+    task_id?: SortOrder
+  }
+
+  export type BilanEntrySumOrderByAggregateInput = {
+    minutes_spent?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
   export type TaskCreateNestedManyWithoutUserInput = {
     create?: XOR<TaskCreateWithoutUserInput, TaskUncheckedCreateWithoutUserInput> | TaskCreateWithoutUserInput[] | TaskUncheckedCreateWithoutUserInput[]
     connectOrCreate?: TaskCreateOrConnectWithoutUserInput | TaskCreateOrConnectWithoutUserInput[]
@@ -5235,6 +8186,13 @@ export namespace Prisma {
     connect?: EventWhereUniqueInput | EventWhereUniqueInput[]
   }
 
+  export type BilanCreateNestedManyWithoutUserInput = {
+    create?: XOR<BilanCreateWithoutUserInput, BilanUncheckedCreateWithoutUserInput> | BilanCreateWithoutUserInput[] | BilanUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BilanCreateOrConnectWithoutUserInput | BilanCreateOrConnectWithoutUserInput[]
+    createMany?: BilanCreateManyUserInputEnvelope
+    connect?: BilanWhereUniqueInput | BilanWhereUniqueInput[]
+  }
+
   export type TaskUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<TaskCreateWithoutUserInput, TaskUncheckedCreateWithoutUserInput> | TaskCreateWithoutUserInput[] | TaskUncheckedCreateWithoutUserInput[]
     connectOrCreate?: TaskCreateOrConnectWithoutUserInput | TaskCreateOrConnectWithoutUserInput[]
@@ -5247,6 +8205,13 @@ export namespace Prisma {
     connectOrCreate?: EventCreateOrConnectWithoutUserInput | EventCreateOrConnectWithoutUserInput[]
     createMany?: EventCreateManyUserInputEnvelope
     connect?: EventWhereUniqueInput | EventWhereUniqueInput[]
+  }
+
+  export type BilanUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<BilanCreateWithoutUserInput, BilanUncheckedCreateWithoutUserInput> | BilanCreateWithoutUserInput[] | BilanUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BilanCreateOrConnectWithoutUserInput | BilanCreateOrConnectWithoutUserInput[]
+    createMany?: BilanCreateManyUserInputEnvelope
+    connect?: BilanWhereUniqueInput | BilanWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -5289,6 +8254,20 @@ export namespace Prisma {
     deleteMany?: EventScalarWhereInput | EventScalarWhereInput[]
   }
 
+  export type BilanUpdateManyWithoutUserNestedInput = {
+    create?: XOR<BilanCreateWithoutUserInput, BilanUncheckedCreateWithoutUserInput> | BilanCreateWithoutUserInput[] | BilanUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BilanCreateOrConnectWithoutUserInput | BilanCreateOrConnectWithoutUserInput[]
+    upsert?: BilanUpsertWithWhereUniqueWithoutUserInput | BilanUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: BilanCreateManyUserInputEnvelope
+    set?: BilanWhereUniqueInput | BilanWhereUniqueInput[]
+    disconnect?: BilanWhereUniqueInput | BilanWhereUniqueInput[]
+    delete?: BilanWhereUniqueInput | BilanWhereUniqueInput[]
+    connect?: BilanWhereUniqueInput | BilanWhereUniqueInput[]
+    update?: BilanUpdateWithWhereUniqueWithoutUserInput | BilanUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: BilanUpdateManyWithWhereWithoutUserInput | BilanUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: BilanScalarWhereInput | BilanScalarWhereInput[]
+  }
+
   export type TaskUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<TaskCreateWithoutUserInput, TaskUncheckedCreateWithoutUserInput> | TaskCreateWithoutUserInput[] | TaskUncheckedCreateWithoutUserInput[]
     connectOrCreate?: TaskCreateOrConnectWithoutUserInput | TaskCreateOrConnectWithoutUserInput[]
@@ -5317,10 +8296,38 @@ export namespace Prisma {
     deleteMany?: EventScalarWhereInput | EventScalarWhereInput[]
   }
 
+  export type BilanUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<BilanCreateWithoutUserInput, BilanUncheckedCreateWithoutUserInput> | BilanCreateWithoutUserInput[] | BilanUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BilanCreateOrConnectWithoutUserInput | BilanCreateOrConnectWithoutUserInput[]
+    upsert?: BilanUpsertWithWhereUniqueWithoutUserInput | BilanUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: BilanCreateManyUserInputEnvelope
+    set?: BilanWhereUniqueInput | BilanWhereUniqueInput[]
+    disconnect?: BilanWhereUniqueInput | BilanWhereUniqueInput[]
+    delete?: BilanWhereUniqueInput | BilanWhereUniqueInput[]
+    connect?: BilanWhereUniqueInput | BilanWhereUniqueInput[]
+    update?: BilanUpdateWithWhereUniqueWithoutUserInput | BilanUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: BilanUpdateManyWithWhereWithoutUserInput | BilanUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: BilanScalarWhereInput | BilanScalarWhereInput[]
+  }
+
   export type UserCreateNestedOneWithoutTasksInput = {
     create?: XOR<UserCreateWithoutTasksInput, UserUncheckedCreateWithoutTasksInput>
     connectOrCreate?: UserCreateOrConnectWithoutTasksInput
     connect?: UserWhereUniqueInput
+  }
+
+  export type BilanEntryCreateNestedManyWithoutTaskInput = {
+    create?: XOR<BilanEntryCreateWithoutTaskInput, BilanEntryUncheckedCreateWithoutTaskInput> | BilanEntryCreateWithoutTaskInput[] | BilanEntryUncheckedCreateWithoutTaskInput[]
+    connectOrCreate?: BilanEntryCreateOrConnectWithoutTaskInput | BilanEntryCreateOrConnectWithoutTaskInput[]
+    createMany?: BilanEntryCreateManyTaskInputEnvelope
+    connect?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
+  }
+
+  export type BilanEntryUncheckedCreateNestedManyWithoutTaskInput = {
+    create?: XOR<BilanEntryCreateWithoutTaskInput, BilanEntryUncheckedCreateWithoutTaskInput> | BilanEntryCreateWithoutTaskInput[] | BilanEntryUncheckedCreateWithoutTaskInput[]
+    connectOrCreate?: BilanEntryCreateOrConnectWithoutTaskInput | BilanEntryCreateOrConnectWithoutTaskInput[]
+    createMany?: BilanEntryCreateManyTaskInputEnvelope
+    connect?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
   }
 
   export type UserUpdateOneRequiredWithoutTasksNestedInput = {
@@ -5329,6 +8336,34 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutTasksInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTasksInput, UserUpdateWithoutTasksInput>, UserUncheckedUpdateWithoutTasksInput>
+  }
+
+  export type BilanEntryUpdateManyWithoutTaskNestedInput = {
+    create?: XOR<BilanEntryCreateWithoutTaskInput, BilanEntryUncheckedCreateWithoutTaskInput> | BilanEntryCreateWithoutTaskInput[] | BilanEntryUncheckedCreateWithoutTaskInput[]
+    connectOrCreate?: BilanEntryCreateOrConnectWithoutTaskInput | BilanEntryCreateOrConnectWithoutTaskInput[]
+    upsert?: BilanEntryUpsertWithWhereUniqueWithoutTaskInput | BilanEntryUpsertWithWhereUniqueWithoutTaskInput[]
+    createMany?: BilanEntryCreateManyTaskInputEnvelope
+    set?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
+    disconnect?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
+    delete?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
+    connect?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
+    update?: BilanEntryUpdateWithWhereUniqueWithoutTaskInput | BilanEntryUpdateWithWhereUniqueWithoutTaskInput[]
+    updateMany?: BilanEntryUpdateManyWithWhereWithoutTaskInput | BilanEntryUpdateManyWithWhereWithoutTaskInput[]
+    deleteMany?: BilanEntryScalarWhereInput | BilanEntryScalarWhereInput[]
+  }
+
+  export type BilanEntryUncheckedUpdateManyWithoutTaskNestedInput = {
+    create?: XOR<BilanEntryCreateWithoutTaskInput, BilanEntryUncheckedCreateWithoutTaskInput> | BilanEntryCreateWithoutTaskInput[] | BilanEntryUncheckedCreateWithoutTaskInput[]
+    connectOrCreate?: BilanEntryCreateOrConnectWithoutTaskInput | BilanEntryCreateOrConnectWithoutTaskInput[]
+    upsert?: BilanEntryUpsertWithWhereUniqueWithoutTaskInput | BilanEntryUpsertWithWhereUniqueWithoutTaskInput[]
+    createMany?: BilanEntryCreateManyTaskInputEnvelope
+    set?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
+    disconnect?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
+    delete?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
+    connect?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
+    update?: BilanEntryUpdateWithWhereUniqueWithoutTaskInput | BilanEntryUpdateWithWhereUniqueWithoutTaskInput[]
+    updateMany?: BilanEntryUpdateManyWithWhereWithoutTaskInput | BilanEntryUpdateManyWithWhereWithoutTaskInput[]
+    deleteMany?: BilanEntryScalarWhereInput | BilanEntryScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutEventsInput = {
@@ -5343,6 +8378,98 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutEventsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutEventsInput, UserUpdateWithoutEventsInput>, UserUncheckedUpdateWithoutEventsInput>
+  }
+
+  export type UserCreateNestedOneWithoutBilansInput = {
+    create?: XOR<UserCreateWithoutBilansInput, UserUncheckedCreateWithoutBilansInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBilansInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type BilanEntryCreateNestedManyWithoutBilanInput = {
+    create?: XOR<BilanEntryCreateWithoutBilanInput, BilanEntryUncheckedCreateWithoutBilanInput> | BilanEntryCreateWithoutBilanInput[] | BilanEntryUncheckedCreateWithoutBilanInput[]
+    connectOrCreate?: BilanEntryCreateOrConnectWithoutBilanInput | BilanEntryCreateOrConnectWithoutBilanInput[]
+    createMany?: BilanEntryCreateManyBilanInputEnvelope
+    connect?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
+  }
+
+  export type BilanEntryUncheckedCreateNestedManyWithoutBilanInput = {
+    create?: XOR<BilanEntryCreateWithoutBilanInput, BilanEntryUncheckedCreateWithoutBilanInput> | BilanEntryCreateWithoutBilanInput[] | BilanEntryUncheckedCreateWithoutBilanInput[]
+    connectOrCreate?: BilanEntryCreateOrConnectWithoutBilanInput | BilanEntryCreateOrConnectWithoutBilanInput[]
+    createMany?: BilanEntryCreateManyBilanInputEnvelope
+    connect?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
+  }
+
+  export type UserUpdateOneRequiredWithoutBilansNestedInput = {
+    create?: XOR<UserCreateWithoutBilansInput, UserUncheckedCreateWithoutBilansInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBilansInput
+    upsert?: UserUpsertWithoutBilansInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutBilansInput, UserUpdateWithoutBilansInput>, UserUncheckedUpdateWithoutBilansInput>
+  }
+
+  export type BilanEntryUpdateManyWithoutBilanNestedInput = {
+    create?: XOR<BilanEntryCreateWithoutBilanInput, BilanEntryUncheckedCreateWithoutBilanInput> | BilanEntryCreateWithoutBilanInput[] | BilanEntryUncheckedCreateWithoutBilanInput[]
+    connectOrCreate?: BilanEntryCreateOrConnectWithoutBilanInput | BilanEntryCreateOrConnectWithoutBilanInput[]
+    upsert?: BilanEntryUpsertWithWhereUniqueWithoutBilanInput | BilanEntryUpsertWithWhereUniqueWithoutBilanInput[]
+    createMany?: BilanEntryCreateManyBilanInputEnvelope
+    set?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
+    disconnect?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
+    delete?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
+    connect?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
+    update?: BilanEntryUpdateWithWhereUniqueWithoutBilanInput | BilanEntryUpdateWithWhereUniqueWithoutBilanInput[]
+    updateMany?: BilanEntryUpdateManyWithWhereWithoutBilanInput | BilanEntryUpdateManyWithWhereWithoutBilanInput[]
+    deleteMany?: BilanEntryScalarWhereInput | BilanEntryScalarWhereInput[]
+  }
+
+  export type BilanEntryUncheckedUpdateManyWithoutBilanNestedInput = {
+    create?: XOR<BilanEntryCreateWithoutBilanInput, BilanEntryUncheckedCreateWithoutBilanInput> | BilanEntryCreateWithoutBilanInput[] | BilanEntryUncheckedCreateWithoutBilanInput[]
+    connectOrCreate?: BilanEntryCreateOrConnectWithoutBilanInput | BilanEntryCreateOrConnectWithoutBilanInput[]
+    upsert?: BilanEntryUpsertWithWhereUniqueWithoutBilanInput | BilanEntryUpsertWithWhereUniqueWithoutBilanInput[]
+    createMany?: BilanEntryCreateManyBilanInputEnvelope
+    set?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
+    disconnect?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
+    delete?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
+    connect?: BilanEntryWhereUniqueInput | BilanEntryWhereUniqueInput[]
+    update?: BilanEntryUpdateWithWhereUniqueWithoutBilanInput | BilanEntryUpdateWithWhereUniqueWithoutBilanInput[]
+    updateMany?: BilanEntryUpdateManyWithWhereWithoutBilanInput | BilanEntryUpdateManyWithWhereWithoutBilanInput[]
+    deleteMany?: BilanEntryScalarWhereInput | BilanEntryScalarWhereInput[]
+  }
+
+  export type BilanCreateNestedOneWithoutEntriesInput = {
+    create?: XOR<BilanCreateWithoutEntriesInput, BilanUncheckedCreateWithoutEntriesInput>
+    connectOrCreate?: BilanCreateOrConnectWithoutEntriesInput
+    connect?: BilanWhereUniqueInput
+  }
+
+  export type TaskCreateNestedOneWithoutBilanEntriesInput = {
+    create?: XOR<TaskCreateWithoutBilanEntriesInput, TaskUncheckedCreateWithoutBilanEntriesInput>
+    connectOrCreate?: TaskCreateOrConnectWithoutBilanEntriesInput
+    connect?: TaskWhereUniqueInput
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type BilanUpdateOneRequiredWithoutEntriesNestedInput = {
+    create?: XOR<BilanCreateWithoutEntriesInput, BilanUncheckedCreateWithoutEntriesInput>
+    connectOrCreate?: BilanCreateOrConnectWithoutEntriesInput
+    upsert?: BilanUpsertWithoutEntriesInput
+    connect?: BilanWhereUniqueInput
+    update?: XOR<XOR<BilanUpdateToOneWithWhereWithoutEntriesInput, BilanUpdateWithoutEntriesInput>, BilanUncheckedUpdateWithoutEntriesInput>
+  }
+
+  export type TaskUpdateOneRequiredWithoutBilanEntriesNestedInput = {
+    create?: XOR<TaskCreateWithoutBilanEntriesInput, TaskUncheckedCreateWithoutBilanEntriesInput>
+    connectOrCreate?: TaskCreateOrConnectWithoutBilanEntriesInput
+    upsert?: TaskUpsertWithoutBilanEntriesInput
+    connect?: TaskWhereUniqueInput
+    update?: XOR<XOR<TaskUpdateToOneWithWhereWithoutBilanEntriesInput, TaskUpdateWithoutBilanEntriesInput>, TaskUncheckedUpdateWithoutBilanEntriesInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -5454,6 +8581,33 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
   export type TaskCreateWithoutUserInput = {
     id?: string
     title: string
@@ -5463,6 +8617,7 @@ export namespace Prisma {
     status?: string | null
     created_at?: Date | string
     updated_at?: Date | string
+    bilanEntries?: BilanEntryCreateNestedManyWithoutTaskInput
   }
 
   export type TaskUncheckedCreateWithoutUserInput = {
@@ -5474,6 +8629,7 @@ export namespace Prisma {
     status?: string | null
     created_at?: Date | string
     updated_at?: Date | string
+    bilanEntries?: BilanEntryUncheckedCreateNestedManyWithoutTaskInput
   }
 
   export type TaskCreateOrConnectWithoutUserInput = {
@@ -5511,6 +8667,32 @@ export namespace Prisma {
 
   export type EventCreateManyUserInputEnvelope = {
     data: EventCreateManyUserInput | EventCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BilanCreateWithoutUserInput = {
+    id?: string
+    date?: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
+    entries?: BilanEntryCreateNestedManyWithoutBilanInput
+  }
+
+  export type BilanUncheckedCreateWithoutUserInput = {
+    id?: string
+    date?: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
+    entries?: BilanEntryUncheckedCreateNestedManyWithoutBilanInput
+  }
+
+  export type BilanCreateOrConnectWithoutUserInput = {
+    where: BilanWhereUniqueInput
+    create: XOR<BilanCreateWithoutUserInput, BilanUncheckedCreateWithoutUserInput>
+  }
+
+  export type BilanCreateManyUserInputEnvelope = {
+    data: BilanCreateManyUserInput | BilanCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -5574,6 +8756,33 @@ export namespace Prisma {
     user_id?: StringFilter<"Event"> | string
   }
 
+  export type BilanUpsertWithWhereUniqueWithoutUserInput = {
+    where: BilanWhereUniqueInput
+    update: XOR<BilanUpdateWithoutUserInput, BilanUncheckedUpdateWithoutUserInput>
+    create: XOR<BilanCreateWithoutUserInput, BilanUncheckedCreateWithoutUserInput>
+  }
+
+  export type BilanUpdateWithWhereUniqueWithoutUserInput = {
+    where: BilanWhereUniqueInput
+    data: XOR<BilanUpdateWithoutUserInput, BilanUncheckedUpdateWithoutUserInput>
+  }
+
+  export type BilanUpdateManyWithWhereWithoutUserInput = {
+    where: BilanScalarWhereInput
+    data: XOR<BilanUpdateManyMutationInput, BilanUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type BilanScalarWhereInput = {
+    AND?: BilanScalarWhereInput | BilanScalarWhereInput[]
+    OR?: BilanScalarWhereInput[]
+    NOT?: BilanScalarWhereInput | BilanScalarWhereInput[]
+    id?: StringFilter<"Bilan"> | string
+    date?: DateTimeFilter<"Bilan"> | Date | string
+    created_at?: DateTimeFilter<"Bilan"> | Date | string
+    updated_at?: DateTimeFilter<"Bilan"> | Date | string
+    user_id?: StringFilter<"Bilan"> | string
+  }
+
   export type UserCreateWithoutTasksInput = {
     id: string
     email: string
@@ -5584,6 +8793,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     events?: EventCreateNestedManyWithoutUserInput
+    bilans?: BilanCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTasksInput = {
@@ -5596,11 +8806,40 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     events?: EventUncheckedCreateNestedManyWithoutUserInput
+    bilans?: BilanUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTasksInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutTasksInput, UserUncheckedCreateWithoutTasksInput>
+  }
+
+  export type BilanEntryCreateWithoutTaskInput = {
+    id?: string
+    minutes_spent?: number
+    notes?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    bilan: BilanCreateNestedOneWithoutEntriesInput
+  }
+
+  export type BilanEntryUncheckedCreateWithoutTaskInput = {
+    id?: string
+    minutes_spent?: number
+    notes?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    bilan_id: string
+  }
+
+  export type BilanEntryCreateOrConnectWithoutTaskInput = {
+    where: BilanEntryWhereUniqueInput
+    create: XOR<BilanEntryCreateWithoutTaskInput, BilanEntryUncheckedCreateWithoutTaskInput>
+  }
+
+  export type BilanEntryCreateManyTaskInputEnvelope = {
+    data: BilanEntryCreateManyTaskInput | BilanEntryCreateManyTaskInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutTasksInput = {
@@ -5624,6 +8863,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     events?: EventUpdateManyWithoutUserNestedInput
+    bilans?: BilanUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTasksInput = {
@@ -5636,6 +8876,36 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     events?: EventUncheckedUpdateManyWithoutUserNestedInput
+    bilans?: BilanUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type BilanEntryUpsertWithWhereUniqueWithoutTaskInput = {
+    where: BilanEntryWhereUniqueInput
+    update: XOR<BilanEntryUpdateWithoutTaskInput, BilanEntryUncheckedUpdateWithoutTaskInput>
+    create: XOR<BilanEntryCreateWithoutTaskInput, BilanEntryUncheckedCreateWithoutTaskInput>
+  }
+
+  export type BilanEntryUpdateWithWhereUniqueWithoutTaskInput = {
+    where: BilanEntryWhereUniqueInput
+    data: XOR<BilanEntryUpdateWithoutTaskInput, BilanEntryUncheckedUpdateWithoutTaskInput>
+  }
+
+  export type BilanEntryUpdateManyWithWhereWithoutTaskInput = {
+    where: BilanEntryScalarWhereInput
+    data: XOR<BilanEntryUpdateManyMutationInput, BilanEntryUncheckedUpdateManyWithoutTaskInput>
+  }
+
+  export type BilanEntryScalarWhereInput = {
+    AND?: BilanEntryScalarWhereInput | BilanEntryScalarWhereInput[]
+    OR?: BilanEntryScalarWhereInput[]
+    NOT?: BilanEntryScalarWhereInput | BilanEntryScalarWhereInput[]
+    id?: StringFilter<"BilanEntry"> | string
+    minutes_spent?: IntFilter<"BilanEntry"> | number
+    notes?: StringNullableFilter<"BilanEntry"> | string | null
+    created_at?: DateTimeFilter<"BilanEntry"> | Date | string
+    updated_at?: DateTimeFilter<"BilanEntry"> | Date | string
+    bilan_id?: StringFilter<"BilanEntry"> | string
+    task_id?: StringFilter<"BilanEntry"> | string
   }
 
   export type UserCreateWithoutEventsInput = {
@@ -5648,6 +8918,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     tasks?: TaskCreateNestedManyWithoutUserInput
+    bilans?: BilanCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEventsInput = {
@@ -5660,6 +8931,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     tasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    bilans?: BilanUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEventsInput = {
@@ -5688,6 +8960,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     tasks?: TaskUpdateManyWithoutUserNestedInput
+    bilans?: BilanUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEventsInput = {
@@ -5700,6 +8973,231 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     tasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    bilans?: BilanUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutBilansInput = {
+    id: string
+    email: string
+    full_name?: string | null
+    avatar_url?: string | null
+    theme?: string | null
+    colorTheme?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    tasks?: TaskCreateNestedManyWithoutUserInput
+    events?: EventCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutBilansInput = {
+    id: string
+    email: string
+    full_name?: string | null
+    avatar_url?: string | null
+    theme?: string | null
+    colorTheme?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    tasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    events?: EventUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutBilansInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutBilansInput, UserUncheckedCreateWithoutBilansInput>
+  }
+
+  export type BilanEntryCreateWithoutBilanInput = {
+    id?: string
+    minutes_spent?: number
+    notes?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    task: TaskCreateNestedOneWithoutBilanEntriesInput
+  }
+
+  export type BilanEntryUncheckedCreateWithoutBilanInput = {
+    id?: string
+    minutes_spent?: number
+    notes?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    task_id: string
+  }
+
+  export type BilanEntryCreateOrConnectWithoutBilanInput = {
+    where: BilanEntryWhereUniqueInput
+    create: XOR<BilanEntryCreateWithoutBilanInput, BilanEntryUncheckedCreateWithoutBilanInput>
+  }
+
+  export type BilanEntryCreateManyBilanInputEnvelope = {
+    data: BilanEntryCreateManyBilanInput | BilanEntryCreateManyBilanInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutBilansInput = {
+    update: XOR<UserUpdateWithoutBilansInput, UserUncheckedUpdateWithoutBilansInput>
+    create: XOR<UserCreateWithoutBilansInput, UserUncheckedCreateWithoutBilansInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutBilansInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutBilansInput, UserUncheckedUpdateWithoutBilansInput>
+  }
+
+  export type UserUpdateWithoutBilansInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    full_name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: NullableStringFieldUpdateOperationsInput | string | null
+    colorTheme?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    tasks?: TaskUpdateManyWithoutUserNestedInput
+    events?: EventUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutBilansInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    full_name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
+    theme?: NullableStringFieldUpdateOperationsInput | string | null
+    colorTheme?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    tasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    events?: EventUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type BilanEntryUpsertWithWhereUniqueWithoutBilanInput = {
+    where: BilanEntryWhereUniqueInput
+    update: XOR<BilanEntryUpdateWithoutBilanInput, BilanEntryUncheckedUpdateWithoutBilanInput>
+    create: XOR<BilanEntryCreateWithoutBilanInput, BilanEntryUncheckedCreateWithoutBilanInput>
+  }
+
+  export type BilanEntryUpdateWithWhereUniqueWithoutBilanInput = {
+    where: BilanEntryWhereUniqueInput
+    data: XOR<BilanEntryUpdateWithoutBilanInput, BilanEntryUncheckedUpdateWithoutBilanInput>
+  }
+
+  export type BilanEntryUpdateManyWithWhereWithoutBilanInput = {
+    where: BilanEntryScalarWhereInput
+    data: XOR<BilanEntryUpdateManyMutationInput, BilanEntryUncheckedUpdateManyWithoutBilanInput>
+  }
+
+  export type BilanCreateWithoutEntriesInput = {
+    id?: string
+    date?: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
+    user: UserCreateNestedOneWithoutBilansInput
+  }
+
+  export type BilanUncheckedCreateWithoutEntriesInput = {
+    id?: string
+    date?: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
+    user_id: string
+  }
+
+  export type BilanCreateOrConnectWithoutEntriesInput = {
+    where: BilanWhereUniqueInput
+    create: XOR<BilanCreateWithoutEntriesInput, BilanUncheckedCreateWithoutEntriesInput>
+  }
+
+  export type TaskCreateWithoutBilanEntriesInput = {
+    id?: string
+    title: string
+    deadline?: string | null
+    deadline_text?: string | null
+    priority?: string | null
+    status?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    user: UserCreateNestedOneWithoutTasksInput
+  }
+
+  export type TaskUncheckedCreateWithoutBilanEntriesInput = {
+    id?: string
+    title: string
+    deadline?: string | null
+    deadline_text?: string | null
+    priority?: string | null
+    status?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    user_id: string
+  }
+
+  export type TaskCreateOrConnectWithoutBilanEntriesInput = {
+    where: TaskWhereUniqueInput
+    create: XOR<TaskCreateWithoutBilanEntriesInput, TaskUncheckedCreateWithoutBilanEntriesInput>
+  }
+
+  export type BilanUpsertWithoutEntriesInput = {
+    update: XOR<BilanUpdateWithoutEntriesInput, BilanUncheckedUpdateWithoutEntriesInput>
+    create: XOR<BilanCreateWithoutEntriesInput, BilanUncheckedCreateWithoutEntriesInput>
+    where?: BilanWhereInput
+  }
+
+  export type BilanUpdateToOneWithWhereWithoutEntriesInput = {
+    where?: BilanWhereInput
+    data: XOR<BilanUpdateWithoutEntriesInput, BilanUncheckedUpdateWithoutEntriesInput>
+  }
+
+  export type BilanUpdateWithoutEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutBilansNestedInput
+  }
+
+  export type BilanUncheckedUpdateWithoutEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    user_id?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TaskUpsertWithoutBilanEntriesInput = {
+    update: XOR<TaskUpdateWithoutBilanEntriesInput, TaskUncheckedUpdateWithoutBilanEntriesInput>
+    create: XOR<TaskCreateWithoutBilanEntriesInput, TaskUncheckedCreateWithoutBilanEntriesInput>
+    where?: TaskWhereInput
+  }
+
+  export type TaskUpdateToOneWithWhereWithoutBilanEntriesInput = {
+    where?: TaskWhereInput
+    data: XOR<TaskUpdateWithoutBilanEntriesInput, TaskUncheckedUpdateWithoutBilanEntriesInput>
+  }
+
+  export type TaskUpdateWithoutBilanEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    deadline?: NullableStringFieldUpdateOperationsInput | string | null
+    deadline_text?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutTasksNestedInput
+  }
+
+  export type TaskUncheckedUpdateWithoutBilanEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    deadline?: NullableStringFieldUpdateOperationsInput | string | null
+    deadline_text?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    user_id?: StringFieldUpdateOperationsInput | string
   }
 
   export type TaskCreateManyUserInput = {
@@ -5722,6 +9220,13 @@ export namespace Prisma {
     updated_at?: Date | string
   }
 
+  export type BilanCreateManyUserInput = {
+    id?: string
+    date?: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
   export type TaskUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
@@ -5731,6 +9236,7 @@ export namespace Prisma {
     status?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    bilanEntries?: BilanEntryUpdateManyWithoutTaskNestedInput
   }
 
   export type TaskUncheckedUpdateWithoutUserInput = {
@@ -5742,6 +9248,7 @@ export namespace Prisma {
     status?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    bilanEntries?: BilanEntryUncheckedUpdateManyWithoutTaskNestedInput
   }
 
   export type TaskUncheckedUpdateManyWithoutUserInput = {
@@ -5780,6 +9287,101 @@ export namespace Prisma {
     date_time_text?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BilanUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    entries?: BilanEntryUpdateManyWithoutBilanNestedInput
+  }
+
+  export type BilanUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    entries?: BilanEntryUncheckedUpdateManyWithoutBilanNestedInput
+  }
+
+  export type BilanUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BilanEntryCreateManyTaskInput = {
+    id?: string
+    minutes_spent?: number
+    notes?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    bilan_id: string
+  }
+
+  export type BilanEntryUpdateWithoutTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes_spent?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    bilan?: BilanUpdateOneRequiredWithoutEntriesNestedInput
+  }
+
+  export type BilanEntryUncheckedUpdateWithoutTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes_spent?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    bilan_id?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type BilanEntryUncheckedUpdateManyWithoutTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes_spent?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    bilan_id?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type BilanEntryCreateManyBilanInput = {
+    id?: string
+    minutes_spent?: number
+    notes?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    task_id: string
+  }
+
+  export type BilanEntryUpdateWithoutBilanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes_spent?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    task?: TaskUpdateOneRequiredWithoutBilanEntriesNestedInput
+  }
+
+  export type BilanEntryUncheckedUpdateWithoutBilanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes_spent?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    task_id?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type BilanEntryUncheckedUpdateManyWithoutBilanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes_spent?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    task_id?: StringFieldUpdateOperationsInput | string
   }
 
 
