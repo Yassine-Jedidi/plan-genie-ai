@@ -54,22 +54,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  ColumnDef,
-  ColumnFiltersState,
-  FilterFn,
-  PaginationState,
-  Row,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFacetedUniqueValues,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import {
   ChevronDown,
   ChevronFirst,
   ChevronLast,
@@ -89,6 +73,22 @@ import { useId, useMemo, useRef, useState, useEffect } from "react";
 import { Task, taskService } from "@/services/taskService";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  FilterFn,
+  PaginationState,
+  Row,
+  SortingState,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFacetedUniqueValues,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 
 // Custom filter function for multi-column searching
 const multiColumnFilterFn: FilterFn<Task> = (row, _columnId, filterValue) => {
@@ -117,6 +117,61 @@ const statusFilterFn: FilterFn<Task> = (
   if (!filterValue?.length) return true;
   const status = row.getValue(columnId) as string;
   return filterValue.includes(status);
+};
+
+// Due In filter function
+const dueInFilterFn: FilterFn<Task> = (row, columnId, filterValue) => {
+  const deadline = row.getValue(columnId) as string | null;
+
+  // If no deadline and "noDeadline" filter is active, show this task
+  if (!deadline && filterValue.includes("noDeadline")) {
+    return true;
+  }
+
+  // If there's no deadline and "noDeadline" filter is not active, don't show this task
+  if (!deadline) {
+    return false;
+  }
+
+  try {
+    const deadlineDate = new Date(deadline);
+    const now = new Date();
+    const todayStart = new Date(now);
+    todayStart.setHours(0, 0, 0, 0);
+
+    const tomorrow = new Date(todayStart);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const nextWeek = new Date(todayStart);
+    nextWeek.setDate(nextWeek.getDate() + 7);
+
+    const nextMonth = new Date(todayStart);
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+    // Pre-calculate conditions to avoid lexical declarations in case blocks
+    const isOverdue = deadlineDate < todayStart;
+    const isToday = deadlineDate >= todayStart && deadlineDate < tomorrow;
+    const isThisWeek = deadlineDate >= tomorrow && deadlineDate < nextWeek;
+    const isThisMonth = deadlineDate >= nextWeek && deadlineDate < nextMonth;
+    const isLater = deadlineDate >= nextMonth;
+
+    // If filter value is empty, show all tasks
+    if (filterValue.length === 0) {
+      return true;
+    }
+
+    // Check if the task matches any of the active filters
+    return (
+      (isOverdue && filterValue.includes("overdue")) ||
+      (isToday && filterValue.includes("today")) ||
+      (isThisWeek && filterValue.includes("thisWeek")) ||
+      (isThisMonth && filterValue.includes("thisMonth")) ||
+      (isLater && filterValue.includes("later"))
+    );
+  } catch {
+    // For invalid dates, don't show the task
+    return false;
+  }
 };
 
 const columns: ColumnDef<Task>[] = [
@@ -252,6 +307,7 @@ const columns: ColumnDef<Task>[] = [
       }
     },
     size: 130,
+    filterFn: dueInFilterFn,
   },
   {
     header: "Priority",
@@ -485,6 +541,67 @@ export default function TasksTable({ tasks }: TasksTableProps) {
     return statusColumn.getFacetedUniqueValues();
   }, [table.getColumn("status")?.getFacetedUniqueValues()]);
 
+  // Get due in filter counts
+  const dueCounts = useMemo(() => {
+    if (!localTasks)
+      return {
+        overdue: 0,
+        today: 0,
+        thisWeek: 0,
+        thisMonth: 0,
+        later: 0,
+        noDeadline: 0,
+      };
+
+    let overdue = 0;
+    let today = 0;
+    let thisWeek = 0;
+    let thisMonth = 0;
+    let later = 0;
+    let noDeadline = 0;
+
+    // Set up date boundaries
+    const now = new Date();
+    const todayStart = new Date(now);
+    todayStart.setHours(0, 0, 0, 0);
+
+    const tomorrow = new Date(todayStart);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const nextWeek = new Date(todayStart);
+    nextWeek.setDate(nextWeek.getDate() + 7);
+
+    const nextMonth = new Date(todayStart);
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+    localTasks.forEach((task) => {
+      if (!task.deadline) {
+        noDeadline++;
+        return;
+      }
+
+      try {
+        const deadlineDate = new Date(task.deadline);
+
+        if (deadlineDate < todayStart) {
+          overdue++;
+        } else if (deadlineDate >= todayStart && deadlineDate < tomorrow) {
+          today++;
+        } else if (deadlineDate >= tomorrow && deadlineDate < nextWeek) {
+          thisWeek++;
+        } else if (deadlineDate >= nextWeek && deadlineDate < nextMonth) {
+          thisMonth++;
+        } else if (deadlineDate >= nextMonth) {
+          later++;
+        }
+      } catch {
+        // Skip invalid dates
+      }
+    });
+
+    return { overdue, today, thisWeek, thisMonth, later, noDeadline };
+  }, [localTasks]);
+
   const selectedPriorities = useMemo(() => {
     const filterValue = table
       .getColumn("priority")
@@ -496,6 +613,14 @@ export default function TasksTable({ tasks }: TasksTableProps) {
     const filterValue = table.getColumn("status")?.getFilterValue() as string[];
     return filterValue ?? [];
   }, [table.getColumn("status")?.getFilterValue()]);
+
+  // Selected Due In filters
+  const selectedDueIn = useMemo(() => {
+    const filterValue = table
+      .getColumn("deadline")
+      ?.getFilterValue() as string[];
+    return filterValue ?? [];
+  }, [table.getColumn("deadline")?.getFilterValue()]);
 
   const handlePriorityChange = (checked: boolean, value: string) => {
     const filterValue = table
@@ -533,6 +658,23 @@ export default function TasksTable({ tasks }: TasksTableProps) {
     table
       .getColumn("status")
       ?.setFilterValue(newFilterValue.length ? newFilterValue : undefined);
+  };
+
+  // Handle due in filter selection
+  const handleDueInChange = (checked: boolean, value: string) => {
+    const dueColumn = table.getColumn("deadline");
+    if (!dueColumn) return;
+
+    const currentFilters = (dueColumn.getFilterValue() as string[]) || [];
+    let newFilters: string[];
+
+    if (checked) {
+      newFilters = [...currentFilters, value];
+    } else {
+      newFilters = currentFilters.filter((item) => item !== value);
+    }
+
+    dueColumn.setFilterValue(newFilters);
   };
 
   // Define the RowActions component inside TasksTable to access table state
@@ -859,6 +1001,142 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                         </Label>
                       </div>
                     ))}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+            {/* Filter by due date */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="w-full sm:w-auto">
+                  <Filter
+                    className="-ms-1 me-2 opacity-60"
+                    size={16}
+                    strokeWidth={2}
+                    aria-hidden="true"
+                  />
+                  Due In
+                  {selectedDueIn.length > 0 && (
+                    <span className="-me-1 ms-3 inline-flex h-5 max-h-full items-center rounded border border-border bg-background px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
+                      {selectedDueIn.length}
+                    </span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="min-w-36 p-3" align="start">
+                <div className="space-y-3">
+                  <div className="text-xs font-medium text-muted-foreground">
+                    Time Frames
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id={`${id}-due-overdue`}
+                        checked={selectedDueIn.includes("overdue")}
+                        onCheckedChange={(checked: boolean) =>
+                          handleDueInChange(checked, "overdue")
+                        }
+                      />
+                      <Label
+                        htmlFor={`${id}-due-overdue`}
+                        className="flex grow justify-between gap-2 font-normal text-red-600"
+                      >
+                        Overdue{" "}
+                        <span className="ms-2 text-xs text-muted-foreground">
+                          {dueCounts.overdue}
+                        </span>
+                      </Label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id={`${id}-due-today`}
+                        checked={selectedDueIn.includes("today")}
+                        onCheckedChange={(checked: boolean) =>
+                          handleDueInChange(checked, "today")
+                        }
+                      />
+                      <Label
+                        htmlFor={`${id}-due-today`}
+                        className="flex grow justify-between gap-2 font-normal"
+                      >
+                        Today{" "}
+                        <span className="ms-2 text-xs text-muted-foreground">
+                          {dueCounts.today}
+                        </span>
+                      </Label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id={`${id}-due-week`}
+                        checked={selectedDueIn.includes("thisWeek")}
+                        onCheckedChange={(checked: boolean) =>
+                          handleDueInChange(checked, "thisWeek")
+                        }
+                      />
+                      <Label
+                        htmlFor={`${id}-due-week`}
+                        className="flex grow justify-between gap-2 font-normal"
+                      >
+                        This Week{" "}
+                        <span className="ms-2 text-xs text-muted-foreground">
+                          {dueCounts.thisWeek}
+                        </span>
+                      </Label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id={`${id}-due-month`}
+                        checked={selectedDueIn.includes("thisMonth")}
+                        onCheckedChange={(checked: boolean) =>
+                          handleDueInChange(checked, "thisMonth")
+                        }
+                      />
+                      <Label
+                        htmlFor={`${id}-due-month`}
+                        className="flex grow justify-between gap-2 font-normal"
+                      >
+                        This Month{" "}
+                        <span className="ms-2 text-xs text-muted-foreground">
+                          {dueCounts.thisMonth}
+                        </span>
+                      </Label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id={`${id}-due-later`}
+                        checked={selectedDueIn.includes("later")}
+                        onCheckedChange={(checked: boolean) =>
+                          handleDueInChange(checked, "later")
+                        }
+                      />
+                      <Label
+                        htmlFor={`${id}-due-later`}
+                        className="flex grow justify-between gap-2 font-normal"
+                      >
+                        Later{" "}
+                        <span className="ms-2 text-xs text-muted-foreground">
+                          {dueCounts.later}
+                        </span>
+                      </Label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id={`${id}-due-none`}
+                        checked={selectedDueIn.includes("noDeadline")}
+                        onCheckedChange={(checked: boolean) =>
+                          handleDueInChange(checked, "noDeadline")
+                        }
+                      />
+                      <Label
+                        htmlFor={`${id}-due-none`}
+                        className="flex grow justify-between gap-2 font-normal"
+                      >
+                        No Deadline{" "}
+                        <span className="ms-2 text-xs text-muted-foreground">
+                          {dueCounts.noDeadline}
+                        </span>
+                      </Label>
+                    </div>
                   </div>
                 </div>
               </PopoverContent>
