@@ -1,10 +1,6 @@
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils";
-import {
-  formatDistanceToNow,
-  formatDistanceToNowStrict,
-  isPast,
-} from "date-fns";
+import { formatDistanceToNowStrict, isPast } from "date-fns";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -143,7 +139,7 @@ const columns: ColumnDef<Task>[] = [
         aria-label="Select row"
       />
     ),
-    size: 28,
+    size: 40,
     enableSorting: false,
     enableHiding: false,
   },
@@ -153,7 +149,7 @@ const columns: ColumnDef<Task>[] = [
     cell: ({ row }) => (
       <div className="font-medium">{row.getValue("title")}</div>
     ),
-    size: 280,
+    size: 300,
     filterFn: multiColumnFilterFn,
     enableHiding: false,
   },
@@ -214,7 +210,7 @@ const columns: ColumnDef<Task>[] = [
         return deadline;
       }
     },
-    size: 250,
+    size: 240,
   },
   {
     header: "Due In",
@@ -255,7 +251,7 @@ const columns: ColumnDef<Task>[] = [
         return <span className="text-muted-foreground">Invalid date</span>;
       }
     },
-    size: 120,
+    size: 130,
   },
   {
     header: "Priority",
@@ -286,7 +282,7 @@ const columns: ColumnDef<Task>[] = [
         </Badge>
       );
     },
-    size: 100,
+    size: 120,
     filterFn: priorityFilterFn,
   },
   {
@@ -318,7 +314,7 @@ const columns: ColumnDef<Task>[] = [
         </Badge>
       );
     },
-    size: 120,
+    size: 140,
     filterFn: statusFilterFn,
   },
   {
@@ -335,7 +331,7 @@ const columns: ColumnDef<Task>[] = [
 
       return <span>🕒 {formattedDate}</span>;
     },
-    size: 160,
+    size: 180,
   },
   {
     id: "actions",
