@@ -170,13 +170,31 @@ const columns: ColumnDef<Task>[] = [
           year: "numeric",
           hour: "numeric",
           minute: "2-digit",
+          hour12: false,
         });
+
+        // Extract the date and time parts more reliably
+        const lastSpaceIndex = formattedDate.lastIndexOf(" ");
+        const datePart = formattedDate.substring(0, lastSpaceIndex);
+        const timePart = formattedDate.substring(lastSpaceIndex + 1);
+
+        const formattedWithEmoji = (
+          <span>
+            📅 {datePart} ·{" "}
+            <Badge
+              variant="outline"
+              className="px-1.5 py-0.5 bg-slate-100 text-slate-800 text-xs font-medium"
+            >
+              {timePart}
+            </Badge>
+          </span>
+        );
 
         // If we have the original text, display it with the formatted date
         if (deadlineText) {
           return (
             <div className="flex flex-col">
-              <span>{formattedDate}</span>
+              <span>{formattedWithEmoji}</span>
               <span className="text-xs text-muted-foreground">
                 {deadlineText}
               </span>
@@ -184,7 +202,7 @@ const columns: ColumnDef<Task>[] = [
           );
         }
 
-        return formattedDate;
+        return formattedWithEmoji;
         // eslint-disable-next-line no-empty
       } catch {
         // If parsing fails, just return the raw deadline
@@ -206,13 +224,19 @@ const columns: ColumnDef<Task>[] = [
         Low: "bg-green-100 text-green-800 border-green-300",
       };
 
+      const priorityEmojis: Record<string, string> = {
+        High: "🔴",
+        Medium: "🟡",
+        Low: "🟢",
+      };
+
       const colorClass =
         priorityColors[priority] ||
         "bg-muted-foreground/60 text-primary-foreground";
 
       return (
         <Badge className={cn(colorClass)} variant="outline">
-          {priority}
+          {priorityEmojis[priority] || ""} {priority}
         </Badge>
       );
     },
@@ -233,12 +257,18 @@ const columns: ColumnDef<Task>[] = [
         Planned: "bg-amber-100 text-amber-800 border-amber-300",
       };
 
+      const statusEmojis: Record<string, string> = {
+        Done: "✅",
+        "In Progress": "🔄",
+        Planned: "📝",
+      };
+
       const colorClass =
         statusColors[status] || "bg-amber-100 text-amber-800 border-amber-300"; // Default to Planned style
 
       return (
         <Badge className={cn(colorClass)} variant="outline">
-          {status || "Planned"}
+          {statusEmojis[status] || ""} {status || "Planned"}
         </Badge>
       );
     },
@@ -257,7 +287,7 @@ const columns: ColumnDef<Task>[] = [
         year: "numeric",
       }).format(date);
 
-      return formattedDate;
+      return <span>🕒 {formattedDate}</span>;
     },
     size: 160,
   },
@@ -571,7 +601,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
   }
 
   return (
-    <div className="space-y-4 max-w-5xl mx-auto border border-primary/30 rounded-lg p-2 sm:p-4 shadow-sm">
+    <div className="space-y-4 w-full min-w-full border border-primary/30 rounded-lg p-2 sm:p-4 shadow-sm">
       {/* Status filter buttons */}
       <div className="flex flex-wrap gap-1 mb-1">
         <Button
@@ -595,7 +625,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
               ?.setFilterValue(newFilter.length ? newFilter : undefined);
           }}
         >
-          Planned
+          📝 Planned
           <span className="ml-1 inline-flex h-4 items-center rounded bg-background-200 px-1 text-xs font-medium text-amber-800">
             {`(${statusCounts.get("Planned") || 0})`}
           </span>
@@ -621,7 +651,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
               ?.setFilterValue(newFilter.length ? newFilter : undefined);
           }}
         >
-          In Progress
+          🔄 In Progress
           <span className="ml-1 inline-flex h-4 items-center rounded bg-background-200 px-1 text-xs font-medium text-blue-800">
             {`(${statusCounts.get("In Progress") || 0})`}
           </span>
@@ -647,7 +677,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
               ?.setFilterValue(newFilter.length ? newFilter : undefined);
           }}
         >
-          Done
+          ✅ Done
           <span className="ml-1 inline-flex h-4 items-center rounded bg-background-200 px-1 text-xs font-medium text-green-800">
             {`(${statusCounts.get("Done") || 0})`}
           </span>

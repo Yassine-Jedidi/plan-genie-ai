@@ -35,8 +35,8 @@ const TasksPage = () => {
       <div className="p-4 flex flex-col h-[calc(100vh-60px)]">
         <h1 className="text-2xl font-bold mb-4">Tasks</h1>
 
-        <div className="flex-grow overflow-auto pb-4 flex justify-center">
-          <div className="w-full max-w-5xl">
+        <div className="flex-grow overflow-auto pb-4">
+          <div className="w-full">
             {loadingTasks ? (
               <div className="space-y-3">
                 <Skeleton className="h-8 w-3/4" />

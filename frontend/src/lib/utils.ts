@@ -29,14 +29,42 @@ export function utcToLocal(dateString: string | null): Date | null {
 export function formatDate(
   dateString: string | null, 
   options: Intl.DateTimeFormatOptions = {
-    dateStyle: 'medium',
-    timeStyle: 'short'
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: false
   }
 ): string {
   const date = utcToLocal(dateString);
   if (!date) return 'No date';
   
-  return new Intl.DateTimeFormat(navigator.language, options).format(date);
+  // Check if time formatting is needed
+  const hasTimeOptions = options.hour !== undefined || options.minute !== undefined;
+  
+  // Format the date part
+  const dateFormatter = new Intl.DateTimeFormat('en-US', {
+    year: options.year,
+    month: options.month,
+    day: options.day,
+    weekday: options.weekday
+  });
+  
+  // If no time is needed, return just the date
+  if (!hasTimeOptions) {
+    return dateFormatter.format(date);
+  }
+  
+  // Format the time part
+  const timeFormatter = new Intl.DateTimeFormat('en-US', {
+    hour: options.hour,
+    minute: options.minute,
+    hour12: options.hour12
+  });
+  
+  // Combine date and time with a space instead of "at"
+  return `${dateFormatter.format(date)} ${timeFormatter.format(date)}`;
 }
 
 /**
@@ -55,5 +83,5 @@ export function formatTime(
   const date = utcToLocal(dateString);
   if (!date) return 'No time';
   
-  return new Intl.DateTimeFormat(navigator.language, options).format(date);
+  return new Intl.DateTimeFormat('en-US', options).format(date);
 }
