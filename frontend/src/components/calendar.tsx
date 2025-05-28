@@ -21,7 +21,7 @@ import {
   SearchIcon,
 } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn, formatTime } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -228,10 +228,7 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
                                 {event.title}
                               </p>
                               <p className="leading-none text-muted-foreground">
-                                {new Date(event.date_time).toLocaleTimeString(
-                                  [],
-                                  { hour: "2-digit", minute: "2-digit" }
-                                )}
+                                {formatTime(event.date_time)}
                               </p>
                             </div>
                           ))}

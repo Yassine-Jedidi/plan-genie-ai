@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 // Make sure you have this import for DndContext if needed
 // import { DndContext } from '@dnd-kit/core';
 
@@ -282,10 +283,13 @@ const TasksKanban: FC = () => {
                           {task.deadline && (
                             <p className="m-0 text-xs text-muted-foreground">
                               {format(new Date(task.created_at), "MMM d")} -{" "}
-                              {format(
-                                new Date(task.deadline),
-                                "MMM d, yyyy HH:mm"
-                              )}
+                              {formatDate(task.deadline, {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                                hour: "numeric",
+                                minute: "2-digit",
+                              })}
                             </p>
                           )}
                         </KanbanCard>

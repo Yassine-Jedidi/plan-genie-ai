@@ -21,7 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronsUpDown } from "lucide-react";
-import { format } from "date-fns";
+import { formatDate as formatDateUtil } from "@/lib/utils";
 import * as chrono from "chrono-node";
 
 // Create custom select components
@@ -156,7 +156,16 @@ export function AnalysisResults({
   // Format date to display in a readable format
   const formatDate = (date: Date | null): string => {
     if (!date) return "Invalid date";
-    return format(date, "EEEE, MMMM dd, yyyy 'at' HH:mm");
+
+    // Convert the Date to ISO string and use our utility
+    return formatDateUtil(date.toISOString(), {
+      weekday: "long",
+      month: "long",
+      day: "2-digit",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
   };
 
   const handleTypeChange = (newType: string) => {

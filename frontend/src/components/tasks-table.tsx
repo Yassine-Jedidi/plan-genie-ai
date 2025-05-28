@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -161,17 +162,15 @@ const columns: ColumnDef<Task>[] = [
       if (!deadline) return <span className="text-muted-foreground">None</span>;
 
       try {
-        // Try to format the date nicely
-        const date = new Date(deadline);
-        const formattedDate = new Intl.DateTimeFormat("en-US", {
+        // Format the date using our utility function that handles timezones
+        const formattedDate = formatDate(deadline, {
           weekday: "long",
           month: "long",
           day: "2-digit",
           year: "numeric",
           hour: "numeric",
           minute: "2-digit",
-          hour12: false,
-        }).format(date);
+        });
 
         // If we have the original text, display it with the formatted date
         if (deadlineText) {

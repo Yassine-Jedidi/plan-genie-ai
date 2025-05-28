@@ -8,13 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  format,
-  isToday,
-  isBefore,
-  parseISO,
-  addDays,
-  subDays,
+  format as dateFormat,
   isSameDay,
+  isToday,
+  addDays,
+  isBefore,
+  subDays,
 } from "date-fns";
 import {
   Table,
@@ -44,7 +43,7 @@ import {
   ChevronRight,
   History,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatDate, utcToLocal } from "@/lib/utils";
 import { DatePicker } from "@/components/date-picker";
 
 const BilanPage = () => {
@@ -62,12 +61,15 @@ const BilanPage = () => {
   const [showHistory, setShowHistory] = useState(false);
 
   // Format date for display - fixing potential timezone issues
-  const formatDate = (dateString: string) => {
+  const formatDateDisplay = (dateString: string) => {
     try {
-      // Parse the date using the dateString and ensure it's treated as UTC
-      const date = new Date(dateString);
-      // Use the exact selected date to format
-      return format(date, "EEEE, MMMM d, yyyy");
+      // Use our utility function for consistent formatting
+      return formatDate(dateString, {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      });
     } catch {
       return dateString;
     }
@@ -99,11 +101,20 @@ const BilanPage = () => {
     if (!deadline) return null;
 
     try {
-      const date = parseISO(deadline);
+      const date = utcToLocal(deadline);
+      if (!date) return deadline;
+
       if (isToday(date)) {
         return "Today";
       }
-      return format(date, "MMM d, yyyy 'at' HH:mm");
+
+      return formatDate(deadline, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      });
     } catch {
       return deadline;
     }
@@ -114,7 +125,9 @@ const BilanPage = () => {
     if (!deadline) return false;
 
     try {
-      const deadlineDate = parseISO(deadline);
+      const deadlineDate = utcToLocal(deadline);
+      if (!deadlineDate) return false;
+
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
@@ -135,7 +148,9 @@ const BilanPage = () => {
     if (!deadline) return false;
 
     try {
-      const deadlineDate = parseISO(deadline);
+      const deadlineDate = utcToLocal(deadline);
+      if (!deadlineDate) return false;
+
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
@@ -156,7 +171,7 @@ const BilanPage = () => {
     if (isDateToday(date)) {
       return "Today";
     }
-    return format(date, "EEE, MMM d");
+    return dateFormat(date, "EEE, MMM d");
   };
 
   // Calculate total time for a bilan
@@ -820,7 +835,7 @@ const BilanPage = () => {
         ) : bilan ? (
           <>
             <p className="text-primary dark:text-primary/80 mb-4">
-              {formatDate(bilan.date)}
+              {formatDateDisplay(bilan.date)}
             </p>
 
             <Card className="border-green-300">
