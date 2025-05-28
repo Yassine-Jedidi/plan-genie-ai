@@ -1,6 +1,11 @@
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils";
 import {
+  formatDistanceToNow,
+  formatDistanceToNowStrict,
+  isPast,
+} from "date-fns";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -209,7 +214,48 @@ const columns: ColumnDef<Task>[] = [
         return deadline;
       }
     },
-    size: 200,
+    size: 250,
+  },
+  {
+    header: "Due In",
+    accessorKey: "deadline",
+    cell: ({ row }) => {
+      const deadline = row.getValue("deadline") as string | null;
+      if (!deadline) return <span className="text-muted-foreground">—</span>;
+
+      try {
+        const date = new Date(deadline);
+
+        // Check if the deadline is in the past
+        if (isPast(date)) {
+          return (
+            <Badge
+              variant="outline"
+              className="bg-red-100 text-red-800 border-red-300"
+            >
+              ⏱️ Overdue
+            </Badge>
+          );
+        }
+
+        // Calculate time remaining
+        const timeRemaining = formatDistanceToNowStrict(date, {
+          addSuffix: false,
+        });
+
+        return (
+          <Badge
+            variant="outline"
+            className="bg-blue-100 text-blue-800 border-blue-300"
+          >
+            ⏱️ {timeRemaining} left
+          </Badge>
+        );
+      } catch {
+        return <span className="text-muted-foreground">Invalid date</span>;
+      }
+    },
+    size: 120,
   },
   {
     header: "Priority",
