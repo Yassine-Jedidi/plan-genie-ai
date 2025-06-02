@@ -3661,7 +3661,7 @@ export namespace Prisma {
   export type EventMinAggregateOutputType = {
     id: string | null
     title: string | null
-    date_time: string | null
+    date_time: Date | null
     date_time_text: string | null
     created_at: Date | null
     updated_at: Date | null
@@ -3671,7 +3671,7 @@ export namespace Prisma {
   export type EventMaxAggregateOutputType = {
     id: string | null
     title: string | null
-    date_time: string | null
+    date_time: Date | null
     date_time_text: string | null
     created_at: Date | null
     updated_at: Date | null
@@ -3796,7 +3796,7 @@ export namespace Prisma {
   export type EventGroupByOutputType = {
     id: string
     title: string
-    date_time: string
+    date_time: Date | null
     date_time_text: string | null
     created_at: Date
     updated_at: Date
@@ -3882,7 +3882,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       title: string
-      date_time: string
+      date_time: Date | null
       date_time_text: string | null
       created_at: Date
       updated_at: Date
@@ -4313,7 +4313,7 @@ export namespace Prisma {
   interface EventFieldRefs {
     readonly id: FieldRef<"Event", 'String'>
     readonly title: FieldRef<"Event", 'String'>
-    readonly date_time: FieldRef<"Event", 'String'>
+    readonly date_time: FieldRef<"Event", 'DateTime'>
     readonly date_time_text: FieldRef<"Event", 'String'>
     readonly created_at: FieldRef<"Event", 'DateTime'>
     readonly updated_at: FieldRef<"Event", 'DateTime'>
@@ -7274,7 +7274,7 @@ export namespace Prisma {
     NOT?: EventWhereInput | EventWhereInput[]
     id?: StringFilter<"Event"> | string
     title?: StringFilter<"Event"> | string
-    date_time?: StringFilter<"Event"> | string
+    date_time?: DateTimeNullableFilter<"Event"> | Date | string | null
     date_time_text?: StringNullableFilter<"Event"> | string | null
     created_at?: DateTimeFilter<"Event"> | Date | string
     updated_at?: DateTimeFilter<"Event"> | Date | string
@@ -7285,7 +7285,7 @@ export namespace Prisma {
   export type EventOrderByWithRelationInput = {
     id?: SortOrder
     title?: SortOrder
-    date_time?: SortOrder
+    date_time?: SortOrderInput | SortOrder
     date_time_text?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
@@ -7299,7 +7299,7 @@ export namespace Prisma {
     OR?: EventWhereInput[]
     NOT?: EventWhereInput | EventWhereInput[]
     title?: StringFilter<"Event"> | string
-    date_time?: StringFilter<"Event"> | string
+    date_time?: DateTimeNullableFilter<"Event"> | Date | string | null
     date_time_text?: StringNullableFilter<"Event"> | string | null
     created_at?: DateTimeFilter<"Event"> | Date | string
     updated_at?: DateTimeFilter<"Event"> | Date | string
@@ -7310,7 +7310,7 @@ export namespace Prisma {
   export type EventOrderByWithAggregationInput = {
     id?: SortOrder
     title?: SortOrder
-    date_time?: SortOrder
+    date_time?: SortOrderInput | SortOrder
     date_time_text?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
@@ -7326,7 +7326,7 @@ export namespace Prisma {
     NOT?: EventScalarWhereWithAggregatesInput | EventScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Event"> | string
     title?: StringWithAggregatesFilter<"Event"> | string
-    date_time?: StringWithAggregatesFilter<"Event"> | string
+    date_time?: DateTimeNullableWithAggregatesFilter<"Event"> | Date | string | null
     date_time_text?: StringNullableWithAggregatesFilter<"Event"> | string | null
     created_at?: DateTimeWithAggregatesFilter<"Event"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"Event"> | Date | string
@@ -7640,7 +7640,7 @@ export namespace Prisma {
   export type EventCreateInput = {
     id?: string
     title: string
-    date_time: string
+    date_time?: Date | string | null
     date_time_text?: string | null
     created_at?: Date | string
     updated_at?: Date | string
@@ -7650,7 +7650,7 @@ export namespace Prisma {
   export type EventUncheckedCreateInput = {
     id?: string
     title: string
-    date_time: string
+    date_time?: Date | string | null
     date_time_text?: string | null
     created_at?: Date | string
     updated_at?: Date | string
@@ -7660,7 +7660,7 @@ export namespace Prisma {
   export type EventUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    date_time?: StringFieldUpdateOperationsInput | string
+    date_time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     date_time_text?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7670,7 +7670,7 @@ export namespace Prisma {
   export type EventUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    date_time?: StringFieldUpdateOperationsInput | string
+    date_time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     date_time_text?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7680,7 +7680,7 @@ export namespace Prisma {
   export type EventCreateManyInput = {
     id?: string
     title: string
-    date_time: string
+    date_time?: Date | string | null
     date_time_text?: string | null
     created_at?: Date | string
     updated_at?: Date | string
@@ -7690,7 +7690,7 @@ export namespace Prisma {
   export type EventUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    date_time?: StringFieldUpdateOperationsInput | string
+    date_time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     date_time_text?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7699,7 +7699,7 @@ export namespace Prisma {
   export type EventUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    date_time?: StringFieldUpdateOperationsInput | string
+    date_time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     date_time_text?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8043,6 +8043,17 @@ export namespace Prisma {
     user_id?: SortOrder
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type EventCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
@@ -8071,6 +8082,20 @@ export namespace Prisma {
     created_at?: SortOrder
     updated_at?: SortOrder
     user_id?: SortOrder
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type BilanCountOrderByAggregateInput = {
@@ -8372,6 +8397,10 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
   export type UserUpdateOneRequiredWithoutEventsNestedInput = {
     create?: XOR<UserCreateWithoutEventsInput, UserUncheckedCreateWithoutEventsInput>
     connectOrCreate?: UserCreateOrConnectWithoutEventsInput
@@ -8581,6 +8610,31 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -8645,7 +8699,7 @@ export namespace Prisma {
   export type EventCreateWithoutUserInput = {
     id?: string
     title: string
-    date_time: string
+    date_time?: Date | string | null
     date_time_text?: string | null
     created_at?: Date | string
     updated_at?: Date | string
@@ -8654,7 +8708,7 @@ export namespace Prisma {
   export type EventUncheckedCreateWithoutUserInput = {
     id?: string
     title: string
-    date_time: string
+    date_time?: Date | string | null
     date_time_text?: string | null
     created_at?: Date | string
     updated_at?: Date | string
@@ -8749,7 +8803,7 @@ export namespace Prisma {
     NOT?: EventScalarWhereInput | EventScalarWhereInput[]
     id?: StringFilter<"Event"> | string
     title?: StringFilter<"Event"> | string
-    date_time?: StringFilter<"Event"> | string
+    date_time?: DateTimeNullableFilter<"Event"> | Date | string | null
     date_time_text?: StringNullableFilter<"Event"> | string | null
     created_at?: DateTimeFilter<"Event"> | Date | string
     updated_at?: DateTimeFilter<"Event"> | Date | string
@@ -9214,7 +9268,7 @@ export namespace Prisma {
   export type EventCreateManyUserInput = {
     id?: string
     title: string
-    date_time: string
+    date_time?: Date | string | null
     date_time_text?: string | null
     created_at?: Date | string
     updated_at?: Date | string
@@ -9265,7 +9319,7 @@ export namespace Prisma {
   export type EventUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    date_time?: StringFieldUpdateOperationsInput | string
+    date_time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     date_time_text?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9274,7 +9328,7 @@ export namespace Prisma {
   export type EventUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    date_time?: StringFieldUpdateOperationsInput | string
+    date_time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     date_time_text?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9283,7 +9337,7 @@ export namespace Prisma {
   export type EventUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    date_time?: StringFieldUpdateOperationsInput | string
+    date_time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     date_time_text?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string

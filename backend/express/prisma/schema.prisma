@@ -45,14 +45,14 @@ model Task {
 }
 
 model Event {
-  id             String   @id @default(uuid())
+  id             String    @id @default(uuid())
   title          String
-  date_time      String
+  date_time      DateTime?
   date_time_text String?
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
   user_id        String
-  user           User     @relation(fields: [user_id], references: [id])
+  user           User      @relation(fields: [user_id], references: [id])
 }
 
 model Bilan {

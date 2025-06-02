@@ -5,9 +5,9 @@ import { AnalysisResult } from "./nlpService";
 export interface Event {
   id: string;
   title: string;
-  date_time: string;
-  created_at: string;
-  updated_at: string;
+  date_time: Date;
+  created_at: Date;
+  updated_at: Date;
   user_id: string;
 }
 

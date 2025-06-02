@@ -24,20 +24,57 @@ router.post("/save", async (req, res) => {
     if (type === "Événement") {
       // Create event
       const title = entities.TITRE?.[0] || "Untitled Event";
-      let date_time = entities.DATE_HEURE?.[0] || new Date().toISOString();
+      let date_time = null;
       let date_time_text = null;
 
-      // Try to parse as JSON with originalText and parsedDate
+      // Handle date and time
       if (entities.DATE_HEURE?.[0]) {
-        try {
-          const parsed = JSON.parse(entities.DATE_HEURE[0]);
-          if (parsed.originalText && parsed.parsedDate) {
-            date_time = parsed.parsedDate;
-            date_time_text = parsed.originalText;
+        // The input text should be saved as date_time_text
+        date_time_text = entities.DATE_HEURE[0];
+
+        // Check if we have an interpretation (parsedDate)
+        if (entities.DATE_HEURE_PARSED?.[0]) {
+          try {
+            // Convert the parsed date string to a JavaScript Date object
+            date_time = new Date(entities.DATE_HEURE_PARSED[0]);
+
+            // Check if the date is valid
+            if (isNaN(date_time.getTime())) {
+              console.warn(
+                "Invalid date parsed:",
+                entities.DATE_HEURE_PARSED[0]
+              );
+              date_time = null;
+            }
+          } catch (e) {
+            console.error("Error parsing date:", e);
+            date_time = null;
           }
-        } catch (e) {
-          // Not JSON, keep as is
-          date_time_text = entities.DATE_HEURE[0];
+        } else {
+          // Fallback to the previous JSON parsing logic
+          try {
+            const parsed = JSON.parse(entities.DATE_HEURE[0]);
+            if (parsed.originalText && parsed.parsedDate) {
+              date_time_text = parsed.originalText;
+
+              try {
+                // Convert parsedDate to Date object
+                date_time = new Date(parsed.parsedDate);
+
+                // Validate the date
+                if (isNaN(date_time.getTime())) {
+                  console.warn("Invalid date from JSON:", parsed.parsedDate);
+                  date_time = null;
+                }
+              } catch (e) {
+                console.error("Error parsing JSON date:", e);
+                date_time = null;
+              }
+            }
+          } catch (e) {
+            // Not JSON, already handled date_time_text above
+            date_time = null;
+          }
         }
       }
 
