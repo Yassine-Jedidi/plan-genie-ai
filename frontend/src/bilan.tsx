@@ -43,7 +43,7 @@ import {
   ChevronRight,
   History,
 } from "lucide-react";
-import { cn, formatDate, utcToLocal } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { DatePicker } from "@/components/date-picker";
 
 const BilanPage = () => {
@@ -98,18 +98,15 @@ const BilanPage = () => {
   };
 
   // Format deadline for display
-  const formatDeadline = (deadline: string | null) => {
+  const formatDeadline = (deadline: Date | null) => {
     if (!deadline) return null;
 
     try {
-      const date = utcToLocal(deadline);
-      if (!date) return deadline;
-
-      if (isToday(date)) {
+      if (isToday(deadline)) {
         return "Today";
       }
 
-      return formatDate(deadline, {
+      return formatDate(deadline.toISOString(), {
         month: "short",
         day: "numeric",
         year: "numeric",
@@ -118,45 +115,39 @@ const BilanPage = () => {
         hour12: false,
       });
     } catch {
-      return deadline;
+      return deadline.toString();
     }
   };
 
   // Check if a task deadline is approaching (within 3 days)
-  const isDeadlineApproaching = (deadline: string | null) => {
+  const isDeadlineApproaching = (deadline: Date | null) => {
     if (!deadline) return false;
 
     try {
-      const deadlineDate = utcToLocal(deadline);
-      if (!deadlineDate) return false;
-
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
       // Task is due today or in the past
-      if (isBefore(deadlineDate, addDays(today, 1))) {
+      if (isBefore(deadline, addDays(today, 1))) {
         return true;
       }
 
       // Task is due within the next 7 days
-      return isBefore(deadlineDate, addDays(today, 8));
+      return isBefore(deadline, addDays(today, 8));
     } catch {
       return false;
     }
   };
 
   // Check if a task is overdue
-  const isTaskOverdue = (deadline: string | null) => {
+  const isTaskOverdue = (deadline: Date | null) => {
     if (!deadline) return false;
 
     try {
-      const deadlineDate = utcToLocal(deadline);
-      if (!deadlineDate) return false;
-
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      return isBefore(deadlineDate, today);
+      return isBefore(deadline, today);
     } catch {
       return false;
     }

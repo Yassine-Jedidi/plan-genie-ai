@@ -7,14 +7,14 @@ export function cn(...inputs: ClassValue[]) {
 
 /**
  * Converts a UTC date string to the user's local timezone
- * @param dateString - ISO date string in UTC
+ * @param date - ISO date string in UTC or Date object
  * @returns Date object in local timezone
  */
-export function utcToLocal(dateString: string | null): Date | null {
-  if (!dateString) return null;
+export function utcToLocal(date: string | Date | null): Date | null {
+  if (!date) return null;
   
   try {
-    return new Date(dateString);
+    return typeof date === 'string' ? new Date(date) : date;
   } catch {
     return null;
   }
@@ -22,12 +22,12 @@ export function utcToLocal(dateString: string | null): Date | null {
 
 /**
  * Formats a date for display using the user's locale and timezone
- * @param dateString - ISO date string in UTC
+ * @param date - ISO date string in UTC or Date object
  * @param options - Intl.DateTimeFormatOptions
  * @returns Formatted date string in local timezone
  */
 export function formatDate(
-  dateString: string | null, 
+  date: string | Date | null, 
   options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'short',
@@ -37,8 +37,8 @@ export function formatDate(
     hour12: false
   }
 ): string {
-  const date = utcToLocal(dateString);
-  if (!date) return 'No date';
+  const dateObj = typeof date === 'string' ? utcToLocal(date) : date;
+  if (!dateObj) return 'No date';
   
   // Check if time formatting is needed
   const hasTimeOptions = options.hour !== undefined || options.minute !== undefined;
@@ -53,7 +53,7 @@ export function formatDate(
   
   // If no time is needed, return just the date
   if (!hasTimeOptions) {
-    return dateFormatter.format(date);
+    return dateFormatter.format(dateObj);
   }
   
   // Format the time part
@@ -64,24 +64,24 @@ export function formatDate(
   });
   
   // Combine date and time with a space instead of "at"
-  return `${dateFormatter.format(date)} ${timeFormatter.format(date)}`;
+  return `${dateFormatter.format(dateObj)} ${timeFormatter.format(dateObj)}`;
 }
 
 /**
  * Formats a time-only value from UTC to local timezone
- * @param dateString - ISO date string in UTC
+ * @param date - ISO date string in UTC or Date object
  * @returns Formatted time string in local timezone
  */
 export function formatTime(
-  dateString: string | null,
+  date: string | Date | null,
   options: Intl.DateTimeFormatOptions = {
     hour: 'numeric',
     minute: '2-digit',
     hour12: false
   }
 ): string {
-  const date = utcToLocal(dateString);
-  if (!date) return 'No time';
+  const dateObj = typeof date === 'string' ? utcToLocal(date) : date;
+  if (!dateObj) return 'No time';
   
-  return new Intl.DateTimeFormat('en-US', options).format(date);
+  return new Intl.DateTimeFormat('en-US', options).format(dateObj);
 }
