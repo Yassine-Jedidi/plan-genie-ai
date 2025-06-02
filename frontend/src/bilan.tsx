@@ -59,6 +59,7 @@ const BilanPage = () => {
   const [notesInput, setNotesInput] = useState<string>("");
   const [totalMinutes, setTotalMinutes] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Format date for display - fixing potential timezone issues
   const formatDateDisplay = (dateString: string) => {
@@ -261,6 +262,7 @@ const BilanPage = () => {
     if (!bilan) return;
 
     try {
+      setIsSaving(true);
       const minutes = parseTimeInput(timeInput);
 
       if (isNaN(minutes) || minutes < 0) {
@@ -270,6 +272,7 @@ const BilanPage = () => {
             position: "top-right",
           }
         );
+        setIsSaving(false);
         return;
       }
 
@@ -278,11 +281,13 @@ const BilanPage = () => {
       // Refresh bilan data
       await fetchBilanForDate(selectedDate);
 
-      toast.success("Time entry updated");
+      toast.success("Task time updated successfully");
       cancelEditing();
     } catch (error) {
       console.error("Error saving time entry:", error);
       toast.error("Failed to update time entry");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -384,8 +389,18 @@ const BilanPage = () => {
   const fetchRecentBilans = async () => {
     try {
       setLoadingRecentBilans(true);
-      const data = await bilanService.getRecentBilans(10);
-      setRecentBilans(data);
+      const bilansData = await bilanService.getRecentBilans(7);
+
+      // Filter to ensure we only have the last 7 days
+      const lastWeek = subDays(new Date(), 7);
+      lastWeek.setHours(0, 0, 0, 0);
+
+      const filteredBilans = bilansData.filter((bilan) => {
+        const bilanDate = new Date(bilan.date);
+        return bilanDate >= lastWeek;
+      });
+
+      setRecentBilans(filteredBilans);
     } catch (error) {
       console.error("Error fetching recent bilans:", error);
       toast.error("Failed to load recent summaries. Please try again.");
@@ -437,9 +452,19 @@ const BilanPage = () => {
             variant="default"
             size="sm"
             onClick={() => saveTimeEntry(taskId)}
+            disabled={isSaving}
           >
-            <Save className="h-4 w-4 mr-1" />
-            Save
+            {isSaving ? (
+              <>
+                <span className="mr-1 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent"></span>
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4 mr-1" />
+                Save
+              </>
+            )}
           </Button>
         </div>
       </div>
@@ -820,7 +845,7 @@ const BilanPage = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-lg">Recent Summaries</CardTitle>
               <CardDescription>
-                View your daily summaries history
+                View your daily summaries from the last 7 days
               </CardDescription>
             </CardHeader>
             <CardContent>{renderBilanHistory()}</CardContent>
@@ -922,9 +947,19 @@ const BilanPage = () => {
                                   variant="default"
                                   size="sm"
                                   onClick={() => saveTimeEntry(entry.task_id)}
+                                  disabled={isSaving}
                                 >
-                                  <Save className="h-4 w-4 mr-1" />
-                                  Save
+                                  {isSaving ? (
+                                    <>
+                                      <span className="mr-1 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent"></span>
+                                      Saving...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Save className="h-4 w-4 mr-1" />
+                                      Save
+                                    </>
+                                  )}
                                 </Button>
                               </div>
                             ) : (
