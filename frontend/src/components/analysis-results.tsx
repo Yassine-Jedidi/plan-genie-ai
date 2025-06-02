@@ -288,9 +288,123 @@ export function AnalysisResults({
         Task: "Tâche",
         Event: "Événement",
       };
+
+      // Make a deep copy of the results to avoid modifying the original
+      const updatedEntities = JSON.parse(JSON.stringify(results.entities));
+      let modifiedPayload = false;
+
+      console.log("Original entities:", updatedEntities);
+
+      // If saving an event, ensure correct field mapping from task fields if needed
+      if (results.type === "Event") {
+        // If we have DELAI but not DATE_HEURE, map task fields to event fields
+        if (
+          updatedEntities["DELAI"]?.length &&
+          !updatedEntities["DATE_HEURE"]?.length
+        ) {
+          console.log("Converting task deadline to event date_time");
+          updatedEntities["DATE_HEURE"] = updatedEntities["DELAI"];
+          modifiedPayload = true;
+
+          // Also convert the parsed date if available
+          if (updatedEntities["DELAI_PARSED"]?.length) {
+            updatedEntities["DATE_HEURE_PARSED"] =
+              updatedEntities["DELAI_PARSED"];
+          }
+
+          // And convert the text representation if available
+          if (updatedEntities["DELAI_TEXT"]?.length) {
+            updatedEntities["DATE_HEURE_TEXT"] = updatedEntities["DELAI_TEXT"];
+          }
+        }
+
+        // Extract parsed date from DATE_HEURE if it's in JSON format
+        if (updatedEntities["DATE_HEURE"]?.[0]) {
+          try {
+            const dateValue = updatedEntities["DATE_HEURE"][0];
+            const parsed = JSON.parse(dateValue);
+
+            if (parsed.originalText && parsed.parsedDate) {
+              console.log("Extracting parsed date from JSON in DATE_HEURE");
+              // Store the original text and parsed date separately
+              updatedEntities["DATE_HEURE"] = [parsed.originalText];
+              updatedEntities["DATE_HEURE_PARSED"] = [parsed.parsedDate];
+              modifiedPayload = true;
+            }
+          } catch (_) {
+            // Not JSON, try to parse it directly if DATE_HEURE_PARSED is not already set
+            if (!updatedEntities["DATE_HEURE_PARSED"]?.length) {
+              const { parsedDate } = parseDate(
+                updatedEntities["DATE_HEURE"][0]
+              );
+              if (parsedDate) {
+                console.log(
+                  "Successfully parsed date from DATE_HEURE text:",
+                  parsedDate
+                );
+                updatedEntities["DATE_HEURE_PARSED"] = [
+                  parsedDate.toISOString(),
+                ];
+                modifiedPayload = true;
+              }
+            }
+          }
+        }
+
+        // Ensure we have DATE_HEURE_TEXT for display purposes
+        if (
+          updatedEntities["DATE_HEURE"]?.length &&
+          !updatedEntities["DATE_HEURE_TEXT"]?.length
+        ) {
+          updatedEntities["DATE_HEURE_TEXT"] = updatedEntities["DATE_HEURE"];
+        }
+      }
+
+      // If we have DELAI in JSON format for tasks, extract it correctly
+      if (results.type === "Task" && updatedEntities["DELAI"]?.[0]) {
+        try {
+          const delaiValue = updatedEntities["DELAI"][0];
+          const parsed = JSON.parse(delaiValue);
+
+          if (parsed.originalText && parsed.parsedDate) {
+            console.log("Extracting parsed date from JSON in DELAI");
+            // Store the original text and parsed date separately
+            updatedEntities["DELAI"] = [parsed.originalText];
+            updatedEntities["DELAI_PARSED"] = [parsed.parsedDate];
+            modifiedPayload = true;
+          }
+        } catch (_) {
+          // Not JSON, try to parse it directly if DELAI_PARSED is not already set
+          if (!updatedEntities["DELAI_PARSED"]?.length) {
+            const { parsedDate } = parseDate(updatedEntities["DELAI"][0]);
+            if (parsedDate) {
+              console.log(
+                "Successfully parsed date from DELAI text:",
+                parsedDate
+              );
+              updatedEntities["DELAI_PARSED"] = [parsedDate.toISOString()];
+              modifiedPayload = true;
+            }
+          }
+        }
+
+        // Ensure we have DELAI_TEXT for display purposes
+        if (
+          updatedEntities["DELAI"]?.length &&
+          !updatedEntities["DELAI_TEXT"]?.length
+        ) {
+          updatedEntities["DELAI_TEXT"] = updatedEntities["DELAI"];
+        }
+      }
+
+      if (modifiedPayload) {
+        console.log("Modified entities for saving:", updatedEntities);
+      }
+
       const payload = {
         ...results,
         type: typeMap[results.type] || results.type,
+        entities: updatedEntities,
       };
 
       if (results.type === "Event") {
