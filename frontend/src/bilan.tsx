@@ -106,7 +106,7 @@ const BilanPage = () => {
         return "Today";
       }
 
-      return formatDate(deadline.toISOString(), {
+      return formatDate(deadline, {
         month: "short",
         day: "numeric",
         year: "numeric",
