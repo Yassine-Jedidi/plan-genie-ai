@@ -7,7 +7,7 @@ import * as chrono from 'chrono-node';
 export interface Task {
   id: string;
   title: string;
-  deadline: string | null;
+  deadline: Date | null;
   deadline_text?: string | null;
   priority: string | null;
   status: string | null;
