@@ -36,7 +36,6 @@ const TasksPage = () => {
           <SidebarTrigger className="h-4 w-4 mt-2" />
         </div>
         <div className="p-4 flex flex-col h-[calc(100vh-60px)]">
-          <h1 className="text-2xl font-bold mb-4">Tasks</h1>
           <div className="space-y-3">
             <Skeleton className="h-8 w-3/4" />
             <Skeleton className="h-24 w-full" />
@@ -55,15 +54,13 @@ const TasksPage = () => {
       </div>
 
       <div className="p-4 flex flex-col h-[calc(100vh-60px)]">
-        <h1 className="text-2xl font-bold mb-4">Tasks</h1>
-
         <Tabs
           defaultValue="table"
           value={activeTab}
           onValueChange={setActiveTab}
           className="w-full"
         >
-          <TabsList className="mb-4 bg-primary text-white">
+          <TabsList className="mb-4 bg-primary/80 text-primary-foreground">
             <TabsTrigger value="table">Table</TabsTrigger>
             <TabsTrigger value="kanban">Kanban</TabsTrigger>
           </TabsList>

@@ -13,8 +13,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils";
@@ -45,7 +43,6 @@ interface TasksKanbanProps {
 const TasksKanban: FC<TasksKanbanProps> = ({ tasks = [] }) => {
   const [localTasks, setLocalTasks] = useState<Task[]>([]);
   const [loadingTasks, setLoadingTasks] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState<Record<string, number>>({
     Planned: 1,
     "In Progress": 1,
@@ -127,28 +124,11 @@ const TasksKanban: FC<TasksKanbanProps> = ({ tasks = [] }) => {
     }
   };
 
-  // Filter tasks based on search term
-  const filterTasks = (taskList: Task[]) => {
-    if (!searchTerm) return taskList;
-
-    return taskList.filter(
-      (task) =>
-        task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (task.priority &&
-          task.priority.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
-  };
-
   // Map tasks to statuses with pagination
   const getTasksByStatus = (statusName: string) => {
-    // First check if there's any task with exact matching status
+    // Get tasks with matching status
     const tasksWithStatus = localTasks.filter(
       (task) => task.status === statusName
-    );
-
-    // Filter tasks based on search term
-    const filteredTasks = filterTasks(
-      tasksWithStatus.length > 0 ? tasksWithStatus : []
     );
 
     // Get current page for this status
@@ -159,9 +139,9 @@ const TasksKanban: FC<TasksKanbanProps> = ({ tasks = [] }) => {
     const endIndex = startIndex + TASKS_PER_PAGE;
 
     return {
-      tasks: filteredTasks.slice(startIndex, endIndex),
-      totalTasks: filteredTasks.length,
-      totalPages: Math.ceil(filteredTasks.length / TASKS_PER_PAGE),
+      tasks: tasksWithStatus.slice(startIndex, endIndex),
+      totalTasks: tasksWithStatus.length,
+      totalPages: Math.ceil(tasksWithStatus.length / TASKS_PER_PAGE),
     };
   };
 
@@ -194,18 +174,6 @@ const TasksKanban: FC<TasksKanbanProps> = ({ tasks = [] }) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex justify-between items-center mb-4">
-        <div className="relative w-64 ml-auto">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search tasks..."
-            className="pl-8"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </div>
-
       {/* Key fix: Use a fixed height container without nested overflow scrolls */}
       <div className="h-full">
         <KanbanProvider onDragEnd={handleDragEnd} className="flex h-full gap-4">
@@ -221,7 +189,7 @@ const TasksKanban: FC<TasksKanbanProps> = ({ tasks = [] }) => {
               <KanbanBoard
                 key={status.name}
                 id={status.name}
-                className="flex-1 min-w-[280px] flex flex-col h-full"
+                className="flex-1 min-w-[280px] flex flex-col h-full bg-primary/10 dark:bg-primary/20"
               >
                 {/* Header section */}
                 <div className="mb-2">

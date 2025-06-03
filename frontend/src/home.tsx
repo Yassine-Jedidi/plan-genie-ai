@@ -276,8 +276,6 @@ function HomePage() {
         <SidebarTrigger className="h-4 w-4 mt-2" />
       </div>
       <div className="p-4 flex flex-col h-[calc(100vh-60px)]">
-        <h1 className="text-2xl font-bold mb-4">Task Analysis</h1>
-
         <div className="flex-grow overflow-auto pb-4 flex justify-center">
           <div className="w-full max-w-4xl">
             {results && (

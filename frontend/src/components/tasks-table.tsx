@@ -1250,7 +1250,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <div className="overflow-hidden rounded-lg border border-border bg-background min-w-full">
+        <div className="overflow-hidden rounded-lg border border-border bg-primary/5 dark:bg-primary/10 min-w-full">
           <Table className="w-full">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (

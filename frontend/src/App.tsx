@@ -20,7 +20,6 @@ import TasksPage from "./tasks";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import SettingsPage from "./settings";
-import { TasksKanban } from "./tasks-kanban";
 import { EventsCalendar } from "./events-calendar";
 import BilanPage from "./bilan";
 
@@ -79,15 +78,6 @@ function AppContent() {
                   <>
                     <AppSidebar />
                     <SettingsPage />
-                  </>
-                }
-              />
-              <Route
-                path="/tasks-kanban"
-                element={
-                  <>
-                    <AppSidebar />
-                    <TasksKanban />
                   </>
                 }
               />
