@@ -20,7 +20,6 @@ import {
   LogOut,
   LifeBuoy,
   BarChart,
-  Kanban,
   ClipboardCheck,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
@@ -51,19 +50,14 @@ const items = [
     icon: ClipboardList,
   },
   {
-    title: "Tasks Kanban",
-    url: "/tasks-kanban",
-    icon: Kanban,
+    title: "Events",
+    url: "/events",
+    icon: Calendar,
   },
   {
     title: "Daily Summary",
     url: "/daily",
     icon: ClipboardCheck,
-  },
-  {
-    title: "Calendar",
-    url: "/events",
-    icon: Calendar,
   },
   {
     title: "Analytics",
