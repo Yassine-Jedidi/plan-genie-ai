@@ -98,7 +98,7 @@ export function AppSidebar() {
 
   return (
     <>
-      <Sidebar className="border-r border-r-primary/30">
+      <Sidebar className="border-r border-r-primary/30 bg-card">
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupLabel className="text-primary">
@@ -131,11 +131,11 @@ export function AppSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
-        <SidebarFooter className="border-t border-t-primary/30">
+        <SidebarFooter>
           <SidebarGroup>
             <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton className="w-full justify-between gap-3 h-12 hover:bg-primary/10">
+                <SidebarMenuButton className="w-full justify-between gap-3 h-12 hover:bg-primary/10 bg-card-foreground/5">
                   {loading ? (
                     <div className="flex items-center gap-2 w-full">
                       <Skeleton className="h-8 w-8 rounded-full" />
