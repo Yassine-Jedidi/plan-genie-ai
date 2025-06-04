@@ -16,6 +16,11 @@ export interface CalendarEvent {
   date_time: Date;
 }
 
+export interface CalendarEventForApi {
+  title: string;
+  date_time: string;
+}
+
 export const eventService = {
   async saveEvent(analysisResult: AnalysisResult): Promise<Event> {
     try {
@@ -41,7 +46,7 @@ export const eventService = {
     }
   },
   
-  async createManualEvent(event: CalendarEvent): Promise<Event> {
+  async createManualEvent(event: CalendarEventForApi): Promise<Event> {
     try {
       const { data } = await api.post("/events/manual", event);
       return data;

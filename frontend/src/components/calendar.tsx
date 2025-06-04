@@ -110,8 +110,13 @@ export function FullScreenCalendar({
       return;
     }
 
+    console.log("newEvent.date_time before sending:", newEvent.date_time);
+
     eventService
-      .createManualEvent(newEvent)
+      .createManualEvent({
+        ...newEvent,
+        date_time: newEvent.date_time.toISOString(),
+      })
       .then(() => {
         toast.success("Event created successfully");
         console.log("Event created successfully", newEvent);
@@ -460,7 +465,17 @@ export function FullScreenCalendar({
                       className="p-2 bg-background"
                       selected={newEvent.date_time}
                       onSelect={(date) =>
-                        date && setNewEvent({ ...newEvent, date_time: date })
+                        date &&
+                        setNewEvent((prev) => {
+                          const newDateTime = new Date(date);
+                          newDateTime.setHours(
+                            prev.date_time.getHours(),
+                            prev.date_time.getMinutes(),
+                            0,
+                            0
+                          );
+                          return { ...prev, date_time: newDateTime };
+                        })
                       }
                     />
                     <div className="border-t border-border p-3">
@@ -472,12 +487,23 @@ export function FullScreenCalendar({
                           <Input
                             id="event-time"
                             type="time"
-                            defaultValue={`${String(
+                            value={`${String(
                               newEvent.date_time.getHours()
                             ).padStart(2, "0")}:${String(
                               newEvent.date_time.getMinutes()
                             ).padStart(2, "0")}`}
                             className="peer ps-9 [&::-webkit-calendar-picker-indicator]:hidden"
+                            onChange={(e) => {
+                              const [hours, minutes] = e.target.value
+                                .split(":")
+                                .map(Number);
+                              const newDateTime = new Date(newEvent.date_time);
+                              newDateTime.setHours(hours, minutes, 0, 0);
+                              setNewEvent({
+                                ...newEvent,
+                                date_time: newDateTime,
+                              });
+                            }}
                           />
                           <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                             <Clock
