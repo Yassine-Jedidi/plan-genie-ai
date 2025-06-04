@@ -1,10 +1,9 @@
-"use client";
-
 import { FullScreenCalendar } from "@/components/calendar";
 import { SidebarTrigger } from "./components/ui/sidebar";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { eventService, Event } from "@/services/eventService";
+import { CalendarSkeleton } from "@/components/calendar-skeleton";
 
 function groupEventsByDay(events: Event[]): { day: Date; events: Event[] }[] {
   const map = new Map<string, { day: Date; events: Event[] }>();
@@ -50,9 +49,7 @@ function EventsCalendar() {
       </div>
       <div className="flex h-screen flex-1 flex-col scale-90">
         {authLoading || loading ? (
-          <div className="flex items-center justify-center h-full">
-            Loading events...
-          </div>
+          <CalendarSkeleton />
         ) : error ? (
           <div className="flex items-center justify-center h-full text-red-500">
             {error}
