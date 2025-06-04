@@ -20,6 +20,7 @@ import {
   PlusCircleIcon,
   SearchIcon,
   Clock,
+  Loader2,
 } from "lucide-react";
 
 import { cn, formatTime } from "@/lib/utils";
@@ -77,6 +78,7 @@ export function FullScreenCalendar({
   });
   const firstDayCurrentMonth = parse(currentMonth, "MMM-yyyy", new Date());
   const isMobile = useIsMobile();
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const days = eachDayOfInterval({
     start: startOfWeek(firstDayCurrentMonth),
@@ -110,6 +112,8 @@ export function FullScreenCalendar({
       return;
     }
 
+    setIsLoading(true);
+
     console.log("newEvent.date_time before sending:", newEvent.date_time);
 
     eventService
@@ -118,6 +122,7 @@ export function FullScreenCalendar({
         date_time: newEvent.date_time.toISOString(),
       })
       .then(() => {
+        setIsLoading(false);
         toast.success("Event created successfully");
         console.log("Event created successfully", newEvent);
         setIsNewEventDialogOpen(false);
@@ -128,6 +133,7 @@ export function FullScreenCalendar({
       })
       .catch((error: Error) => {
         toast.error("Failed to create event: " + error.message);
+        setIsLoading(false);
       });
   };
 
@@ -527,7 +533,16 @@ export function FullScreenCalendar({
               >
                 Cancel
               </Button>
-              <Button type="submit">Create Event</Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  "Create Event"
+                )}
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
