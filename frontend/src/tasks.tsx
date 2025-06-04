@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Task, taskService } from "./services/taskService";
 import TasksTable from "./components/tasks-table";
 import { SidebarTrigger } from "@/components/ui/sidebar";

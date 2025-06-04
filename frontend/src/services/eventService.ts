@@ -11,6 +11,11 @@ export interface Event {
   user_id: string;
 }
 
+export interface CalendarEvent {
+  title: string;
+  date_time: Date;
+}
+
 export const eventService = {
   async saveEvent(analysisResult: AnalysisResult): Promise<Event> {
     try {
@@ -34,5 +39,17 @@ export const eventService = {
       }
       throw new Error("Failed to fetch events");
     }
-  }
-}; 
+  },
+  
+  async createManualEvent(event: CalendarEvent): Promise<Event> {
+    try {
+      const { data } = await api.post("/events/manual", event);
+      return data;
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        throw new Error(error.response.data?.error || "Failed to save event");
+      }
+      throw new Error("Failed to save event");
+    }
+  },
+};

@@ -137,4 +137,60 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
+// Save manual event from calendar
+router.post("/manual", async (req, res) => {
+  try {
+    if (!prisma) {
+      return res
+        .status(500)
+        .json({ error: "Database connection not available" });
+    }
+
+    const { title, date_time } = req.body;
+
+    if (!title || !date_time) {
+      return res
+        .status(400)
+        .json({ error: "Title and date_time are required" });
+    }
+
+    // Check if user exists in the database
+    let dbUser = await prisma.user.findUnique({
+      where: { id: req.user.id },
+    });
+
+    // If user doesn't exist in database, create them
+    if (!dbUser) {
+      dbUser = await prisma.user.create({
+        data: {
+          id: req.user.id,
+          email: req.user.email,
+        },
+      });
+    }
+
+    // Parse date_time if it's a string
+    const parsedDateTime =
+      typeof date_time === "string" ? new Date(date_time) : date_time;
+
+    // Validate date
+    if (isNaN(parsedDateTime.getTime())) {
+      return res.status(400).json({ error: "Invalid date format" });
+    }
+
+    const event = await prisma.event.create({
+      data: {
+        title,
+        date_time: parsedDateTime,
+        user_id: req.user.id,
+      },
+    });
+
+    return res.status(201).json(event);
+  } catch (error) {
+    console.error("Error saving manual event:", error);
+    res.status(500).json({ error: "Failed to save: " + error.message });
+  }
+});
+
 module.exports = router;

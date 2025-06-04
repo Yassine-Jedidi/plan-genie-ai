@@ -26,15 +26,21 @@ function EventsCalendar() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchEvents = () => {
     if (!user) return;
+
     setLoading(true);
     setError(null);
+
     eventService
       .getEvents(user.id)
       .then((events) => setCalendarData(groupEventsByDay(events)))
       .catch((err) => setError(err.message || "Failed to load events"))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchEvents();
   }, [user]);
 
   return (
@@ -52,7 +58,7 @@ function EventsCalendar() {
             {error}
           </div>
         ) : (
-          <FullScreenCalendar data={calendarData} />
+          <FullScreenCalendar data={calendarData} onEventChange={fetchEvents} />
         )}
       </div>
     </>

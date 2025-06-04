@@ -19,14 +19,26 @@ import {
   ChevronRightIcon,
   PlusCircleIcon,
   SearchIcon,
+  Clock,
 } from "lucide-react";
 
 import { cn, formatTime } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Event } from "@/services/eventService";
+import { CalendarEvent, Event, eventService } from "@/services/eventService";
 import { EventDialog } from "@/components/event-dialog";
+import { Calendar } from "@/components/date-time-picker";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 interface CalendarData {
   day: Date;
@@ -35,6 +47,7 @@ interface CalendarData {
 
 interface FullScreenCalendarProps {
   data: CalendarData[];
+  onEventChange?: () => void;
 }
 
 const colStartClasses = [
@@ -47,13 +60,21 @@ const colStartClasses = [
   "col-start-7",
 ];
 
-export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
+export function FullScreenCalendar({
+  data,
+  onEventChange,
+}: FullScreenCalendarProps) {
   const today = startOfToday();
   const [selectedDay, setSelectedDay] = React.useState(today);
   const [currentMonth, setCurrentMonth] = React.useState(
     format(today, "MMM-yyyy")
   );
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [isNewEventDialogOpen, setIsNewEventDialogOpen] = React.useState(false);
+  const [newEvent, setNewEvent] = React.useState<CalendarEvent>({
+    title: "",
+    date_time: new Date(),
+  });
   const firstDayCurrentMonth = parse(currentMonth, "MMM-yyyy", new Date());
   const isMobile = useIsMobile();
 
@@ -79,6 +100,30 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
   const handleDayClick = (day: Date) => {
     setSelectedDay(day);
     setIsDialogOpen(true);
+  };
+
+  const handleNewEventSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!newEvent.title || !newEvent.date_time) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    eventService
+      .createManualEvent(newEvent)
+      .then(() => {
+        toast.success("Event created successfully");
+        console.log("Event created successfully", newEvent);
+        setIsNewEventDialogOpen(false);
+        setNewEvent({ title: "", date_time: new Date() });
+        if (onEventChange) {
+          onEventChange();
+        }
+      })
+      .catch((error: Error) => {
+        toast.error("Failed to create event: " + error.message);
+      });
   };
 
   const selectedDayEvents =
@@ -147,7 +192,10 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
             className="block w-full md:hidden"
           />
 
-          <Button className="w-full gap-2 md:w-auto">
+          <Button
+            className="w-full gap-2 md:w-auto"
+            onClick={() => setIsNewEventDialogOpen(true)}
+          >
             <PlusCircleIcon size={16} strokeWidth={2} aria-hidden="true" />
             <span>New Event</span>
           </Button>
@@ -378,6 +426,86 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
         selectedDate={selectedDay}
         events={selectedDayEvents}
       />
+
+      <Dialog
+        open={isNewEventDialogOpen}
+        onOpenChange={setIsNewEventDialogOpen}
+      >
+        <DialogContent className="sm:max-w-[425px]">
+          <form onSubmit={handleNewEventSubmit}>
+            <DialogHeader>
+              <DialogTitle>Create New Event</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="title" className="text-right">
+                  Title
+                </Label>
+                <Input
+                  id="title"
+                  className="col-span-3"
+                  value={newEvent.title}
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, title: e.target.value })
+                  }
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-4 items-start gap-4">
+                <Label className="text-right pt-2">Date & Time</Label>
+                <div className="col-span-3">
+                  <div className="rounded-lg border border-border">
+                    <Calendar
+                      mode="single"
+                      className="p-2 bg-background"
+                      selected={newEvent.date_time}
+                      onSelect={(date) =>
+                        date && setNewEvent({ ...newEvent, date_time: date })
+                      }
+                    />
+                    <div className="border-t border-border p-3">
+                      <div className="flex items-center gap-3">
+                        <Label htmlFor="event-time" className="text-xs">
+                          Enter time
+                        </Label>
+                        <div className="relative grow">
+                          <Input
+                            id="event-time"
+                            type="time"
+                            defaultValue={`${String(
+                              newEvent.date_time.getHours()
+                            ).padStart(2, "0")}:${String(
+                              newEvent.date_time.getMinutes()
+                            ).padStart(2, "0")}`}
+                            className="peer ps-9 [&::-webkit-calendar-picker-indicator]:hidden"
+                          />
+                          <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                            <Clock
+                              size={16}
+                              strokeWidth={2}
+                              aria-hidden="true"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsNewEventDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">Create Event</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
