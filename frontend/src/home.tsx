@@ -5,6 +5,7 @@ import { nlpService, AnalysisResult } from "@/services/nlpService";
 import { PromptInputWithActions } from "./components/input";
 import { AnalysisResults } from "@/components/analysis-results";
 import { ShiningText } from "./components/ui/shining-text";
+import { WelcomeTextLoop } from "./components/welcome";
 
 function HomePage() {
   const [inputText, setInputText] = useState("");
@@ -313,6 +314,11 @@ function HomePage() {
             {analyzing && (
               <div className="flex justify-center items-center h-full">
                 <ShiningText text={"Plan Genie AI is thinking..."} />
+              </div>
+            )}
+            {!analyzing && !results && (
+              <div className="flex justify-center items-center h-full">
+                <WelcomeTextLoop />
               </div>
             )}
           </div>
