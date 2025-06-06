@@ -168,6 +168,19 @@ exports.Prisma.BilanEntryScalarFieldEnum = {
   task_id: 'task_id'
 };
 
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  message: 'message',
+  type: 'type',
+  read: 'read',
+  created_at: 'created_at',
+  scheduled_for: 'scheduled_for',
+  user_id: 'user_id',
+  task_id: 'task_id',
+  event_id: 'event_id'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -189,7 +202,8 @@ exports.Prisma.ModelName = {
   Task: 'Task',
   Event: 'Event',
   Bilan: 'Bilan',
-  BilanEntry: 'BilanEntry'
+  BilanEntry: 'BilanEntry',
+  Notification: 'Notification'
 };
 
 /**

@@ -19,6 +19,7 @@ const tasksRoutes = require("./routes/tasks");
 const eventsRoutes = require("./routes/events");
 const audioRoutes = require("./routes/audio");
 const bilanRoutes = require("./routes/bilan");
+const notificationsRoutes = require("./routes/notifications");
 
 // Apply routes
 app.use("/auth", authRoutes);
@@ -27,6 +28,7 @@ app.use("/tasks", tasksRoutes);
 app.use("/events", eventsRoutes);
 app.use("/audio", audioRoutes);
 app.use("/bilan", bilanRoutes);
+app.use("/notifications", notificationsRoutes);
 
 // Handle OPTIONS preflight
 app.options("*", corsMiddleware());

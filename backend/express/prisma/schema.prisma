@@ -17,42 +17,45 @@ datasource db {
 
 // Custom User model that syncs with Supabase auth.users
 model User {
-  id         String   @id
-  email      String   @unique
-  full_name  String?
-  avatar_url String?
-  theme      String?  @default("system") // 'light', 'dark', or 'system'
-  colorTheme String?  @default("default") // 'default', 'red', 'blue', etc.
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  tasks      Task[]
-  events     Event[]
-  bilans     Bilan[]
+  id            String         @id
+  email         String         @unique
+  full_name     String?
+  avatar_url    String?
+  theme         String?        @default("system") // 'light', 'dark', or 'system'
+  colorTheme    String?        @default("default") // 'default', 'red', 'blue', etc.
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+  tasks         Task[]
+  events        Event[]
+  bilans        Bilan[]
+  notifications Notification[]
 }
 
 model Task {
-  id            String       @id @default(uuid())
+  id            String         @id @default(uuid())
   title         String
   deadline      DateTime?
   deadline_text String?
   priority      String?
   status        String?
-  created_at    DateTime     @default(now())
-  updated_at    DateTime     @updatedAt
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
   user_id       String
-  user          User         @relation(fields: [user_id], references: [id])
+  user          User           @relation(fields: [user_id], references: [id])
   bilanEntries  BilanEntry[]
+  Notification  Notification[]
 }
 
 model Event {
-  id             String    @id @default(uuid())
+  id             String         @id @default(uuid())
   title          String
   date_time      DateTime?
   date_time_text String?
-  created_at     DateTime  @default(now())
-  updated_at     DateTime  @updatedAt
+  created_at     DateTime       @default(now())
+  updated_at     DateTime       @updatedAt
   user_id        String
-  user           User      @relation(fields: [user_id], references: [id])
+  user           User           @relation(fields: [user_id], references: [id])
+  Notification   Notification[]
 }
 
 model Bilan {
@@ -75,4 +78,23 @@ model BilanEntry {
   bilan         Bilan    @relation(fields: [bilan_id], references: [id], onDelete: Cascade)
   task_id       String
   task          Task     @relation(fields: [task_id], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id            String    @id @default(uuid())
+  title         String
+  message       String
+  type          String // e.g., 'task_due', 'event_soon', 'general'
+  read          Boolean   @default(false)
+  created_at    DateTime  @default(now())
+  scheduled_for DateTime? // When the notification is intended to be displayed/sent
+
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id])
+
+  task_id String?
+  task    Task?   @relation(fields: [task_id], references: [id])
+
+  event_id String?
+  event    Event?  @relation(fields: [event_id], references: [id])
 }

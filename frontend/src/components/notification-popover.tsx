@@ -1,13 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Bell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import {
+  notificationService,
+  Notification as ApiNotification,
+} from "@/services/notificationService";
+import { AxiosError } from "axios";
 
 export type Notification = {
   id: string;
   title: string;
-  description: string;
+  message: string;
   timestamp: Date;
   read: boolean;
 };
@@ -52,7 +57,7 @@ const NotificationItem = ({
       </span>
     </div>
     <p className={`text-xs opacity-70 mt-1 ${textColor}`}>
-      {notification.description}
+      {notification.message}
     </p>
   </motion.div>
 );
@@ -87,7 +92,6 @@ const NotificationList = ({
 );
 
 interface NotificationPopoverProps {
-  notifications?: Notification[];
   onNotificationsChange?: (notifications: Notification[]) => void;
   buttonClassName?: string;
   popoverClassName?: string;
@@ -98,7 +102,6 @@ interface NotificationPopoverProps {
 }
 
 export const NotificationPopover = ({
-  notifications: initialNotifications = dummyNotifications,
   onNotificationsChange,
   buttonClassName = "w-10 h-10 rounded-xl bg-primary/70  hover:bg-primary/90 shadow-xl",
   popoverClassName = "bg-card backdrop-blur-sm",
@@ -108,28 +111,84 @@ export const NotificationPopover = ({
   headerBorderColor = "border-primary/50",
 }: NotificationPopoverProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] =
-    useState<Notification[]>(initialNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        setLoading(true);
+        const fetchedNotifications: ApiNotification[] =
+          await notificationService.getNotifications();
+        const formattedNotifications: Notification[] = fetchedNotifications.map(
+          (apiNotif) => ({
+            id: apiNotif.id,
+            title: apiNotif.title,
+            message: apiNotif.message,
+            read: apiNotif.read,
+            timestamp: new Date(apiNotif.created_at), // Use created_at for display
+          })
+        );
+        setNotifications(formattedNotifications);
+        onNotificationsChange?.(formattedNotifications);
+      } catch (err: unknown) {
+        if (err instanceof AxiosError) {
+          setError(err.response?.data?.error || err.message);
+        } else if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unknown error occurred");
+        }
+        console.error("Failed to fetch notifications:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchNotifications();
+  }, [onNotificationsChange]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const toggleOpen = () => setIsOpen(!isOpen);
 
-  const markAllAsRead = () => {
-    const updatedNotifications = notifications.map((n) => ({
-      ...n,
-      read: true,
-    }));
-    setNotifications(updatedNotifications);
-    onNotificationsChange?.(updatedNotifications);
+  const markAllAsRead = async () => {
+    const updatedNotifications = await Promise.all(
+      notifications
+        .filter((n) => !n.read)
+        .map(async (n) => {
+          try {
+            await notificationService.markNotificationAsRead(n.id);
+            return { ...n, read: true };
+          } catch (error) {
+            console.error(
+              `Failed to mark notification ${n.id} as read:`,
+              error
+            );
+            return n; // Return original notification if update fails
+          }
+        })
+    );
+    setNotifications((prevNotifications) =>
+      prevNotifications.map((prev) => {
+        const updated = updatedNotifications.find((upd) => upd.id === prev.id);
+        return updated ? updated : prev;
+      })
+    );
+    onNotificationsChange?.(notifications.map((n) => ({ ...n, read: true }))); // Notify parent with all marked as read
   };
 
-  const markAsRead = (id: string) => {
-    const updatedNotifications = notifications.map((n) =>
-      n.id === id ? { ...n, read: true } : n
-    );
-    setNotifications(updatedNotifications);
-    onNotificationsChange?.(updatedNotifications);
+  const markAsRead = async (id: string) => {
+    try {
+      await notificationService.markNotificationAsRead(id);
+      const updatedNotifications = notifications.map((n) =>
+        n.id === id ? { ...n, read: true } : n
+      );
+      setNotifications(updatedNotifications);
+      onNotificationsChange?.(updatedNotifications);
+    } catch (error) {
+      console.error(`Failed to mark notification ${id} as read:`, error);
+    }
   };
 
   return (
@@ -173,40 +232,27 @@ export const NotificationPopover = ({
               </Button>
             </div>
 
-            <NotificationList
-              notifications={notifications}
-              onMarkAsRead={markAsRead}
-              textColor={textColor}
-              hoverBgColor={hoverBgColor}
-              dividerColor={dividerColor}
-            />
+            {loading && (
+              <p className="p-4 text-center">Loading notifications...</p>
+            )}
+            {error && (
+              <p className="p-4 text-center text-red-500">Error: {error}</p>
+            )}
+            {!loading && !error && notifications.length === 0 && (
+              <p className="p-4 text-center opacity-70">No notifications</p>
+            )}
+            {!loading && !error && notifications.length > 0 && (
+              <NotificationList
+                notifications={notifications}
+                onMarkAsRead={markAsRead}
+                textColor={textColor}
+                hoverBgColor={hoverBgColor}
+                dividerColor={dividerColor}
+              />
+            )}
           </motion.div>
         )}
       </AnimatePresence>
     </div>
   );
 };
-
-const dummyNotifications: Notification[] = [
-  {
-    id: "1",
-    title: "New Message",
-    description: "You have received a new message from John Doe",
-    timestamp: new Date(),
-    read: false,
-  },
-  {
-    id: "2",
-    title: "System Update",
-    description: "System maintenance scheduled for tomorrow",
-    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-    read: false,
-  },
-  {
-    id: "3",
-    title: "Reminder",
-    description: "Meeting with team at 2 PM",
-    timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-    read: true,
-  },
-];
