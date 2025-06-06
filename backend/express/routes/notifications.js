@@ -42,6 +42,9 @@ router.post("/generate-daily", async (req, res) => {
             gte: tomorrowStart,
             lt: tomorrowEnd,
           },
+          NOT: {
+            status: "Done", // Exclude tasks that are in 'Done' status
+          },
         },
       });
 
@@ -126,11 +129,9 @@ router.post("/generate-daily", async (req, res) => {
       .json({ success: true, notificationsCreated: notificationsCreatedCount });
   } catch (error) {
     console.error("Error generating daily notifications:", error);
-    res
-      .status(500)
-      .json({
-        error: "Failed to generate daily notifications: " + error.message,
-      });
+    res.status(500).json({
+      error: "Failed to generate daily notifications: " + error.message,
+    });
   }
 });
 
