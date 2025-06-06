@@ -79,6 +79,7 @@ export function FullScreenCalendar({
   const firstDayCurrentMonth = parse(currentMonth, "MMM-yyyy", new Date());
   const isMobile = useIsMobile();
   const [isLoading, setIsLoading] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState("");
 
   const days = eachDayOfInterval({
     start: startOfWeek(firstDayCurrentMonth),
@@ -137,8 +138,23 @@ export function FullScreenCalendar({
       });
   };
 
+  const filteredData = React.useMemo(() => {
+    if (!searchQuery) {
+      return data;
+    }
+
+    const lowerCaseQuery = searchQuery.toLowerCase();
+
+    return data.map((dayData) => ({
+      ...dayData,
+      events: dayData.events.filter((event) =>
+        event.title.toLowerCase().includes(lowerCaseQuery)
+      ),
+    }));
+  }, [data, searchQuery]);
+
   const selectedDayEvents =
-    data.find((d) => isSameDay(d.day, selectedDay))?.events || [];
+    filteredData.find((d) => isSameDay(d.day, selectedDay))?.events || [];
 
   return (
     <div className="flex flex-1 flex-col">
@@ -166,10 +182,22 @@ export function FullScreenCalendar({
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-4 md:flex-row md:gap-6">
-          <Button variant="outline" size="icon" className="hidden lg:flex">
-            <SearchIcon size={16} strokeWidth={2} aria-hidden="true" />
-          </Button>
+        <div className="relative flex flex-col items-center gap-4 md:flex-row md:gap-6">
+          <div className="relative w-full lg:w-48">
+            <SearchIcon
+              size={16}
+              strokeWidth={2}
+              aria-hidden="true"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            />
+            <Input
+              type="text"
+              placeholder="Search events..."
+              className="w-full ps-9"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
 
           <Separator orientation="vertical" className="hidden h-6 lg:block" />
 
@@ -274,7 +302,7 @@ export function FullScreenCalendar({
                     </button>
                   </header>
                   <div className="flex-1 p-2.5">
-                    {data
+                    {filteredData
                       .filter((event) => isSameDay(event.day, day))
                       .map((day) => (
                         <div key={day.day.toString()} className="space-y-1.5">
@@ -334,10 +362,10 @@ export function FullScreenCalendar({
                   >
                     {format(day, "d")}
                   </time>
-                  {data.filter((date) => isSameDay(date.day, day)).length >
-                    0 && (
+                  {filteredData.filter((date) => isSameDay(date.day, day))
+                    .length > 0 && (
                     <div>
-                      {data
+                      {filteredData
                         .filter((date) => isSameDay(date.day, day))
                         .map((date) => (
                           <div
@@ -400,9 +428,10 @@ export function FullScreenCalendar({
                 >
                   {format(day, "d")}
                 </time>
-                {data.filter((date) => isSameDay(date.day, day)).length > 0 && (
+                {filteredData.filter((date) => isSameDay(date.day, day))
+                  .length > 0 && (
                   <div>
-                    {data
+                    {filteredData
                       .filter((date) => isSameDay(date.day, day))
                       .map((date) => (
                         <div
