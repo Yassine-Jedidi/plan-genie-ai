@@ -70,33 +70,67 @@ export function EventDialog({
   onEditEvent,
   onDeleteEvent,
 }: EventDialogProps) {
-  // Group events by morning, afternoon, evening
-  const groupedEvents = {
+  // Group events by morning, afternoon, evening and night
+  const groupedEvents: Record<string, Event[]> = {
+    earlyMorning: events.filter((event) => {
+      const hour = new Date(event.date_time).getHours();
+      return hour >= 0 && hour < 6;
+    }),
     morning: events.filter((event) => {
       const hour = new Date(event.date_time).getHours();
-      return hour >= 5 && hour < 12;
+      return hour >= 6 && hour < 12;
     }),
     afternoon: events.filter((event) => {
       const hour = new Date(event.date_time).getHours();
-      return hour >= 12 && hour < 17;
+      return hour >= 12 && hour < 18;
     }),
     evening: events.filter((event) => {
       const hour = new Date(event.date_time).getHours();
-      return hour >= 17 || hour < 5;
+      return hour >= 18 && hour < 22;
+    }),
+    lateNight: events.filter((event) => {
+      const hour = new Date(event.date_time).getHours();
+      return hour >= 22 && hour < 24;
     }),
   };
+
+  // Sort events within each group by time
+  Object.keys(groupedEvents).forEach((period: string) => {
+    groupedEvents[period] = (groupedEvents[period] as Event[]).sort(
+      (a: Event, b: Event) => {
+        return (
+          new Date(a.date_time).getTime() - new Date(b.date_time).getTime()
+        );
+      }
+    );
+  });
 
   // Get time period colors
   const getTimeColor = (period: string) => {
     switch (period) {
+      case "earlyMorning":
+        return "bg-gray-700";
       case "morning":
         return "bg-amber-500";
       case "afternoon":
         return "bg-sky-500";
       case "evening":
         return "bg-indigo-500";
+      case "lateNight":
+        return "bg-slate-700";
       default:
         return "bg-zinc-500";
+    }
+  };
+
+  const getFormattedTimePeriod = (period: string) => {
+    switch (period) {
+      case "earlyMorning":
+        return "Early Morning";
+      case "lateNight":
+        return "Late Night";
+      default:
+        return period.charAt(0).toUpperCase() + period.slice(1);
     }
   };
 
@@ -147,8 +181,15 @@ export function EventDialog({
                       initial="hidden"
                       animate="visible"
                     >
-                      {Object.entries(groupedEvents).map(
-                        ([time, timeEvents]) =>
+                      {[
+                        "earlyMorning",
+                        "morning",
+                        "afternoon",
+                        "evening",
+                        "lateNight",
+                      ].map((time) => {
+                        const timeEvents = groupedEvents[time];
+                        return (
                           timeEvents.length > 0 && (
                             <motion.div
                               key={time}
@@ -162,8 +203,8 @@ export function EventDialog({
                                     getTimeColor(time)
                                   )}
                                 ></div>
-                                <h3 className="font-medium text-muted-foreground capitalize">
-                                  {time}
+                                <h3 className="font-medium text-muted-foreground capitalize my-2">
+                                  {getFormattedTimePeriod(time)}
                                 </h3>
                               </div>
 
@@ -204,7 +245,7 @@ export function EventDialog({
                                     <div className="ml-12">
                                       <Card
                                         className="group overflow-hidden transition-all border-border/50
-                                        hover:shadow-md hover:border-primary/50 relative"
+                                          hover:shadow-md hover:border-primary/50 relative"
                                       >
                                         <div
                                           className={cn(
@@ -275,7 +316,8 @@ export function EventDialog({
                               </motion.div>
                             </motion.div>
                           )
-                      )}
+                        );
+                      })}
                     </motion.div>
                   </div>
                 </ScrollArea>
