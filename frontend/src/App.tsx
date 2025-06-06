@@ -22,6 +22,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import SettingsPage from "./settings";
 import { EventsCalendar } from "./events-calendar";
 import BilanPage from "./bilan";
+import { NotificationPopover } from "./components/notification-popover";
 
 function AppContent() {
   const location = useLocation();
@@ -57,46 +58,61 @@ function AppContent() {
               <Route
                 path="/home"
                 element={
-                  <>
+                  <div className="relative w-full flex-1 flex">
                     <AppSidebar />
                     <HomePage />
-                  </>
+                    <div className="absolute top-4 right-4">
+                      <NotificationPopover />
+                    </div>
+                  </div>
                 }
               />
               <Route
                 path="/tasks"
                 element={
-                  <>
+                  <div className="relative w-full flex-1 flex">
                     <AppSidebar />
                     <TasksPage />
-                  </>
+                    <div className="absolute top-4 right-4">
+                      <NotificationPopover />
+                    </div>
+                  </div>
                 }
               />
               <Route
                 path="/settings"
                 element={
-                  <>
+                  <div className="relative w-full flex-1 flex">
                     <AppSidebar />
                     <SettingsPage />
-                  </>
+                    <div className="absolute top-4 right-4">
+                      <NotificationPopover />
+                    </div>
+                  </div>
                 }
               />
               <Route
                 path="/events"
                 element={
-                  <>
+                  <div className="relative w-full flex-1 flex">
                     <AppSidebar />
                     <EventsCalendar />
-                  </>
+                    <div className="absolute top-4 right-4">
+                      <NotificationPopover />
+                    </div>
+                  </div>
                 }
               />
               <Route
                 path="/daily"
                 element={
-                  <>
+                  <div className="relative w-full flex-1 flex">
                     <AppSidebar />
                     <BilanPage />
-                  </>
+                    <div className="absolute top-4 right-4">
+                      <NotificationPopover />
+                    </div>
+                  </div>
                 }
               />
             </Route>
