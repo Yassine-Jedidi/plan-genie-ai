@@ -24,7 +24,7 @@ router.post("/predict-type", async (req, res) => {
 router.post("/extract-entities", async (req, res) => {
   try {
     const response = await axios.post(
-      `${FASTAPI_URL}/extract-entities/`,
+      `${HUGGINGFACE_SPACE}/extract-entities/`,
       req.body
     );
     res.json(response.data);
@@ -38,7 +38,10 @@ router.post("/extract-entities", async (req, res) => {
 // Proxy route for analyzing text
 router.post("/analyze-text", async (req, res) => {
   try {
-    const response = await axios.post(`${FASTAPI_URL}/analyze-text/`, req.body);
+    const response = await axios.post(
+      `${HUGGINGFACE_SPACE}/analyze-text/`,
+      req.body
+    );
     res.json(response.data);
   } catch (error) {
     res
