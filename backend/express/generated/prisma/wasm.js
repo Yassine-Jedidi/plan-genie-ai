@@ -175,7 +175,6 @@ exports.Prisma.NotificationScalarFieldEnum = {
   type: 'type',
   read: 'read',
   created_at: 'created_at',
-  scheduled_for: 'scheduled_for',
   user_id: 'user_id',
   task_id: 'task_id',
   event_id: 'event_id'

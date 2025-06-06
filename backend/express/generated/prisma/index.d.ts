@@ -7189,7 +7189,6 @@ export namespace Prisma {
     type: string | null
     read: boolean | null
     created_at: Date | null
-    scheduled_for: Date | null
     user_id: string | null
     task_id: string | null
     event_id: string | null
@@ -7202,7 +7201,6 @@ export namespace Prisma {
     type: string | null
     read: boolean | null
     created_at: Date | null
-    scheduled_for: Date | null
     user_id: string | null
     task_id: string | null
     event_id: string | null
@@ -7215,7 +7213,6 @@ export namespace Prisma {
     type: number
     read: number
     created_at: number
-    scheduled_for: number
     user_id: number
     task_id: number
     event_id: number
@@ -7230,7 +7227,6 @@ export namespace Prisma {
     type?: true
     read?: true
     created_at?: true
-    scheduled_for?: true
     user_id?: true
     task_id?: true
     event_id?: true
@@ -7243,7 +7239,6 @@ export namespace Prisma {
     type?: true
     read?: true
     created_at?: true
-    scheduled_for?: true
     user_id?: true
     task_id?: true
     event_id?: true
@@ -7256,7 +7251,6 @@ export namespace Prisma {
     type?: true
     read?: true
     created_at?: true
-    scheduled_for?: true
     user_id?: true
     task_id?: true
     event_id?: true
@@ -7342,7 +7336,6 @@ export namespace Prisma {
     type: string
     read: boolean
     created_at: Date
-    scheduled_for: Date | null
     user_id: string
     task_id: string | null
     event_id: string | null
@@ -7372,7 +7365,6 @@ export namespace Prisma {
     type?: boolean
     read?: boolean
     created_at?: boolean
-    scheduled_for?: boolean
     user_id?: boolean
     task_id?: boolean
     event_id?: boolean
@@ -7388,7 +7380,6 @@ export namespace Prisma {
     type?: boolean
     read?: boolean
     created_at?: boolean
-    scheduled_for?: boolean
     user_id?: boolean
     task_id?: boolean
     event_id?: boolean
@@ -7404,7 +7395,6 @@ export namespace Prisma {
     type?: boolean
     read?: boolean
     created_at?: boolean
-    scheduled_for?: boolean
     user_id?: boolean
     task_id?: boolean
     event_id?: boolean
@@ -7420,13 +7410,12 @@ export namespace Prisma {
     type?: boolean
     read?: boolean
     created_at?: boolean
-    scheduled_for?: boolean
     user_id?: boolean
     task_id?: boolean
     event_id?: boolean
   }
 
-  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "message" | "type" | "read" | "created_at" | "scheduled_for" | "user_id" | "task_id" | "event_id", ExtArgs["result"]["notification"]>
+  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "message" | "type" | "read" | "created_at" | "user_id" | "task_id" | "event_id", ExtArgs["result"]["notification"]>
   export type NotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     task?: boolean | Notification$taskArgs<ExtArgs>
@@ -7457,7 +7446,6 @@ export namespace Prisma {
       type: string
       read: boolean
       created_at: Date
-      scheduled_for: Date | null
       user_id: string
       task_id: string | null
       event_id: string | null
@@ -7893,7 +7881,6 @@ export namespace Prisma {
     readonly type: FieldRef<"Notification", 'String'>
     readonly read: FieldRef<"Notification", 'Boolean'>
     readonly created_at: FieldRef<"Notification", 'DateTime'>
-    readonly scheduled_for: FieldRef<"Notification", 'DateTime'>
     readonly user_id: FieldRef<"Notification", 'String'>
     readonly task_id: FieldRef<"Notification", 'String'>
     readonly event_id: FieldRef<"Notification", 'String'>
@@ -8436,7 +8423,6 @@ export namespace Prisma {
     type: 'type',
     read: 'read',
     created_at: 'created_at',
-    scheduled_for: 'scheduled_for',
     user_id: 'user_id',
     task_id: 'task_id',
     event_id: 'event_id'
@@ -8906,7 +8892,6 @@ export namespace Prisma {
     type?: StringFilter<"Notification"> | string
     read?: BoolFilter<"Notification"> | boolean
     created_at?: DateTimeFilter<"Notification"> | Date | string
-    scheduled_for?: DateTimeNullableFilter<"Notification"> | Date | string | null
     user_id?: StringFilter<"Notification"> | string
     task_id?: StringNullableFilter<"Notification"> | string | null
     event_id?: StringNullableFilter<"Notification"> | string | null
@@ -8922,7 +8907,6 @@ export namespace Prisma {
     type?: SortOrder
     read?: SortOrder
     created_at?: SortOrder
-    scheduled_for?: SortOrderInput | SortOrder
     user_id?: SortOrder
     task_id?: SortOrderInput | SortOrder
     event_id?: SortOrderInput | SortOrder
@@ -8941,7 +8925,6 @@ export namespace Prisma {
     type?: StringFilter<"Notification"> | string
     read?: BoolFilter<"Notification"> | boolean
     created_at?: DateTimeFilter<"Notification"> | Date | string
-    scheduled_for?: DateTimeNullableFilter<"Notification"> | Date | string | null
     user_id?: StringFilter<"Notification"> | string
     task_id?: StringNullableFilter<"Notification"> | string | null
     event_id?: StringNullableFilter<"Notification"> | string | null
@@ -8957,7 +8940,6 @@ export namespace Prisma {
     type?: SortOrder
     read?: SortOrder
     created_at?: SortOrder
-    scheduled_for?: SortOrderInput | SortOrder
     user_id?: SortOrder
     task_id?: SortOrderInput | SortOrder
     event_id?: SortOrderInput | SortOrder
@@ -8976,7 +8958,6 @@ export namespace Prisma {
     type?: StringWithAggregatesFilter<"Notification"> | string
     read?: BoolWithAggregatesFilter<"Notification"> | boolean
     created_at?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
-    scheduled_for?: DateTimeNullableWithAggregatesFilter<"Notification"> | Date | string | null
     user_id?: StringWithAggregatesFilter<"Notification"> | string
     task_id?: StringNullableWithAggregatesFilter<"Notification"> | string | null
     event_id?: StringNullableWithAggregatesFilter<"Notification"> | string | null
@@ -9373,7 +9354,6 @@ export namespace Prisma {
     type: string
     read?: boolean
     created_at?: Date | string
-    scheduled_for?: Date | string | null
     user: UserCreateNestedOneWithoutNotificationsInput
     task?: TaskCreateNestedOneWithoutNotificationInput
     event?: EventCreateNestedOneWithoutNotificationInput
@@ -9386,7 +9366,6 @@ export namespace Prisma {
     type: string
     read?: boolean
     created_at?: Date | string
-    scheduled_for?: Date | string | null
     user_id: string
     task_id?: string | null
     event_id?: string | null
@@ -9399,7 +9378,6 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutNotificationsNestedInput
     task?: TaskUpdateOneWithoutNotificationNestedInput
     event?: EventUpdateOneWithoutNotificationNestedInput
@@ -9412,7 +9390,6 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user_id?: StringFieldUpdateOperationsInput | string
     task_id?: NullableStringFieldUpdateOperationsInput | string | null
     event_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9425,7 +9402,6 @@ export namespace Prisma {
     type: string
     read?: boolean
     created_at?: Date | string
-    scheduled_for?: Date | string | null
     user_id: string
     task_id?: string | null
     event_id?: string | null
@@ -9438,7 +9414,6 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type NotificationUncheckedUpdateManyInput = {
@@ -9448,7 +9423,6 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user_id?: StringFieldUpdateOperationsInput | string
     task_id?: NullableStringFieldUpdateOperationsInput | string | null
     event_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9850,7 +9824,6 @@ export namespace Prisma {
     type?: SortOrder
     read?: SortOrder
     created_at?: SortOrder
-    scheduled_for?: SortOrder
     user_id?: SortOrder
     task_id?: SortOrder
     event_id?: SortOrder
@@ -9863,7 +9836,6 @@ export namespace Prisma {
     type?: SortOrder
     read?: SortOrder
     created_at?: SortOrder
-    scheduled_for?: SortOrder
     user_id?: SortOrder
     task_id?: SortOrder
     event_id?: SortOrder
@@ -9876,7 +9848,6 @@ export namespace Prisma {
     type?: SortOrder
     read?: SortOrder
     created_at?: SortOrder
-    scheduled_for?: SortOrder
     user_id?: SortOrder
     task_id?: SortOrder
     event_id?: SortOrder
@@ -10643,7 +10614,6 @@ export namespace Prisma {
     type: string
     read?: boolean
     created_at?: Date | string
-    scheduled_for?: Date | string | null
     task?: TaskCreateNestedOneWithoutNotificationInput
     event?: EventCreateNestedOneWithoutNotificationInput
   }
@@ -10655,7 +10625,6 @@ export namespace Prisma {
     type: string
     read?: boolean
     created_at?: Date | string
-    scheduled_for?: Date | string | null
     task_id?: string | null
     event_id?: string | null
   }
@@ -10783,7 +10752,6 @@ export namespace Prisma {
     type?: StringFilter<"Notification"> | string
     read?: BoolFilter<"Notification"> | boolean
     created_at?: DateTimeFilter<"Notification"> | Date | string
-    scheduled_for?: DateTimeNullableFilter<"Notification"> | Date | string | null
     user_id?: StringFilter<"Notification"> | string
     task_id?: StringNullableFilter<"Notification"> | string | null
     event_id?: StringNullableFilter<"Notification"> | string | null
@@ -10857,7 +10825,6 @@ export namespace Prisma {
     type: string
     read?: boolean
     created_at?: Date | string
-    scheduled_for?: Date | string | null
     user: UserCreateNestedOneWithoutNotificationsInput
     event?: EventCreateNestedOneWithoutNotificationInput
   }
@@ -10869,7 +10836,6 @@ export namespace Prisma {
     type: string
     read?: boolean
     created_at?: Date | string
-    scheduled_for?: Date | string | null
     user_id: string
     event_id?: string | null
   }
@@ -11008,7 +10974,6 @@ export namespace Prisma {
     type: string
     read?: boolean
     created_at?: Date | string
-    scheduled_for?: Date | string | null
     user: UserCreateNestedOneWithoutNotificationsInput
     task?: TaskCreateNestedOneWithoutNotificationInput
   }
@@ -11020,7 +10985,6 @@ export namespace Prisma {
     type: string
     read?: boolean
     created_at?: Date | string
-    scheduled_for?: Date | string | null
     user_id: string
     task_id?: string | null
   }
@@ -11552,7 +11516,6 @@ export namespace Prisma {
     type: string
     read?: boolean
     created_at?: Date | string
-    scheduled_for?: Date | string | null
     task_id?: string | null
     event_id?: string | null
   }
@@ -11653,7 +11616,6 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     task?: TaskUpdateOneWithoutNotificationNestedInput
     event?: EventUpdateOneWithoutNotificationNestedInput
   }
@@ -11665,7 +11627,6 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     task_id?: NullableStringFieldUpdateOperationsInput | string | null
     event_id?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -11677,7 +11638,6 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     task_id?: NullableStringFieldUpdateOperationsInput | string | null
     event_id?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -11698,7 +11658,6 @@ export namespace Prisma {
     type: string
     read?: boolean
     created_at?: Date | string
-    scheduled_for?: Date | string | null
     user_id: string
     event_id?: string | null
   }
@@ -11737,7 +11696,6 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutNotificationsNestedInput
     event?: EventUpdateOneWithoutNotificationNestedInput
   }
@@ -11749,7 +11707,6 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user_id?: StringFieldUpdateOperationsInput | string
     event_id?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -11761,7 +11718,6 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user_id?: StringFieldUpdateOperationsInput | string
     event_id?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -11773,7 +11729,6 @@ export namespace Prisma {
     type: string
     read?: boolean
     created_at?: Date | string
-    scheduled_for?: Date | string | null
     user_id: string
     task_id?: string | null
   }
@@ -11785,7 +11740,6 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutNotificationsNestedInput
     task?: TaskUpdateOneWithoutNotificationNestedInput
   }
@@ -11797,7 +11751,6 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user_id?: StringFieldUpdateOperationsInput | string
     task_id?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -11809,7 +11762,6 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user_id?: StringFieldUpdateOperationsInput | string
     task_id?: NullableStringFieldUpdateOperationsInput | string | null
   }

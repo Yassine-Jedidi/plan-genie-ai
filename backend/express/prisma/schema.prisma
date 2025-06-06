@@ -81,13 +81,12 @@ model BilanEntry {
 }
 
 model Notification {
-  id            String    @id @default(uuid())
-  title         String
-  message       String
-  type          String // e.g., 'task_due', 'event_soon', 'general'
-  read          Boolean   @default(false)
-  created_at    DateTime  @default(now())
-  scheduled_for DateTime? // When the notification is intended to be displayed/sent
+  id         String   @id @default(uuid())
+  title      String
+  message    String
+  type       String // e.g., 'task_due', 'event_soon'
+  read       Boolean  @default(false)
+  created_at DateTime @default(now())
 
   user_id String
   user    User   @relation(fields: [user_id], references: [id])

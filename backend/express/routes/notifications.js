@@ -64,7 +64,14 @@ router.post("/generate-daily", async (req, res) => {
 
         if (!existingNotification) {
           const notificationTitle = `Task Reminder: ${task.title}`;
-          const notificationMessage = `Your task "${task.title}" is due tomorrow.`;
+          const taskTime = task.deadline
+            ? new Date(task.deadline).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              })
+            : "tomorrow";
+          const notificationMessage = `Your task "${task.title}" is due tomorrow at ${taskTime}.`;
 
           await prisma.notification.create({
             data: {
@@ -107,7 +114,14 @@ router.post("/generate-daily", async (req, res) => {
 
         if (!existingNotification) {
           const notificationTitle = `Event Reminder: ${event.title}`;
-          const notificationMessage = `Your event "${event.title}" is scheduled for tomorrow.`;
+          const eventTime = event.date_time
+            ? new Date(event.date_time).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              })
+            : "tomorrow";
+          const notificationMessage = `Your event "${event.title}" is scheduled for tomorrow at ${eventTime}.`;
 
           await prisma.notification.create({
             data: {
