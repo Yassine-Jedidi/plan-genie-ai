@@ -55,10 +55,6 @@ router.post("/generate-daily", async (req, res) => {
             user_id: user.id,
             task_id: task.id,
             type: "task_due",
-            scheduled_for: {
-              gte: tomorrowStart,
-              lt: tomorrowEnd,
-            },
           },
         });
 
@@ -80,7 +76,6 @@ router.post("/generate-daily", async (req, res) => {
               type: "task_due",
               user_id: user.id,
               task_id: task.id,
-              scheduled_for: tomorrowStart, // Schedule for tomorrow's start
             },
           });
           notificationsCreatedCount++;
@@ -105,10 +100,6 @@ router.post("/generate-daily", async (req, res) => {
             user_id: user.id,
             event_id: event.id,
             type: "event_soon",
-            scheduled_for: {
-              gte: tomorrowStart,
-              lt: tomorrowEnd,
-            },
           },
         });
 
@@ -130,7 +121,6 @@ router.post("/generate-daily", async (req, res) => {
               type: "event_soon",
               user_id: user.id,
               event_id: event.id,
-              scheduled_for: tomorrowStart, // Schedule for tomorrow's start
             },
           });
           notificationsCreatedCount++;
