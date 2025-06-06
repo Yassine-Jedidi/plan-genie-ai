@@ -3,13 +3,15 @@ const axios = require("axios");
 const router = express.Router();
 
 // Get the FastAPI URL from environment variables or use the default
-const FASTAPI_URL =
-  process.env.FASTAPI_URL || "https://YassineJedidi-plan-genie-ai.hf.space";
+const HUGGINGFACE_SPACE = process.env.HUGGINGFACE_SPACE;
 
 // Proxy route for predicting type
 router.post("/predict-type", async (req, res) => {
   try {
-    const response = await axios.post(`${FASTAPI_URL}/predict-type/`, req.body);
+    const response = await axios.post(
+      `${HUGGINGFACE_SPACE}/predict-type/`,
+      req.body
+    );
     res.json(response.data);
   } catch (error) {
     res

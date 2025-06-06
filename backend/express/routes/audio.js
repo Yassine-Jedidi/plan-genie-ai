@@ -5,8 +5,7 @@ const FormData = require("form-data");
 const fileUpload = require("express-fileupload");
 
 // Get the FastAPI URL from environment variables or use the default
-const FASTAPI_URL =
-  process.env.FASTAPI_URL || "https://YassineJedidi-plan-genie-ai.hf.space";
+const HUGGINGFACE_SPACE = process.env.HUGGINGFACE_SPACE;
 
 // Use express-fileupload middleware
 router.use(fileUpload());
@@ -24,11 +23,15 @@ router.post("/transcribe", async (req, res) => {
       contentType: req.files.file.mimetype,
     });
 
-    const response = await axios.post(`${FASTAPI_URL}/transcribe/`, formData, {
-      headers: {
-        ...formData.getHeaders(),
-      },
-    });
+    const response = await axios.post(
+      `${HUGGINGFACE_SPACE}/transcribe/`,
+      formData,
+      {
+        headers: {
+          ...formData.getHeaders(),
+        },
+      }
+    );
     res.json(response.data);
   } catch (error) {
     console.error("Transcription error:", error);
