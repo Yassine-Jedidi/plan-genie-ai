@@ -69,7 +69,8 @@ router.post("/generate", async (req, res) => {
       items,
       itemType,
       notificationType,
-      timeDescription
+      timeDescription,
+      currentTime
     ) => {
       let createdCount = 0;
       for (const item of items) {
@@ -107,6 +108,45 @@ router.post("/generate", async (req, res) => {
         }
       }
       return createdCount;
+    };
+
+    // New helper function to filter and generate notifications
+    const filterAndGenerateNotifications = async (
+      userId,
+      items,
+      itemType,
+      notificationType,
+      timeDescription,
+      excludeTypes = []
+    ) => {
+      const filteredItems = [];
+      for (const item of items) {
+        let shouldExclude = false;
+        for (const excludeType of excludeTypes) {
+          const existing = await prisma.notification.findFirst({
+            where: {
+              user_id: userId,
+              [`${itemType}_id`]: item.id,
+              type: excludeType,
+            },
+          });
+          if (existing) {
+            shouldExclude = true;
+            break;
+          }
+        }
+        if (!shouldExclude) {
+          filteredItems.push(item);
+        }
+      }
+      return await generateNotifications(
+        userId,
+        filteredItems,
+        itemType,
+        notificationType,
+        timeDescription,
+        new Date()
+      );
     };
 
     for (const user of users) {
@@ -209,80 +249,6 @@ router.post("/generate", async (req, res) => {
       const { start: fifteenMinutesStart, end: fifteenMinutesEnd } =
         getFifteenMinutesFromNow();
 
-      // Tasks due in the next 6 hours
-      const tasksDueInSixHours = await prisma.task.findMany({
-        where: {
-          user_id: user.id,
-          deadline: {
-            gte: sixHoursStart,
-            lt: sixHoursEnd,
-          },
-          NOT: { status: "Done" },
-        },
-      });
-      notificationsCreatedCount += await generateNotifications(
-        user.id,
-        tasksDueInSixHours,
-        "task",
-        "task_due_in_6h",
-        "in 6 hours"
-      );
-
-      // Events in the next 6 hours
-      const eventsInSixHours = await prisma.event.findMany({
-        where: {
-          user_id: user.id,
-          date_time: {
-            gte: sixHoursStart,
-            lt: sixHoursEnd,
-          },
-        },
-      });
-      notificationsCreatedCount += await generateNotifications(
-        user.id,
-        eventsInSixHours,
-        "event",
-        "event_in_6h",
-        "in 6 hours"
-      );
-
-      // Tasks due in the next 1 hour
-      const tasksDueInOneHour = await prisma.task.findMany({
-        where: {
-          user_id: user.id,
-          deadline: {
-            gte: oneHourStart,
-            lt: oneHourEnd,
-          },
-          NOT: { status: "Done" },
-        },
-      });
-      notificationsCreatedCount += await generateNotifications(
-        user.id,
-        tasksDueInOneHour,
-        "task",
-        "task_due_in_1h",
-        "in 1 hour"
-      );
-
-      // Events in the next 1 hour
-      const eventsInOneHour = await prisma.event.findMany({
-        where: {
-          user_id: user.id,
-          date_time: {
-            gte: oneHourStart,
-            lt: oneHourEnd,
-          },
-        },
-      });
-      notificationsCreatedCount += await generateNotifications(
-        user.id,
-        eventsInOneHour,
-        "event",
-        "event_in_1h",
-        "in 1 hour"
-      );
-
       // Tasks due in the next 15 minutes
       const tasksDueInFifteenMinutes = await prisma.task.findMany({
         where: {
@@ -294,7 +260,7 @@ router.post("/generate", async (req, res) => {
           NOT: { status: "Done" },
         },
       });
-      notificationsCreatedCount += await generateNotifications(
+      notificationsCreatedCount += await filterAndGenerateNotifications(
         user.id,
         tasksDueInFifteenMinutes,
         "task",
@@ -312,12 +278,90 @@ router.post("/generate", async (req, res) => {
           },
         },
       });
-      notificationsCreatedCount += await generateNotifications(
+      notificationsCreatedCount += await filterAndGenerateNotifications(
         user.id,
         eventsInFifteenMinutes,
         "event",
         "event_in_15m",
         "in 15 minutes"
+      );
+
+      // Tasks due in the next 1 hour
+      const tasksDueInOneHour = await prisma.task.findMany({
+        where: {
+          user_id: user.id,
+          deadline: {
+            gte: oneHourStart,
+            lt: oneHourEnd,
+          },
+          NOT: { status: "Done" },
+        },
+      });
+      notificationsCreatedCount += await filterAndGenerateNotifications(
+        user.id,
+        tasksDueInOneHour,
+        "task",
+        "task_due_in_1h",
+        "in 1 hour",
+        ["task_due_in_15m"] // Exclude if 15m notification already exists
+      );
+
+      // Events in the next 1 hour
+      const eventsInOneHour = await prisma.event.findMany({
+        where: {
+          user_id: user.id,
+          date_time: {
+            gte: oneHourStart,
+            lt: oneHourEnd,
+          },
+        },
+      });
+      notificationsCreatedCount += await filterAndGenerateNotifications(
+        user.id,
+        eventsInOneHour,
+        "event",
+        "event_in_1h",
+        "in 1 hour",
+        ["event_in_15m"] // Exclude if 15m notification already exists
+      );
+
+      // Tasks due in the next 6 hours
+      const tasksDueInSixHours = await prisma.task.findMany({
+        where: {
+          user_id: user.id,
+          deadline: {
+            gte: sixHoursStart,
+            lt: sixHoursEnd,
+          },
+          NOT: { status: "Done" },
+        },
+      });
+      notificationsCreatedCount += await filterAndGenerateNotifications(
+        user.id,
+        tasksDueInSixHours,
+        "task",
+        "task_due_in_6h",
+        "in 6 hours",
+        ["task_due_in_15m", "task_due_in_1h"] // Exclude if 15m or 1h notification exists
+      );
+
+      // Events in the next 6 hours
+      const eventsInSixHours = await prisma.event.findMany({
+        where: {
+          user_id: user.id,
+          date_time: {
+            gte: sixHoursStart,
+            lt: sixHoursEnd,
+          },
+        },
+      });
+      notificationsCreatedCount += await filterAndGenerateNotifications(
+        user.id,
+        eventsInSixHours,
+        "event",
+        "event_in_6h",
+        "in 6 hours",
+        ["event_in_15m", "event_in_1h"] // Exclude if 15m or 1h notification exists
       );
     }
 
