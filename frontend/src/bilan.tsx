@@ -72,8 +72,18 @@ const BilanPage = () => {
   // Format date for display - fixing potential timezone issues
   const formatDateDisplay = (dateString: string) => {
     try {
-      // Use our utility function for consistent formatting
-      return formatDate(dateString, {
+      const date = new Date(dateString);
+
+      // Get offset in minutes and convert to hours
+      const offsetMinutes = date.getTimezoneOffset(); // e.g., -60 for GMT+1
+      const offsetHours = -offsetMinutes / 60;
+
+      // Format offset string
+      const gmtOffset =
+        "GMT" + (offsetHours >= 0 ? "+" : "") + offsetHours.toString();
+
+      // Format date without timezone name
+      const formattedDate = new Intl.DateTimeFormat("en-US", {
         weekday: "long",
         month: "long",
         day: "numeric",
@@ -81,7 +91,9 @@ const BilanPage = () => {
         hour: "numeric",
         minute: "2-digit",
         hour12: false,
-      });
+      }).format(date);
+
+      return `${formattedDate} ${gmtOffset}`;
     } catch {
       return dateString;
     }
