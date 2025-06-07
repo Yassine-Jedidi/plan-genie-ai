@@ -14,13 +14,13 @@ router.get("/today", async (req, res) => {
       return res.status(400).json({ error: "User ID is required" });
     }
 
-    // Get today's date at midnight in local timezone
+    // Get today's date at midnight in UTC
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
 
-    // Get tomorrow's date at midnight
+    // Get tomorrow's date at midnight UTC
     const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
 
     // Find bilan for today or create a new one if it doesn't exist
     let bilan = await prisma.bilan.findFirst({
@@ -74,13 +74,13 @@ router.get("/date/:date", async (req, res) => {
       return res.status(400).json({ error: "Date parameter is required" });
     }
 
-    // Parse the date and set to midnight
+    // Parse the date and set to midnight UTC
     const requestedDate = new Date(date);
-    requestedDate.setHours(0, 0, 0, 0);
+    requestedDate.setUTCHours(0, 0, 0, 0);
 
-    // Get next day at midnight
+    // Get next day at midnight UTC
     const nextDay = new Date(requestedDate);
-    nextDay.setDate(nextDay.getDate() + 1);
+    nextDay.setUTCDate(nextDay.getUTCDate() + 1);
 
     // Find bilan for the requested date
     let bilan = await prisma.bilan.findFirst({
@@ -102,7 +102,7 @@ router.get("/date/:date", async (req, res) => {
 
     // If no bilan exists and the date is today or in the past, create one
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
 
     if (!bilan && requestedDate <= today) {
       bilan = await prisma.bilan.create({
