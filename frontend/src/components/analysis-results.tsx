@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { Edit, Save, X } from "lucide-react";
+import { Edit, Loader2, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -829,7 +829,15 @@ export function AnalysisResults({
                 : ""
             }`}
           >
-            {saving ? "Saving..." : isSaved ? "Saved" : "Save"}
+            {saving ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-3 w-3 animate-spin" /> Saving...
+              </div>
+            ) : isSaved ? (
+              "Saved"
+            ) : (
+              "Save"
+            )}
           </Button>
         </CardFooter>
       </div>
