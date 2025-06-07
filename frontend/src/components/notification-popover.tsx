@@ -193,7 +193,7 @@ export const NotificationPopover = ({
 
     fetchNotifications(); // Initial fetch
 
-    const intervalId = setInterval(fetchNotifications, 10000); // Poll every 10 seconds
+    const intervalId = setInterval(fetchNotifications, 60000); // Poll every 1 minute
 
     return () => clearInterval(intervalId); // Cleanup on unmount
   }, [onNotificationsChange]);
