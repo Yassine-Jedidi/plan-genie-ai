@@ -42,9 +42,16 @@ import {
   ChevronLeft,
   ChevronRight,
   History,
+  Info,
 } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
 import { DatePicker } from "@/components/date-picker";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const BilanPage = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -60,6 +67,7 @@ const BilanPage = () => {
   const [totalMinutes, setTotalMinutes] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [currentUtcTime, setCurrentUtcTime] = useState("");
 
   // Format date for display - fixing potential timezone issues
   const formatDateDisplay = (dateString: string) => {
@@ -412,6 +420,19 @@ const BilanPage = () => {
   useEffect(() => {
     fetchTasks();
     fetchRecentBilans();
+
+    const updateUtcTime = () => {
+      const now = new Date();
+      const utcHours = now.getUTCHours().toString().padStart(2, "0");
+      const utcMinutes = now.getUTCMinutes().toString().padStart(2, "0");
+      const utcSeconds = now.getUTCSeconds().toString().padStart(2, "0");
+      setCurrentUtcTime(`${utcHours}:${utcMinutes}:${utcSeconds} UTC`);
+    };
+
+    updateUtcTime(); // Set initial time
+    const intervalId = setInterval(updateUtcTime, 1000); // Update every second
+
+    return () => clearInterval(intervalId); // Clear interval on unmount
   }, []);
 
   // Render the time entry form for a task that doesn't have an entry yet
@@ -793,7 +814,22 @@ const BilanPage = () => {
 
       <div className="p-4 flex flex-col h-[calc(100vh-60px)] overflow-auto">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">Daily Summary</h1>
+          <div className="flex flex-col">
+            <h1 className="text-2xl font-bold">Daily Summary</h1>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="text-sm text-muted-foreground mt-1 flex items-center">
+                    Current UTC Time: {currentUtcTime}
+                    <Info className="ml-2 h-3 w-3 text-muted-foreground" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Summaries are generated on UTC midnight</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
 
           <div className="flex items-center gap-2">
             <DatePicker date={selectedDate} onSelect={handleDateSelect} />
