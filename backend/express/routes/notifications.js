@@ -18,6 +18,19 @@ const getTomorrowDateRange = () => {
 
 // Endpoint to generate daily notifications (no authentication needed, for cron job)
 router.post("/generate-daily", async (req, res) => {
+  // Check for CRON_SECRET for cron job authentication
+  if (
+    process.env.CRON_SECRET &&
+    req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`
+  ) {
+    console.warn(
+      "Unauthorized attempt to access /notifications/generate-daily (invalid CRON_SECRET)"
+    );
+    return res.status(401).end("Unauthorized");
+  }
+
+  console.log("Cron job route hit: /notifications/generate-daily");
+  console.log("Incoming Request Headers:", req.headers);
   try {
     if (!prisma) {
       return res
