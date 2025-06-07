@@ -18,23 +18,23 @@ export type Notification = {
   type: string;
 };
 
-// Function to get border color based on notification type
-const getNotificationBorderColor = (type: string) => {
+// Function to get dot color based on notification type
+const getNotificationDotColor = (type: string) => {
   switch (type) {
-    case "task_due":
-    case "event_soon":
-      return "border-l-4 border-l-blue-500"; // Tomorrow notifications
+    case "task_due_in_1day":
+    case "event_in_1day":
+      return "bg-blue-500"; // Tomorrow notifications
     case "task_due_in_6h":
     case "event_in_6h":
-      return "border-l-4 border-l-yellow-500"; // 6 hours notifications
+      return "bg-yellow-500"; // 6 hours notifications
     case "task_due_in_1h":
     case "event_in_1h":
-      return "border-l-4 border-l-orange-500"; // 1 hour notifications
+      return "bg-orange-500"; // 1 hour notifications
     case "task_due_in_15m":
     case "event_in_15m":
-      return "border-l-4 border-l-red-500"; // 15 minutes notifications
+      return "bg-red-500"; // 15 minutes notifications
     default:
-      return "border-l-4 border-l-gray-500";
+      return "bg-gray-500";
   }
 };
 
@@ -44,7 +44,6 @@ interface NotificationItemProps {
   onMarkAsRead: (id: string) => void;
   textColor?: string;
   hoverBgColor?: string;
-  dotColor?: string;
 }
 
 const NotificationItem = ({
@@ -52,39 +51,39 @@ const NotificationItem = ({
   index,
   onMarkAsRead,
   textColor = "text-foreground",
-  dotColor = "bg-foreground",
   hoverBgColor = "hover:bg-[#ffffff37]",
-}: NotificationItemProps) => (
-  <motion.div
-    initial={{ opacity: 0, x: 20, filter: "blur(10px)" }}
-    animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-    transition={{ duration: 0.3, delay: index * 0.1 }}
-    key={notification.id}
-    className={cn(
-      `p-4 ${hoverBgColor} cursor-pointer transition-colors`,
-      getNotificationBorderColor(notification.type)
-    )}
-    onClick={() => onMarkAsRead(notification.id)}
-  >
-    <div className="flex justify-between items-start">
-      <div className="flex items-center gap-2">
-        {!notification.read && (
-          <span className={`h-1 w-1 rounded-full ${dotColor}`} />
-        )}
-        <h4 className={`text-sm font-medium ${textColor}`}>
-          {notification.title}
-        </h4>
-      </div>
+}: NotificationItemProps) => {
+  const dotColorClass = getNotificationDotColor(notification.type);
 
-      <span className={`text-xs opacity-80 ${textColor}`}>
-        {notification.timestamp.toLocaleDateString()}
-      </span>
-    </div>
-    <p className={`text-xs opacity-70 mt-1 ${textColor}`}>
-      {notification.message}
-    </p>
-  </motion.div>
-);
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 20, filter: "blur(10px)" }}
+      animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+      transition={{ duration: 0.3, delay: index * 0.1 }}
+      key={notification.id}
+      className={cn(`p-4 ${hoverBgColor} cursor-pointer transition-colors`)}
+      onClick={() => onMarkAsRead(notification.id)}
+    >
+      <div className="flex justify-between items-start">
+        <div className="flex items-center gap-2">
+          {!notification.read && (
+            <span className={cn("h-1 w-1 rounded-full", dotColorClass)} />
+          )}
+          <h4 className={`text-sm font-medium ${textColor}`}>
+            {notification.title}
+          </h4>
+        </div>
+
+        <span className={`text-xs opacity-80 ${textColor}`}>
+          {notification.timestamp.toLocaleDateString()}
+        </span>
+      </div>
+      <p className={`text-xs opacity-70 mt-1 ${textColor}`}>
+        {notification.message}
+      </p>
+    </motion.div>
+  );
+};
 
 interface NotificationListProps {
   notifications: Notification[];
