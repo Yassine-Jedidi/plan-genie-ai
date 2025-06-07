@@ -17,7 +17,7 @@ const getTomorrowDateRange = () => {
 };
 
 // Endpoint to generate daily notifications (no authentication needed, for cron job)
-router.get("/generate-daily", async (req, res) => {
+router.post("/generate-daily", async (req, res) => {
   try {
     if (!prisma) {
       return res
