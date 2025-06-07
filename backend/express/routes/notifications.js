@@ -130,7 +130,7 @@ router.post("/generate", async (req, res) => {
           where: {
             user_id: user.id,
             task_id: task.id,
-            type: "task_due",
+            type: "task_due_in_1day",
           },
         });
 
@@ -149,7 +149,7 @@ router.post("/generate", async (req, res) => {
             data: {
               title: notificationTitle,
               message: notificationMessage,
-              type: "task_due",
+              type: "task_due_in_1day",
               user_id: user.id,
               task_id: task.id,
             },
@@ -175,7 +175,7 @@ router.post("/generate", async (req, res) => {
           where: {
             user_id: user.id,
             event_id: event.id,
-            type: "event_soon",
+            type: "event_in_1day",
           },
         });
 
@@ -194,7 +194,7 @@ router.post("/generate", async (req, res) => {
             data: {
               title: notificationTitle,
               message: notificationMessage,
-              type: "event_soon",
+              type: "event_in_1day",
               user_id: user.id,
               event_id: event.id,
             },

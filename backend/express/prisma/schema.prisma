@@ -99,8 +99,8 @@ model Notification {
 }
 
 enum NotificationType {
-  task_due
-  event_soon
+  task_due_in_1day
+  event_in_1day
   task_due_in_6h
   event_in_6h
   task_due_in_1h

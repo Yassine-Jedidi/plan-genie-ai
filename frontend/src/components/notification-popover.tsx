@@ -15,6 +15,27 @@ export type Notification = {
   message: string;
   timestamp: Date;
   read: boolean;
+  type: string;
+};
+
+// Function to get border color based on notification type
+const getNotificationBorderColor = (type: string) => {
+  switch (type) {
+    case "task_due":
+    case "event_soon":
+      return "border-l-4 border-l-blue-500"; // Tomorrow notifications
+    case "task_due_in_6h":
+    case "event_in_6h":
+      return "border-l-4 border-l-yellow-500"; // 6 hours notifications
+    case "task_due_in_1h":
+    case "event_in_1h":
+      return "border-l-4 border-l-orange-500"; // 1 hour notifications
+    case "task_due_in_15m":
+    case "event_in_15m":
+      return "border-l-4 border-l-red-500"; // 15 minutes notifications
+    default:
+      return "border-l-4 border-l-gray-500";
+  }
 };
 
 interface NotificationItemProps {
@@ -39,7 +60,10 @@ const NotificationItem = ({
     animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
     transition={{ duration: 0.3, delay: index * 0.1 }}
     key={notification.id}
-    className={cn(`p-4 ${hoverBgColor} cursor-pointer transition-colors`)}
+    className={cn(
+      `p-4 ${hoverBgColor} cursor-pointer transition-colors`,
+      getNotificationBorderColor(notification.type)
+    )}
     onClick={() => onMarkAsRead(notification.id)}
   >
     <div className="flex justify-between items-start">
@@ -127,7 +151,8 @@ export const NotificationPopover = ({
             title: apiNotif.title,
             message: apiNotif.message,
             read: apiNotif.read,
-            timestamp: new Date(apiNotif.created_at), // Use created_at for display
+            type: apiNotif.type,
+            timestamp: new Date(apiNotif.created_at),
           })
         );
         setNotifications(formattedNotifications);
