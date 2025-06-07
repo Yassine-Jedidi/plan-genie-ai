@@ -3,8 +3,7 @@
   "crons": [
     {
       "path": "/notifications/generate-daily",
-      "schedule": "45 10 * * *",
-      "method": "POST"
+      "schedule": "45 10 * * *"
     }
   ],
   "builds": [
