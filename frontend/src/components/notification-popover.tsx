@@ -169,7 +169,12 @@ export const NotificationPopover = ({
         setLoading(false);
       }
     };
-    fetchNotifications();
+
+    fetchNotifications(); // Initial fetch
+
+    const intervalId = setInterval(fetchNotifications, 10000); // Poll every 10 seconds
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
   }, [onNotificationsChange]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
