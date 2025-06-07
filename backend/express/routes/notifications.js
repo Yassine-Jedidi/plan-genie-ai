@@ -152,11 +152,8 @@ router.post("/generate-daily", async (req, res) => {
   }
 });
 
-// Apply authentication middleware to all routes
-router.use(authenticateUser);
-
 // GET endpoint to retrieve user's notifications
-router.get("/", async (req, res) => {
+router.get("/", authenticateUser, async (req, res) => {
   try {
     const userId = req.user.id;
     if (!userId) {
@@ -186,7 +183,7 @@ router.get("/", async (req, res) => {
 });
 
 // PUT endpoint to mark a notification as read
-router.put("/:notificationId/read", async (req, res) => {
+router.put("/:notificationId/read", authenticateUser, async (req, res) => {
   try {
     const { notificationId } = req.params;
     const userId = req.user.id;
