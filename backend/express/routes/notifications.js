@@ -16,8 +16,26 @@ const getTomorrowDateRange = () => {
   return { tomorrowStart, tomorrowEnd };
 };
 
+const getSixHoursFromNow = () => {
+  const now = new Date();
+  const sixHoursLater = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+  return { start: now, end: sixHoursLater };
+};
+
+const getOneHourFromNow = () => {
+  const now = new Date();
+  const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
+  return { start: now, end: oneHourLater };
+};
+
+const getFifteenMinutesFromNow = () => {
+  const now = new Date();
+  const fifteenMinutesLater = new Date(now.getTime() + 15 * 60 * 1000);
+  return { start: now, end: fifteenMinutesLater };
+};
+
 // Endpoint to generate daily notifications (no authentication needed, for cron job)
-router.post("/generate-daily", async (req, res) => {
+router.post("/generate", async (req, res) => {
   // Check for CRON_SECRET for cron job authentication
   if (
     process.env.CRON_SECRET &&
@@ -45,6 +63,51 @@ router.post("/generate-daily", async (req, res) => {
     const users = await prisma.user.findMany({
       select: { id: true, email: true },
     });
+
+    const generateNotifications = async (
+      userId,
+      items,
+      itemType,
+      notificationType,
+      timeDescription
+    ) => {
+      let createdCount = 0;
+      for (const item of items) {
+        const existingNotification = await prisma.notification.findFirst({
+          where: {
+            user_id: userId,
+            [`${itemType}_id`]: item.id,
+            type: notificationType,
+          },
+        });
+
+        if (!existingNotification) {
+          const notificationTitle = `${
+            itemType === "task" ? "Task" : "Event"
+          } Reminder: ${item.title}`;
+          const itemTime =
+            item.deadline || item.date_time
+              ? new Date(item.deadline || item.date_time).toLocaleTimeString(
+                  [],
+                  { hour: "2-digit", minute: "2-digit", hour12: false }
+                )
+              : timeDescription;
+          const notificationMessage = `Your ${itemType} "${item.title}" is due ${timeDescription} at ${itemTime}.`;
+
+          await prisma.notification.create({
+            data: {
+              title: notificationTitle,
+              message: notificationMessage,
+              type: notificationType,
+              user_id: userId,
+              [`${itemType}_id`]: item.id,
+            },
+          });
+          createdCount++;
+        }
+      }
+      return createdCount;
+    };
 
     for (const user of users) {
       // Fetch tasks due tomorrow for this user
@@ -139,6 +202,123 @@ router.post("/generate-daily", async (req, res) => {
           notificationsCreatedCount++;
         }
       }
+
+      // --- New notification logic for 6 hours, 1 hour, 15 minutes ---
+      const { start: sixHoursStart, end: sixHoursEnd } = getSixHoursFromNow();
+      const { start: oneHourStart, end: oneHourEnd } = getOneHourFromNow();
+      const { start: fifteenMinutesStart, end: fifteenMinutesEnd } =
+        getFifteenMinutesFromNow();
+
+      // Tasks due in the next 6 hours
+      const tasksDueInSixHours = await prisma.task.findMany({
+        where: {
+          user_id: user.id,
+          deadline: {
+            gte: sixHoursStart,
+            lt: sixHoursEnd,
+          },
+          NOT: { status: "Done" },
+        },
+      });
+      notificationsCreatedCount += await generateNotifications(
+        user.id,
+        tasksDueInSixHours,
+        "task",
+        "task_due_in_6h",
+        "in 6 hours"
+      );
+
+      // Events in the next 6 hours
+      const eventsInSixHours = await prisma.event.findMany({
+        where: {
+          user_id: user.id,
+          date_time: {
+            gte: sixHoursStart,
+            lt: sixHoursEnd,
+          },
+        },
+      });
+      notificationsCreatedCount += await generateNotifications(
+        user.id,
+        eventsInSixHours,
+        "event",
+        "event_in_6h",
+        "in 6 hours"
+      );
+
+      // Tasks due in the next 1 hour
+      const tasksDueInOneHour = await prisma.task.findMany({
+        where: {
+          user_id: user.id,
+          deadline: {
+            gte: oneHourStart,
+            lt: oneHourEnd,
+          },
+          NOT: { status: "Done" },
+        },
+      });
+      notificationsCreatedCount += await generateNotifications(
+        user.id,
+        tasksDueInOneHour,
+        "task",
+        "task_due_in_1h",
+        "in 1 hour"
+      );
+
+      // Events in the next 1 hour
+      const eventsInOneHour = await prisma.event.findMany({
+        where: {
+          user_id: user.id,
+          date_time: {
+            gte: oneHourStart,
+            lt: oneHourEnd,
+          },
+        },
+      });
+      notificationsCreatedCount += await generateNotifications(
+        user.id,
+        eventsInOneHour,
+        "event",
+        "event_in_1h",
+        "in 1 hour"
+      );
+
+      // Tasks due in the next 15 minutes
+      const tasksDueInFifteenMinutes = await prisma.task.findMany({
+        where: {
+          user_id: user.id,
+          deadline: {
+            gte: fifteenMinutesStart,
+            lt: fifteenMinutesEnd,
+          },
+          NOT: { status: "Done" },
+        },
+      });
+      notificationsCreatedCount += await generateNotifications(
+        user.id,
+        tasksDueInFifteenMinutes,
+        "task",
+        "task_due_in_15m",
+        "in 15 minutes"
+      );
+
+      // Events in the next 15 minutes
+      const eventsInFifteenMinutes = await prisma.event.findMany({
+        where: {
+          user_id: user.id,
+          date_time: {
+            gte: fifteenMinutesStart,
+            lt: fifteenMinutesEnd,
+          },
+        },
+      });
+      notificationsCreatedCount += await generateNotifications(
+        user.id,
+        eventsInFifteenMinutes,
+        "event",
+        "event_in_15m",
+        "in 15 minutes"
+      );
     }
 
     return res

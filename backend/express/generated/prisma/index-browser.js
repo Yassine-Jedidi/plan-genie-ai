@@ -194,7 +194,16 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-
+exports.NotificationType = exports.$Enums.NotificationType = {
+  task_due: 'task_due',
+  event_soon: 'event_soon',
+  task_due_in_6h: 'task_due_in_6h',
+  event_in_6h: 'event_in_6h',
+  task_due_in_1h: 'task_due_in_1h',
+  event_in_1h: 'event_in_1h',
+  task_due_in_15m: 'task_due_in_15m',
+  event_in_15m: 'event_in_15m'
+};
 
 exports.Prisma.ModelName = {
   User: 'User',
