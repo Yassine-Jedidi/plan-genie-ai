@@ -435,6 +435,27 @@ export default function TasksTable({ tasks }: TasksTableProps) {
     };
   }, []);
 
+  //Fetch tasks every minute
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const latestTasks = await taskService.getTasks(); // Adjust this to your actual fetch method
+        setLocalTasks(latestTasks);
+      } catch (error) {
+        console.error("Failed to fetch tasks:", error);
+      }
+    };
+
+    // Fetch immediately on mount
+    fetchTasks();
+
+    // Set up interval to fetch every minute
+    const intervalId = setInterval(fetchTasks, 60000);
+
+    // Clean up on unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
   const [sorting, setSorting] = useState<SortingState>([
     {
       id: "created_at",
