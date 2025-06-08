@@ -12,9 +12,11 @@ import { Check, Sun, Moon } from "lucide-react";
 import { ColorTheme, Theme } from "@/contexts/theme-context";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import themeService from "@/services/themeService";
+import { Switch } from "@/components/ui/switch";
+import { notificationService } from "@/services/notificationService";
 
 const colorThemes = [
   { name: "Default", primary: "hsl(222.2, 47.4%, 11.2%)", color: "#1e293b" },
@@ -32,6 +34,34 @@ export default function SettingsPage() {
   const { isMobile } = useSidebar();
   const { user } = useAuth();
   const [saving, setSaving] = useState(false);
+  const [receiveTaskNotifications, setReceiveTaskNotifications] = useState(
+    user?.receive_task_notifications ?? true
+  );
+  const [receiveEventNotifications, setReceiveEventNotifications] = useState(
+    user?.receive_event_notifications ?? true
+  );
+  const [loadingPreferences, setLoadingPreferences] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchPreferences() {
+      try {
+        const prefs = await notificationService.getNotificationPreferences();
+        if (isMounted) {
+          setReceiveTaskNotifications(prefs.receive_task_notifications);
+          setReceiveEventNotifications(prefs.receive_event_notifications);
+        }
+      } catch (error) {
+        console.error("Failed to fetch notification preferences:", error);
+      } finally {
+        if (isMounted) setLoadingPreferences(false);
+      }
+    }
+    fetchPreferences();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleThemeChange = (newTheme: ColorTheme) => {
     setSaving(true);
@@ -79,6 +109,36 @@ export default function SettingsPage() {
           setSaving(false);
         });
     } else {
+      setSaving(false);
+    }
+  };
+
+  const handleNotificationPreferenceChange = async (
+    type: "task" | "event",
+    checked: boolean
+  ) => {
+    setSaving(true);
+    try {
+      if (type === "task") {
+        setReceiveTaskNotifications(checked);
+        await notificationService.updateNotificationPreferences({
+          receive_task_notifications: checked,
+        });
+      } else {
+        setReceiveEventNotifications(checked);
+        await notificationService.updateNotificationPreferences({
+          receive_event_notifications: checked,
+        });
+      }
+      toast.success(
+        `You will ${checked ? "receive" : "not receive"} ${
+          type === "task" ? "task" : "event"
+        } notifications`
+      );
+    } catch (error) {
+      console.error("Failed to save notification preferences:", error);
+      toast.error("Failed to save notification preferences");
+    } finally {
       setSaving(false);
     }
   };
@@ -203,16 +263,40 @@ export default function SettingsPage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="notifications">
+          <TabsContent value="notifications" className="space-y-4">
             <Card>
               <CardHeader>
                 <CardTitle>Notification Settings</CardTitle>
                 <CardDescription>
-                  Manage your notification preferences
+                  Manage your notification preferences. Enable or disable
+                  notifications for tasks and events below.
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <p>Notification settings will be available soon.</p>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span>Receive Task Notifications</span>
+                  <Switch
+                    checked={
+                      loadingPreferences ? true : receiveTaskNotifications
+                    }
+                    onCheckedChange={(checked) =>
+                      handleNotificationPreferenceChange("task", checked)
+                    }
+                    disabled={saving || loadingPreferences}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Receive Event Notifications</span>
+                  <Switch
+                    checked={
+                      loadingPreferences ? true : receiveEventNotifications
+                    }
+                    onCheckedChange={(checked) =>
+                      handleNotificationPreferenceChange("event", checked)
+                    }
+                    disabled={saving || loadingPreferences}
+                  />
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

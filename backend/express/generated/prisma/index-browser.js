@@ -125,7 +125,9 @@ exports.Prisma.UserScalarFieldEnum = {
   theme: 'theme',
   colorTheme: 'colorTheme',
   created_at: 'created_at',
-  updated_at: 'updated_at'
+  updated_at: 'updated_at',
+  receive_task_notifications: 'receive_task_notifications',
+  receive_event_notifications: 'receive_event_notifications'
 };
 
 exports.Prisma.TaskScalarFieldEnum = {

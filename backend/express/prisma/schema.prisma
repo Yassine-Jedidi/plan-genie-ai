@@ -17,18 +17,20 @@ datasource db {
 
 // Custom User model that syncs with Supabase auth.users
 model User {
-  id            String         @id
-  email         String         @unique
-  full_name     String?
-  avatar_url    String?
-  theme         String?        @default("system") // 'light', 'dark', or 'system'
-  colorTheme    String?        @default("default") // 'default', 'red', 'blue', etc.
-  created_at    DateTime       @default(now())
-  updated_at    DateTime       @updatedAt
-  tasks         Task[]
-  events        Event[]
-  bilans        Bilan[]
-  notifications Notification[]
+  id                          String         @id
+  email                       String         @unique
+  full_name                   String?
+  avatar_url                  String?
+  theme                       String?        @default("system") // 'light', 'dark', or 'system'
+  colorTheme                  String?        @default("default") // 'default', 'red', 'blue', etc.
+  created_at                  DateTime       @default(now())
+  updated_at                  DateTime       @updatedAt
+  tasks                       Task[]
+  events                      Event[]
+  bilans                      Bilan[]
+  notifications               Notification[]
+  receive_task_notifications  Boolean        @default(true)
+  receive_event_notifications Boolean        @default(true)
 }
 
 model Task {
@@ -84,7 +86,7 @@ model Notification {
   id         String           @id @default(uuid())
   title      String
   message    String
-  type       NotificationType // e.g., 'task_due', 'event_soon'
+  type       NotificationType
   read       Boolean          @default(false)
   created_at DateTime         @default(now())
 

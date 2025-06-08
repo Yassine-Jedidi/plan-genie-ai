@@ -61,7 +61,12 @@ router.post("/generate", async (req, res) => {
 
     // Get all users to generate notifications for each
     const users = await prisma.user.findMany({
-      select: { id: true, email: true },
+      select: {
+        id: true,
+        email: true,
+        receive_task_notifications: true,
+        receive_event_notifications: true,
+      },
     });
 
     const generateNotifications = async (
@@ -165,6 +170,11 @@ router.post("/generate", async (req, res) => {
       });
 
       for (const task of tasksDueTomorrow) {
+        // Check if user wants to receive task notifications
+        if (!user.receive_task_notifications) {
+          continue; // Skip if user has opted out of task notifications
+        }
+
         // Check if a notification for this task already exists for tomorrow
         const existingNotification = await prisma.notification.findFirst({
           where: {
@@ -210,6 +220,11 @@ router.post("/generate", async (req, res) => {
       });
 
       for (const event of eventsTomorrow) {
+        // Check if user wants to receive event notifications
+        if (!user.receive_event_notifications) {
+          continue; // Skip if user has opted out of event notifications
+        }
+
         // Check if a notification for this event already exists for tomorrow
         const existingNotification = await prisma.notification.findFirst({
           where: {
@@ -260,13 +275,16 @@ router.post("/generate", async (req, res) => {
           NOT: { status: "Done" },
         },
       });
-      notificationsCreatedCount += await filterAndGenerateNotifications(
-        user.id,
-        tasksDueInFifteenMinutes,
-        "task",
-        "task_due_in_15m",
-        "in 15 minutes"
-      );
+      // Only generate if user wants task notifications
+      if (user.receive_task_notifications) {
+        notificationsCreatedCount += await filterAndGenerateNotifications(
+          user.id,
+          tasksDueInFifteenMinutes,
+          "task",
+          "task_due_in_15m",
+          "in 15 minutes"
+        );
+      }
 
       // Events in the next 15 minutes
       const eventsInFifteenMinutes = await prisma.event.findMany({
@@ -278,13 +296,16 @@ router.post("/generate", async (req, res) => {
           },
         },
       });
-      notificationsCreatedCount += await filterAndGenerateNotifications(
-        user.id,
-        eventsInFifteenMinutes,
-        "event",
-        "event_in_15m",
-        "in 15 minutes"
-      );
+      // Only generate if user wants event notifications
+      if (user.receive_event_notifications) {
+        notificationsCreatedCount += await filterAndGenerateNotifications(
+          user.id,
+          eventsInFifteenMinutes,
+          "event",
+          "event_in_15m",
+          "in 15 minutes"
+        );
+      }
 
       // Tasks due in the next 1 hour
       const tasksDueInOneHour = await prisma.task.findMany({
@@ -297,14 +318,17 @@ router.post("/generate", async (req, res) => {
           NOT: { status: "Done" },
         },
       });
-      notificationsCreatedCount += await filterAndGenerateNotifications(
-        user.id,
-        tasksDueInOneHour,
-        "task",
-        "task_due_in_1h",
-        "in 1 hour",
-        ["task_due_in_15m"] // Exclude if 15m notification already exists
-      );
+      // Only generate if user wants task notifications
+      if (user.receive_task_notifications) {
+        notificationsCreatedCount += await filterAndGenerateNotifications(
+          user.id,
+          tasksDueInOneHour,
+          "task",
+          "task_due_in_1h",
+          "in 1 hour",
+          ["task_due_in_15m"] // Exclude if 15m notification already exists
+        );
+      }
 
       // Events in the next 1 hour
       const eventsInOneHour = await prisma.event.findMany({
@@ -316,14 +340,17 @@ router.post("/generate", async (req, res) => {
           },
         },
       });
-      notificationsCreatedCount += await filterAndGenerateNotifications(
-        user.id,
-        eventsInOneHour,
-        "event",
-        "event_in_1h",
-        "in 1 hour",
-        ["event_in_15m"] // Exclude if 15m notification already exists
-      );
+      // Only generate if user wants event notifications
+      if (user.receive_event_notifications) {
+        notificationsCreatedCount += await filterAndGenerateNotifications(
+          user.id,
+          eventsInOneHour,
+          "event",
+          "event_in_1h",
+          "in 1 hour",
+          ["event_in_15m"] // Exclude if 15m notification already exists
+        );
+      }
 
       // Tasks due in the next 6 hours
       const tasksDueInSixHours = await prisma.task.findMany({
@@ -336,14 +363,17 @@ router.post("/generate", async (req, res) => {
           NOT: { status: "Done" },
         },
       });
-      notificationsCreatedCount += await filterAndGenerateNotifications(
-        user.id,
-        tasksDueInSixHours,
-        "task",
-        "task_due_in_6h",
-        "in 6 hours",
-        ["task_due_in_15m", "task_due_in_1h"] // Exclude if 15m or 1h notification exists
-      );
+      // Only generate if user wants task notifications
+      if (user.receive_task_notifications) {
+        notificationsCreatedCount += await filterAndGenerateNotifications(
+          user.id,
+          tasksDueInSixHours,
+          "task",
+          "task_due_in_6h",
+          "in 6 hours",
+          ["task_due_in_15m", "task_due_in_1h"] // Exclude if 15m or 1h notification exists
+        );
+      }
 
       // Events in the next 6 hours
       const eventsInSixHours = await prisma.event.findMany({
@@ -355,14 +385,17 @@ router.post("/generate", async (req, res) => {
           },
         },
       });
-      notificationsCreatedCount += await filterAndGenerateNotifications(
-        user.id,
-        eventsInSixHours,
-        "event",
-        "event_in_6h",
-        "in 6 hours",
-        ["event_in_15m", "event_in_1h"] // Exclude if 15m or 1h notification exists
-      );
+      // Only generate if user wants event notifications
+      if (user.receive_event_notifications) {
+        notificationsCreatedCount += await filterAndGenerateNotifications(
+          user.id,
+          eventsInSixHours,
+          "event",
+          "event_in_6h",
+          "in 6 hours",
+          ["event_in_15m", "event_in_1h"] // Exclude if 15m or 1h notification exists
+        );
+      }
     }
 
     return res
@@ -448,6 +481,65 @@ router.put("/:notificationId/read", authenticateUser, async (req, res) => {
     res
       .status(500)
       .json({ error: "Failed to mark notification as read: " + error.message });
+  }
+});
+
+// API endpoint to update user notification preferences
+router.put("/preferences", authenticateUser, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { receive_task_notifications, receive_event_notifications } =
+      req.body;
+
+    const updateData = {};
+    if (typeof receive_task_notifications === "boolean") {
+      updateData.receive_task_notifications = receive_task_notifications;
+    }
+    if (typeof receive_event_notifications === "boolean") {
+      updateData.receive_event_notifications = receive_event_notifications;
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return res
+        .status(400)
+        .json({ error: "No notification preferences provided for update." });
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+    });
+
+    res.json({
+      message: "Notification preferences updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Failed to update notification preferences:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to update notification preferences" });
+  }
+});
+
+// API endpoint to get user notification preferences
+router.get("/preferences", authenticateUser, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        receive_task_notifications: true,
+        receive_event_notifications: true,
+      },
+    });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error("Failed to fetch notification preferences:", error);
+    res.status(500).json({ error: "Failed to fetch notification preferences" });
   }
 });
 

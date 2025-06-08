@@ -1525,6 +1525,8 @@ export namespace Prisma {
     colorTheme: string | null
     created_at: Date | null
     updated_at: Date | null
+    receive_task_notifications: boolean | null
+    receive_event_notifications: boolean | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -1536,6 +1538,8 @@ export namespace Prisma {
     colorTheme: string | null
     created_at: Date | null
     updated_at: Date | null
+    receive_task_notifications: boolean | null
+    receive_event_notifications: boolean | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -1547,6 +1551,8 @@ export namespace Prisma {
     colorTheme: number
     created_at: number
     updated_at: number
+    receive_task_notifications: number
+    receive_event_notifications: number
     _all: number
   }
 
@@ -1560,6 +1566,8 @@ export namespace Prisma {
     colorTheme?: true
     created_at?: true
     updated_at?: true
+    receive_task_notifications?: true
+    receive_event_notifications?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -1571,6 +1579,8 @@ export namespace Prisma {
     colorTheme?: true
     created_at?: true
     updated_at?: true
+    receive_task_notifications?: true
+    receive_event_notifications?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -1582,6 +1592,8 @@ export namespace Prisma {
     colorTheme?: true
     created_at?: true
     updated_at?: true
+    receive_task_notifications?: true
+    receive_event_notifications?: true
     _all?: true
   }
 
@@ -1666,6 +1678,8 @@ export namespace Prisma {
     colorTheme: string | null
     created_at: Date
     updated_at: Date
+    receive_task_notifications: boolean
+    receive_event_notifications: boolean
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -1694,6 +1708,8 @@ export namespace Prisma {
     colorTheme?: boolean
     created_at?: boolean
     updated_at?: boolean
+    receive_task_notifications?: boolean
+    receive_event_notifications?: boolean
     tasks?: boolean | User$tasksArgs<ExtArgs>
     events?: boolean | User$eventsArgs<ExtArgs>
     bilans?: boolean | User$bilansArgs<ExtArgs>
@@ -1710,6 +1726,8 @@ export namespace Prisma {
     colorTheme?: boolean
     created_at?: boolean
     updated_at?: boolean
+    receive_task_notifications?: boolean
+    receive_event_notifications?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1721,6 +1739,8 @@ export namespace Prisma {
     colorTheme?: boolean
     created_at?: boolean
     updated_at?: boolean
+    receive_task_notifications?: boolean
+    receive_event_notifications?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -1732,9 +1752,11 @@ export namespace Prisma {
     colorTheme?: boolean
     created_at?: boolean
     updated_at?: boolean
+    receive_task_notifications?: boolean
+    receive_event_notifications?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "full_name" | "avatar_url" | "theme" | "colorTheme" | "created_at" | "updated_at", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "full_name" | "avatar_url" | "theme" | "colorTheme" | "created_at" | "updated_at" | "receive_task_notifications" | "receive_event_notifications", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tasks?: boolean | User$tasksArgs<ExtArgs>
     events?: boolean | User$eventsArgs<ExtArgs>
@@ -1762,6 +1784,8 @@ export namespace Prisma {
       colorTheme: string | null
       created_at: Date
       updated_at: Date
+      receive_task_notifications: boolean
+      receive_event_notifications: boolean
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -2197,6 +2221,8 @@ export namespace Prisma {
     readonly colorTheme: FieldRef<"User", 'String'>
     readonly created_at: FieldRef<"User", 'DateTime'>
     readonly updated_at: FieldRef<"User", 'DateTime'>
+    readonly receive_task_notifications: FieldRef<"User", 'Boolean'>
+    readonly receive_event_notifications: FieldRef<"User", 'Boolean'>
   }
     
 
@@ -8381,7 +8407,9 @@ export namespace Prisma {
     theme: 'theme',
     colorTheme: 'colorTheme',
     created_at: 'created_at',
-    updated_at: 'updated_at'
+    updated_at: 'updated_at',
+    receive_task_notifications: 'receive_task_notifications',
+    receive_event_notifications: 'receive_event_notifications'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -8512,6 +8540,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -8536,13 +8571,6 @@ export namespace Prisma {
    * Reference to a field of type 'NotificationType[]'
    */
   export type ListEnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationType[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Boolean'
-   */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -8575,6 +8603,8 @@ export namespace Prisma {
     colorTheme?: StringNullableFilter<"User"> | string | null
     created_at?: DateTimeFilter<"User"> | Date | string
     updated_at?: DateTimeFilter<"User"> | Date | string
+    receive_task_notifications?: BoolFilter<"User"> | boolean
+    receive_event_notifications?: BoolFilter<"User"> | boolean
     tasks?: TaskListRelationFilter
     events?: EventListRelationFilter
     bilans?: BilanListRelationFilter
@@ -8590,6 +8620,8 @@ export namespace Prisma {
     colorTheme?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
+    receive_task_notifications?: SortOrder
+    receive_event_notifications?: SortOrder
     tasks?: TaskOrderByRelationAggregateInput
     events?: EventOrderByRelationAggregateInput
     bilans?: BilanOrderByRelationAggregateInput
@@ -8608,6 +8640,8 @@ export namespace Prisma {
     colorTheme?: StringNullableFilter<"User"> | string | null
     created_at?: DateTimeFilter<"User"> | Date | string
     updated_at?: DateTimeFilter<"User"> | Date | string
+    receive_task_notifications?: BoolFilter<"User"> | boolean
+    receive_event_notifications?: BoolFilter<"User"> | boolean
     tasks?: TaskListRelationFilter
     events?: EventListRelationFilter
     bilans?: BilanListRelationFilter
@@ -8623,6 +8657,8 @@ export namespace Prisma {
     colorTheme?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
+    receive_task_notifications?: SortOrder
+    receive_event_notifications?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -8640,6 +8676,8 @@ export namespace Prisma {
     colorTheme?: StringNullableWithAggregatesFilter<"User"> | string | null
     created_at?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"User"> | Date | string
+    receive_task_notifications?: BoolWithAggregatesFilter<"User"> | boolean
+    receive_event_notifications?: BoolWithAggregatesFilter<"User"> | boolean
   }
 
   export type TaskWhereInput = {
@@ -9009,6 +9047,8 @@ export namespace Prisma {
     colorTheme?: string | null
     created_at?: Date | string
     updated_at?: Date | string
+    receive_task_notifications?: boolean
+    receive_event_notifications?: boolean
     tasks?: TaskCreateNestedManyWithoutUserInput
     events?: EventCreateNestedManyWithoutUserInput
     bilans?: BilanCreateNestedManyWithoutUserInput
@@ -9024,6 +9064,8 @@ export namespace Prisma {
     colorTheme?: string | null
     created_at?: Date | string
     updated_at?: Date | string
+    receive_task_notifications?: boolean
+    receive_event_notifications?: boolean
     tasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     events?: EventUncheckedCreateNestedManyWithoutUserInput
     bilans?: BilanUncheckedCreateNestedManyWithoutUserInput
@@ -9039,6 +9081,8 @@ export namespace Prisma {
     colorTheme?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    receive_task_notifications?: BoolFieldUpdateOperationsInput | boolean
+    receive_event_notifications?: BoolFieldUpdateOperationsInput | boolean
     tasks?: TaskUpdateManyWithoutUserNestedInput
     events?: EventUpdateManyWithoutUserNestedInput
     bilans?: BilanUpdateManyWithoutUserNestedInput
@@ -9054,6 +9098,8 @@ export namespace Prisma {
     colorTheme?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    receive_task_notifications?: BoolFieldUpdateOperationsInput | boolean
+    receive_event_notifications?: BoolFieldUpdateOperationsInput | boolean
     tasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     events?: EventUncheckedUpdateManyWithoutUserNestedInput
     bilans?: BilanUncheckedUpdateManyWithoutUserNestedInput
@@ -9069,6 +9115,8 @@ export namespace Prisma {
     colorTheme?: string | null
     created_at?: Date | string
     updated_at?: Date | string
+    receive_task_notifications?: boolean
+    receive_event_notifications?: boolean
   }
 
   export type UserUpdateManyMutationInput = {
@@ -9080,6 +9128,8 @@ export namespace Prisma {
     colorTheme?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    receive_task_notifications?: BoolFieldUpdateOperationsInput | boolean
+    receive_event_notifications?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -9091,6 +9141,8 @@ export namespace Prisma {
     colorTheme?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    receive_task_notifications?: BoolFieldUpdateOperationsInput | boolean
+    receive_event_notifications?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type TaskCreateInput = {
@@ -9506,6 +9558,11 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type TaskListRelationFilter = {
     every?: TaskWhereInput
     some?: TaskWhereInput
@@ -9560,6 +9617,8 @@ export namespace Prisma {
     colorTheme?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
+    receive_task_notifications?: SortOrder
+    receive_event_notifications?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -9571,6 +9630,8 @@ export namespace Prisma {
     colorTheme?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
+    receive_task_notifications?: SortOrder
+    receive_event_notifications?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -9582,6 +9643,8 @@ export namespace Prisma {
     colorTheme?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
+    receive_task_notifications?: SortOrder
+    receive_event_notifications?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -9632,6 +9695,14 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type DateTimeNullableFilter<$PrismaModel = never> = {
@@ -9846,11 +9917,6 @@ export namespace Prisma {
     not?: NestedEnumNotificationTypeFilter<$PrismaModel> | $Enums.NotificationType
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type TaskNullableScalarRelationFilter = {
     is?: TaskWhereInput | null
     isNot?: TaskWhereInput | null
@@ -9905,14 +9971,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumNotificationTypeFilter<$PrismaModel>
     _max?: NestedEnumNotificationTypeFilter<$PrismaModel>
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type TaskCreateNestedManyWithoutUserInput = {
@@ -9981,6 +10039,10 @@ export namespace Prisma {
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
   }
 
   export type TaskUpdateManyWithoutUserNestedInput = {
@@ -10367,10 +10429,6 @@ export namespace Prisma {
     set?: $Enums.NotificationType
   }
 
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
-  }
-
   export type UserUpdateOneRequiredWithoutNotificationsNestedInput = {
     create?: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
     connectOrCreate?: UserCreateOrConnectWithoutNotificationsInput
@@ -10436,6 +10494,11 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
@@ -10508,6 +10571,14 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -10567,11 +10638,6 @@ export namespace Prisma {
     not?: NestedEnumNotificationTypeFilter<$PrismaModel> | $Enums.NotificationType
   }
 
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type NestedEnumNotificationTypeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.NotificationType | EnumNotificationTypeFieldRefInput<$PrismaModel>
     in?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
@@ -10580,14 +10646,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumNotificationTypeFilter<$PrismaModel>
     _max?: NestedEnumNotificationTypeFilter<$PrismaModel>
-  }
-
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type TaskCreateWithoutUserInput = {
@@ -10841,6 +10899,8 @@ export namespace Prisma {
     colorTheme?: string | null
     created_at?: Date | string
     updated_at?: Date | string
+    receive_task_notifications?: boolean
+    receive_event_notifications?: boolean
     events?: EventCreateNestedManyWithoutUserInput
     bilans?: BilanCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -10855,6 +10915,8 @@ export namespace Prisma {
     colorTheme?: string | null
     created_at?: Date | string
     updated_at?: Date | string
+    receive_task_notifications?: boolean
+    receive_event_notifications?: boolean
     events?: EventUncheckedCreateNestedManyWithoutUserInput
     bilans?: BilanUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -10945,6 +11007,8 @@ export namespace Prisma {
     colorTheme?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    receive_task_notifications?: BoolFieldUpdateOperationsInput | boolean
+    receive_event_notifications?: BoolFieldUpdateOperationsInput | boolean
     events?: EventUpdateManyWithoutUserNestedInput
     bilans?: BilanUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -10959,6 +11023,8 @@ export namespace Prisma {
     colorTheme?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    receive_task_notifications?: BoolFieldUpdateOperationsInput | boolean
+    receive_event_notifications?: BoolFieldUpdateOperationsInput | boolean
     events?: EventUncheckedUpdateManyWithoutUserNestedInput
     bilans?: BilanUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -11018,6 +11084,8 @@ export namespace Prisma {
     colorTheme?: string | null
     created_at?: Date | string
     updated_at?: Date | string
+    receive_task_notifications?: boolean
+    receive_event_notifications?: boolean
     tasks?: TaskCreateNestedManyWithoutUserInput
     bilans?: BilanCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -11032,6 +11100,8 @@ export namespace Prisma {
     colorTheme?: string | null
     created_at?: Date | string
     updated_at?: Date | string
+    receive_task_notifications?: boolean
+    receive_event_notifications?: boolean
     tasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     bilans?: BilanUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -11094,6 +11164,8 @@ export namespace Prisma {
     colorTheme?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    receive_task_notifications?: BoolFieldUpdateOperationsInput | boolean
+    receive_event_notifications?: BoolFieldUpdateOperationsInput | boolean
     tasks?: TaskUpdateManyWithoutUserNestedInput
     bilans?: BilanUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -11108,6 +11180,8 @@ export namespace Prisma {
     colorTheme?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    receive_task_notifications?: BoolFieldUpdateOperationsInput | boolean
+    receive_event_notifications?: BoolFieldUpdateOperationsInput | boolean
     tasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     bilans?: BilanUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -11138,6 +11212,8 @@ export namespace Prisma {
     colorTheme?: string | null
     created_at?: Date | string
     updated_at?: Date | string
+    receive_task_notifications?: boolean
+    receive_event_notifications?: boolean
     tasks?: TaskCreateNestedManyWithoutUserInput
     events?: EventCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -11152,6 +11228,8 @@ export namespace Prisma {
     colorTheme?: string | null
     created_at?: Date | string
     updated_at?: Date | string
+    receive_task_notifications?: boolean
+    receive_event_notifications?: boolean
     tasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     events?: EventUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -11210,6 +11288,8 @@ export namespace Prisma {
     colorTheme?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    receive_task_notifications?: BoolFieldUpdateOperationsInput | boolean
+    receive_event_notifications?: BoolFieldUpdateOperationsInput | boolean
     tasks?: TaskUpdateManyWithoutUserNestedInput
     events?: EventUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -11224,6 +11304,8 @@ export namespace Prisma {
     colorTheme?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    receive_task_notifications?: BoolFieldUpdateOperationsInput | boolean
+    receive_event_notifications?: BoolFieldUpdateOperationsInput | boolean
     tasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     events?: EventUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -11370,6 +11452,8 @@ export namespace Prisma {
     colorTheme?: string | null
     created_at?: Date | string
     updated_at?: Date | string
+    receive_task_notifications?: boolean
+    receive_event_notifications?: boolean
     tasks?: TaskCreateNestedManyWithoutUserInput
     events?: EventCreateNestedManyWithoutUserInput
     bilans?: BilanCreateNestedManyWithoutUserInput
@@ -11384,6 +11468,8 @@ export namespace Prisma {
     colorTheme?: string | null
     created_at?: Date | string
     updated_at?: Date | string
+    receive_task_notifications?: boolean
+    receive_event_notifications?: boolean
     tasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     events?: EventUncheckedCreateNestedManyWithoutUserInput
     bilans?: BilanUncheckedCreateNestedManyWithoutUserInput
@@ -11470,6 +11556,8 @@ export namespace Prisma {
     colorTheme?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    receive_task_notifications?: BoolFieldUpdateOperationsInput | boolean
+    receive_event_notifications?: BoolFieldUpdateOperationsInput | boolean
     tasks?: TaskUpdateManyWithoutUserNestedInput
     events?: EventUpdateManyWithoutUserNestedInput
     bilans?: BilanUpdateManyWithoutUserNestedInput
@@ -11484,6 +11572,8 @@ export namespace Prisma {
     colorTheme?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    receive_task_notifications?: BoolFieldUpdateOperationsInput | boolean
+    receive_event_notifications?: BoolFieldUpdateOperationsInput | boolean
     tasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     events?: EventUncheckedUpdateManyWithoutUserNestedInput
     bilans?: BilanUncheckedUpdateManyWithoutUserNestedInput

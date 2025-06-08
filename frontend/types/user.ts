@@ -50,5 +50,7 @@ export interface User {
     created_at: string;
     updated_at: string;
     is_anonymous: boolean;
+    receive_task_notifications?: boolean;
+    receive_event_notifications?: boolean;
   }
   
