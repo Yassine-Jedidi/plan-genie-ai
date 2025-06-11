@@ -16,6 +16,13 @@ export interface Task {
   user_id: string;
 }
 
+export interface ManualTask {
+  title: string;
+  deadline: Date;
+  priority: string;
+  status: string;
+}
+
 // Use the built-in French parser as demonstrated by the user
 const frenchParser = chrono.fr;
 const englishParser = chrono.en;
@@ -115,6 +122,18 @@ export const taskService = {
         throw new Error(error.response.data?.error || "Failed to update task");
       }
       throw new Error("Failed to update task");
+    }
+  },
+
+  async createManualTask(task: ManualTask): Promise<Task> {
+    try {
+      const { data } = await api.post("/tasks/manual", task);
+      return data;
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        throw new Error(error.response.data?.error || "Failed to save task");
+      }
+      throw new Error("Failed to save task");
     }
   },
 }; 

@@ -68,10 +68,10 @@ import {
   ListFilter,
   Plus,
   Trash,
+  Clock,
 } from "lucide-react";
 import { useId, useMemo, useRef, useState, useEffect } from "react";
-import { Task, taskService } from "@/services/taskService";
-import { useNavigate } from "react-router-dom";
+import { ManualTask, Task, taskService } from "@/services/taskService";
 import { toast } from "sonner";
 import {
   ColumnDef,
@@ -89,6 +89,16 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Calendar } from "./date-time-picker";
 
 // Custom filter function for multi-column searching
 const multiColumnFilterFn: FilterFn<Task> = (row, _columnId, filterValue) => {
@@ -403,7 +413,6 @@ interface TasksTableProps {
 }
 
 export default function TasksTable({ tasks }: TasksTableProps) {
-  const navigate = useNavigate();
   const id = useId();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -413,6 +422,14 @@ export default function TasksTable({ tasks }: TasksTableProps) {
   });
   const inputRef = useRef<HTMLInputElement>(null);
   const [localTasks, setLocalTasks] = useState<Task[]>(tasks);
+  const [addTaskDialogOpen, setAddTaskDialogOpen] = useState(false);
+  const [formData, setFormData] = useState<ManualTask>({
+    title: "",
+    priority: "",
+    status: "",
+    deadline: new Date(),
+  });
+  const [loading, setLoading] = useState(false);
 
   useMemo(() => {
     setLocalTasks(tasks);
@@ -805,6 +822,53 @@ export default function TasksTable({ tasks }: TasksTableProps) {
     );
   }
 
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      if (!formData.title) {
+        toast.error("Title is required");
+        setLoading(false);
+        return;
+      }
+      if (!formData.priority) {
+        toast.error("Priority is required");
+        setLoading(false);
+        return;
+      }
+      if (!formData.deadline) {
+        toast.error("Deadline is required");
+        setLoading(false);
+        return;
+      }
+
+      const newTask = await taskService.createManualTask({
+        title: formData.title,
+        priority: formData.priority || "Medium",
+        status: "Planned",
+        deadline: formData.deadline,
+      });
+
+      // Add the new task to the local state
+      setLocalTasks((prev) => [newTask, ...prev]);
+
+      // Reset form and close dialog
+      setFormData({
+        title: "",
+        priority: "",
+        status: "",
+        deadline: new Date(),
+      });
+      setLoading(false);
+      setAddTaskDialogOpen(false);
+
+      toast.success("Task created successfully");
+    } catch (error) {
+      console.error("Error creating task:", error);
+      toast.error("Failed to create task");
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-4 w-full min-w-full border border-primary/30 rounded-lg p-2 sm:p-4 shadow-sm">
       {/* Status filter buttons */}
@@ -1176,19 +1240,147 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                 </Button>
               </DropdownMenuTrigger>
               {/* Add task button */}
-              <Button
-                className="w-full sm:w-auto"
-                variant="outline"
-                onClick={() => navigate("/home")}
+              <Dialog
+                open={addTaskDialogOpen}
+                onOpenChange={setAddTaskDialogOpen}
               >
-                <Plus
-                  className="-ms-1 me-2 opacity-60"
-                  size={16}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                />
-                Add task
-              </Button>
+                <DialogTrigger asChild>
+                  <Button className="w-full sm:w-auto bg-primary/80">
+                    <Plus
+                      className="-ms-1 me-2"
+                      size={16}
+                      strokeWidth={2}
+                      aria-hidden="true"
+                    />
+                    New Task
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Add New Task</DialogTitle>
+                    <DialogDescription>
+                      Create a new task by filling out the form below.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="title">
+                        Title<span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="title"
+                        placeholder="Enter task title"
+                        value={formData.title}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            title: e.target.value,
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="priority">
+                        Priority<span className="text-destructive">*</span>
+                      </Label>
+                      <Select
+                        value={formData.priority}
+                        onValueChange={(value) =>
+                          setFormData((prev) => ({ ...prev, priority: value }))
+                        }
+                      >
+                        <SelectTrigger id="priority">
+                          <SelectValue placeholder="Select priority" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Low">Low</SelectItem>
+                          <SelectItem value="Medium">Medium</SelectItem>
+                          <SelectItem value="High">High</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="deadline">
+                        Deadline<span className="text-destructive">*</span>
+                      </Label>
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <Calendar
+                          mode="single"
+                          selected={formData.deadline}
+                          onSelect={(date: Date | undefined) => {
+                            const newDateTime = date || new Date();
+                            // Preserve the time from the existing deadline
+                            if (formData.deadline) {
+                              newDateTime.setHours(
+                                formData.deadline.getHours(),
+                                formData.deadline.getMinutes(),
+                                formData.deadline.getSeconds(),
+                                formData.deadline.getMilliseconds()
+                              );
+                            }
+                            setFormData((prev) => ({
+                              ...prev,
+                              deadline: newDateTime,
+                            }));
+                          }}
+                          initialFocus
+                        />
+                        <div className="flex items-center gap-3">
+                          <div className="relative grow">
+                            <Input
+                              id="task-time"
+                              type="time"
+                              value={`${String(
+                                formData.deadline.getHours()
+                              ).padStart(2, "0")}:${String(
+                                formData.deadline.getMinutes()
+                              ).padStart(2, "0")}`}
+                              className="peer ps-9 [&::-webkit-calendar-picker-indicator]:hidden"
+                              onChange={(e) => {
+                                const [hours, minutes] = e.target.value
+                                  .split(":")
+                                  .map(Number);
+                                const newDateTime = new Date(formData.deadline);
+                                newDateTime.setHours(hours, minutes, 0, 0);
+                                setFormData({
+                                  ...formData,
+                                  deadline: newDateTime,
+                                });
+                              }}
+                            />
+                            <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                              <Clock
+                                size={16}
+                                strokeWidth={2}
+                                aria-hidden="true"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setAddTaskDialogOpen(false);
+                        setFormData({
+                          title: "",
+                          priority: "",
+                          status: "",
+                          deadline: new Date(),
+                        });
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button onClick={handleSubmit} disabled={loading}>
+                      {!loading ? "Create Task" : "Creating ..."}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
                 {table

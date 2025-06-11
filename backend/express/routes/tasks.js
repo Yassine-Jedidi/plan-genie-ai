@@ -289,4 +289,40 @@ router.put("/:taskId", async (req, res) => {
   }
 });
 
+// Manual task creation endpoint
+router.post("/manual", async (req, res) => {
+  try {
+    if (!prisma) {
+      return res
+        .status(500)
+        .json({ error: "Database connection not available" });
+    }
+
+    const { title, deadline, priority, status } = req.body;
+
+    // Check if user exists in the database
+    let dbUser = await prisma.user.findUnique({
+      where: { id: req.user.id },
+    });
+
+    // If user doesn't exist in database
+    if (!dbUser) res.status(500).json("You are not authenticated!");
+
+    const task = await prisma.task.create({
+      data: {
+        title,
+        deadline: deadline ? new Date(deadline) : null,
+        priority,
+        status,
+        user_id: req.user.id,
+      },
+    });
+
+    return res.status(201).json(task);
+  } catch (error) {
+    console.error("Error creating manual task:", error);
+    res.status(500).json({ error: "Failed to create task: " + error.message });
+  }
+});
+
 module.exports = router;

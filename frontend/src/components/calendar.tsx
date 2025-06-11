@@ -479,7 +479,7 @@ export function FullScreenCalendar({
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="title" className="text-right">
-                  Title
+                  Title<span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="title"
@@ -491,8 +491,10 @@ export function FullScreenCalendar({
                   required
                 />
               </div>
-              <div className="grid grid-cols-4 items-start gap-4">
-                <Label className="text-right pt-2">Date & Time</Label>
+              <div className="grid grid-cols-4 items-start gap-5">
+                <Label className="text-right pt-2">
+                  Date&Time<span className="text-destructive">*</span>
+                </Label>
                 <div className="col-span-3">
                   <div className="rounded-lg border border-border">
                     <Calendar
