@@ -748,16 +748,20 @@ export default function TasksTable({ tasks }: TasksTableProps) {
       if (taskToUpdate) {
         try {
           setLoading(true);
-          const updatedTask = await taskService.updateTask({
-            ...taskToUpdate,
-            status: "Done",
-          });
-          setLocalTasks((prev) =>
-            prev.map((t) => (t.id === updatedTask.id ? updatedTask : t))
-          );
-          fetchTasks();
-          toast.success("Task marked as Done");
-          setDropdownOpen(false);
+          if (taskToUpdate.status === "Done")
+            toast.error("Task is already Done!");
+          else {
+            const updatedTask = await taskService.updateTask({
+              ...taskToUpdate,
+              status: "Done",
+            });
+            setLocalTasks((prev) =>
+              prev.map((t) => (t.id === updatedTask.id ? updatedTask : t))
+            );
+            fetchTasks();
+            toast.success("Task marked as Done");
+            setDropdownOpen(false);
+          }
         } catch (error) {
           console.error("Error marking task as done:", error);
           toast.error("Failed to mark task as Done");
