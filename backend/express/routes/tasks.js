@@ -249,10 +249,12 @@ router.put("/:taskId", async (req, res) => {
   try {
     const { taskId } = req.params;
     const userId = req.user.id;
-    const { status } = req.body;
+    const { title, deadline, priority, status } = req.body;
 
-    if (!taskId || !status) {
-      return res.status(400).json({ error: "Task ID and status are required" });
+    if (!taskId || !title || !deadline || !priority || !status) {
+      return res.status(400).json({
+        error: "Task ID, title, deadline, priority, and status are required",
+      });
     }
 
     // Verify that the task belongs to the authenticated user
@@ -278,6 +280,9 @@ router.put("/:taskId", async (req, res) => {
         id: taskId,
       },
       data: {
+        title,
+        deadline: deadline ? new Date(deadline) : null,
+        priority,
         status,
       },
     });

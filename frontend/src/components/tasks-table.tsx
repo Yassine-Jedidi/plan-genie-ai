@@ -23,7 +23,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -69,6 +68,8 @@ import {
   Plus,
   Trash,
   Clock,
+  Pencil,
+  Check,
 } from "lucide-react";
 import { useId, useMemo, useRef, useState, useEffect } from "react";
 import { ManualTask, Task, taskService } from "@/services/taskService";
@@ -423,6 +424,8 @@ export default function TasksTable({ tasks }: TasksTableProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [localTasks, setLocalTasks] = useState<Task[]>(tasks);
   const [addTaskDialogOpen, setAddTaskDialogOpen] = useState(false);
+  const [editTaskDialogOpen, setEditTaskDialogOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [formData, setFormData] = useState<ManualTask>({
     title: "",
     priority: "",
@@ -434,6 +437,16 @@ export default function TasksTable({ tasks }: TasksTableProps) {
   useMemo(() => {
     setLocalTasks(tasks);
   }, [tasks]);
+
+  // Utility function to fetch tasks
+  const fetchTasks = async () => {
+    try {
+      const latestTasks = await taskService.getTasks();
+      setLocalTasks(latestTasks);
+    } catch (error) {
+      console.error("Failed to fetch tasks:", error);
+    }
+  };
 
   // Add event listener for task deletion from row actions
   useEffect(() => {
@@ -452,17 +465,8 @@ export default function TasksTable({ tasks }: TasksTableProps) {
     };
   }, []);
 
-  //Fetch tasks every minute
+  // Fetch tasks every minute
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const latestTasks = await taskService.getTasks(); // Adjust this to your actual fetch method
-        setLocalTasks(latestTasks);
-      } catch (error) {
-        console.error("Failed to fetch tasks:", error);
-      }
-    };
-
     // Fetch immediately on mount
     fetchTasks();
 
@@ -740,6 +744,29 @@ export default function TasksTable({ tasks }: TasksTableProps) {
       }
     };
 
+    const handleMarkAsDone = async (taskToUpdate: Task) => {
+      if (taskToUpdate) {
+        try {
+          setLoading(true);
+          const updatedTask = await taskService.updateTask({
+            ...taskToUpdate,
+            status: "Done",
+          });
+          setLocalTasks((prev) =>
+            prev.map((t) => (t.id === updatedTask.id ? updatedTask : t))
+          );
+          fetchTasks();
+          toast.success("Task marked as Done");
+          setDropdownOpen(false);
+        } catch (error) {
+          console.error("Error marking task as done:", error);
+          toast.error("Failed to mark task as Done");
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
     return (
       <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
         <DropdownMenuTrigger asChild>
@@ -756,20 +783,26 @@ export default function TasksTable({ tasks }: TasksTableProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <span>Edit</span>
-              <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                setSelectedTask(task);
+                setEditTaskDialogOpen(true);
+                setDropdownOpen(false);
+              }}
+            >
+              <Pencil
+                className="me-2 h-4 w-4 text-yellow-500"
+                aria-hidden="true"
+              />
+              <span className="text-yellow-500">Edit</span>
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <span>Mark as complete</span>
-              <DropdownMenuShortcut>⌘C</DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <span>Archive</span>
-              <DropdownMenuShortcut>⌘A</DropdownMenuShortcut>
+            <DropdownMenuItem onSelect={() => handleMarkAsDone(task)}>
+              <Check
+                className="me-2 h-4 w-4 text-green-500"
+                aria-hidden="true"
+              />
+              <span className="text-green-500">Mark as Done</span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
@@ -785,8 +818,11 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                   setDeleteConfirmOpen(true);
                 }}
               >
-                <span>Delete</span>
-                <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+                <Trash
+                  className="me-2 h-4 w-4 text-red-500"
+                  aria-hidden="true"
+                />
+                <span className="text-red-500">Delete</span>
               </DropdownMenuItem>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -865,6 +901,58 @@ export default function TasksTable({ tasks }: TasksTableProps) {
     } catch (error) {
       console.error("Error creating task:", error);
       toast.error("Failed to create task");
+      setLoading(false);
+    }
+  };
+
+  const handleEditSubmit = async () => {
+    try {
+      setLoading(true);
+      if (!selectedTask) {
+        toast.error("Task is not selected");
+        setLoading(false);
+        return;
+      }
+      if (!selectedTask.title) {
+        toast.error("Title is required");
+        setLoading(false);
+        return;
+      }
+      if (!selectedTask.priority) {
+        toast.error("Priority is required");
+        setLoading(false);
+        return;
+      }
+      if (!selectedTask.deadline) {
+        toast.error("Deadline is required");
+        setLoading(false);
+        return;
+      }
+      if (!selectedTask.status) {
+        toast.error("Status is required");
+        setLoading(false);
+        return;
+      }
+
+      const updatedTask = await taskService.updateTask(selectedTask);
+
+      // Update the local state
+      setLocalTasks((prev) =>
+        prev.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+      );
+
+      // Reset selected task and close dialog
+      setSelectedTask(null);
+      setEditTaskDialogOpen(false);
+      setLoading(false);
+
+      toast.success("Task updated successfully");
+
+      // Re-fetch tasks to ensure the table is updated
+      fetchTasks();
+    } catch (error) {
+      console.error("Error updating task:", error);
+      toast.error("Failed to update task");
       setLoading(false);
     }
   };
@@ -1255,7 +1343,11 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                     New Task
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent
+                  className="sm:max-w-[425px]"
+                  onEscapeKeyDown={() => setAddTaskDialogOpen(false)}
+                  onPointerDownOutside={() => setAddTaskDialogOpen(false)}
+                >
                   <DialogHeader>
                     <DialogTitle>Add New Task</DialogTitle>
                     <DialogDescription>
@@ -1377,6 +1469,167 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                     </Button>
                     <Button onClick={handleSubmit} disabled={loading}>
                       {!loading ? "Create Task" : "Creating ..."}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+              {/* Edit task dialog */}
+              <Dialog
+                open={editTaskDialogOpen}
+                onOpenChange={setEditTaskDialogOpen}
+              >
+                <DialogContent
+                  className="sm:max-w-[425px]"
+                  onEscapeKeyDown={() => setEditTaskDialogOpen(false)}
+                  onPointerDownOutside={() => setEditTaskDialogOpen(false)}
+                >
+                  <DialogHeader>
+                    <DialogTitle>Edit Task</DialogTitle>
+                    <DialogDescription>
+                      Make changes to your task here.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="edit-title">Title</Label>
+                      <Input
+                        id="edit-title"
+                        placeholder="Enter task title"
+                        value={selectedTask?.title || ""}
+                        onChange={(e) =>
+                          setSelectedTask((prev) =>
+                            prev ? { ...prev, title: e.target.value } : null
+                          )
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="edit-priority">Priority</Label>
+                      <Select
+                        value={selectedTask?.priority || ""}
+                        onValueChange={(value) =>
+                          setSelectedTask((prev) =>
+                            prev ? { ...prev, priority: value } : null
+                          )
+                        }
+                      >
+                        <SelectTrigger id="edit-priority">
+                          <SelectValue placeholder="Select priority" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Low">Low</SelectItem>
+                          <SelectItem value="Medium">Medium</SelectItem>
+                          <SelectItem value="High">High</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="edit-status">Status</Label>
+                      <Select
+                        value={selectedTask?.status || ""}
+                        onValueChange={(value) =>
+                          setSelectedTask((prev) =>
+                            prev ? { ...prev, status: value } : null
+                          )
+                        }
+                      >
+                        <SelectTrigger id="edit-status">
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Planned">Planned</SelectItem>
+                          <SelectItem value="In Progress">
+                            In Progress
+                          </SelectItem>
+                          <SelectItem value="Done">Done</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="edit-deadline">Deadline</Label>
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <Calendar
+                          mode="single"
+                          selected={
+                            selectedTask?.deadline
+                              ? new Date(selectedTask.deadline)
+                              : new Date()
+                          }
+                          onSelect={(date: Date | undefined) => {
+                            const newDateTime = date || new Date();
+                            // Preserve the time from the existing deadline
+                            setSelectedTask((prev) => {
+                              if (prev && prev.deadline) {
+                                const existingDate = new Date(prev.deadline);
+                                newDateTime.setHours(
+                                  existingDate.getHours(),
+                                  existingDate.getMinutes(),
+                                  existingDate.getSeconds(),
+                                  existingDate.getMilliseconds()
+                                );
+                              }
+                              return prev
+                                ? { ...prev, deadline: newDateTime }
+                                : null;
+                            });
+                          }}
+                          initialFocus
+                        />
+                        <div className="flex items-center gap-3">
+                          <div className="relative grow">
+                            <Input
+                              id="edit-task-time"
+                              type="time"
+                              value={
+                                selectedTask?.deadline
+                                  ? `${String(
+                                      new Date(selectedTask.deadline).getHours()
+                                    ).padStart(2, "0")}:${String(
+                                      new Date(
+                                        selectedTask.deadline
+                                      ).getMinutes()
+                                    ).padStart(2, "0")}`
+                                  : "00:00"
+                              }
+                              className="peer ps-9 [&::-webkit-calendar-picker-indicator]:hidden"
+                              onChange={(e) => {
+                                const [hours, minutes] = e.target.value
+                                  .split(":")
+                                  .map(Number);
+                                setSelectedTask((prev) => {
+                                  if (!prev) return null;
+                                  const newDateTime = prev.deadline
+                                    ? new Date(prev.deadline)
+                                    : new Date();
+                                  newDateTime.setHours(hours, minutes, 0, 0);
+                                  return { ...prev, deadline: newDateTime };
+                                });
+                              }}
+                            />
+                            <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                              <Clock
+                                size={16}
+                                strokeWidth={2}
+                                aria-hidden="true"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setEditTaskDialogOpen(false);
+                        setSelectedTask(null);
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button onClick={handleEditSubmit} disabled={loading}>
+                      {!loading ? "Save Changes" : "Saving ..."}
                     </Button>
                   </DialogFooter>
                 </DialogContent>

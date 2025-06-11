@@ -114,9 +114,15 @@ export const taskService = {
     }
   },
 
-  async updateTask(taskId: string, status: string): Promise<void> {
+  async updateTask(task: Task): Promise<Task> {
     try {
-      await api.put(`/tasks/${taskId}`, { status });
+      const { data } = await api.put(`/tasks/${task.id}`, {
+        title: task.title,
+        deadline: task.deadline,
+        priority: task.priority,
+        status: task.status,
+      });
+      return data;
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         throw new Error(error.response.data?.error || "Failed to update task");
