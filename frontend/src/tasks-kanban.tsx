@@ -112,7 +112,7 @@ const TasksKanban: FC<TasksKanbanProps> = ({ tasks = [] }) => {
 
     try {
       // The taskId must be a string from the actual task
-      await taskService.updateTask(draggedTask.id, status.name);
+      await taskService.updateTask({ ...draggedTask, status: status.name });
       console.log("Backend update successful for task ID:", draggedTask.id);
       toast.success(`Task moved to ${status.name}`, { duration: 1000 });
     } catch (error) {
