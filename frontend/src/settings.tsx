@@ -274,7 +274,7 @@ export default function SettingsPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span>Receive Task Notifications</span>
+                  <span>Task Notifications</span>
                   <Switch
                     checked={
                       loadingPreferences ? true : receiveTaskNotifications
@@ -286,7 +286,7 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <span>Receive Event Notifications</span>
+                  <span>Event Notifications</span>
                   <Switch
                     checked={
                       loadingPreferences ? true : receiveEventNotifications
