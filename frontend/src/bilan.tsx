@@ -43,6 +43,7 @@ import {
   ChevronRight,
   History,
   Info,
+  CheckCircle,
 } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
 import { DatePicker } from "@/components/date-picker";
@@ -298,8 +299,8 @@ const BilanPage = () => {
       toast.success("Task time updated successfully");
       cancelEditing();
     } catch (error) {
-      console.error("Error saving time entry:", error);
-      toast.error("Failed to update time entry");
+      console.error("Error saving task time:", error);
+      toast.error("Failed to update task time");
     } finally {
       setIsSaving(false);
     }
@@ -313,10 +314,10 @@ const BilanPage = () => {
       // Refresh bilan data
       await fetchBilanForDate(selectedDate);
 
-      toast.success("Time entry deleted");
+      toast.success("Task time deleted");
     } catch (error) {
-      console.error("Error deleting time entry:", error);
-      toast.error("Failed to delete time entry");
+      console.error("Error deleting task time:", error);
+      toast.error("Failed to delete task time");
     }
   };
 
@@ -446,6 +447,23 @@ const BilanPage = () => {
 
     return () => clearInterval(intervalId); // Clear interval on unmount
   }, []);
+
+  // Mark task as done
+  const markTaskAsDone = async (task: Task) => {
+    try {
+      await taskService.updateTask({
+        ...task,
+        status: "Done",
+      });
+      toast.success("Task marked as done!");
+      // Refresh tasks and bilans
+      fetchTasks();
+      fetchBilanForDate(selectedDate);
+    } catch (error) {
+      console.error("Error marking task as done:", error);
+      toast.error("Failed to mark task as done.");
+    }
+  };
 
   // Render the time entry form for a task that doesn't have an entry yet
   const renderTimeEntryForm = (taskId: string) => {
@@ -646,14 +664,25 @@ const BilanPage = () => {
                           Cancel
                         </Button>
                       ) : (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => startEditing(task.id)}
-                        >
-                          <Clock className="h-4 w-4 mr-1" />
-                          Add Time
-                        </Button>
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => startEditing(task.id)}
+                          >
+                            <Clock className="h-4 w-4 mr-1" />
+                            Add Time
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => markTaskAsDone(task)}
+                            disabled={!isDateToday(selectedDate)}
+                          >
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                            Mark as Done
+                          </Button>
+                        </>
                       )}
                     </TableCell>
                   </TableRow>
@@ -771,14 +800,25 @@ const BilanPage = () => {
                           Cancel
                         </Button>
                       ) : (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => startEditing(task.id)}
-                        >
-                          <Clock className="h-4 w-4 mr-1" />
-                          Add Time
-                        </Button>
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => startEditing(task.id)}
+                          >
+                            <Clock className="h-4 w-4 mr-1" />
+                            Add Time
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => markTaskAsDone(task)}
+                            disabled={!isDateToday(selectedDate)}
+                          >
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                            Mark as Done
+                          </Button>
+                        </>
                       )}
                     </TableCell>
                   </TableRow>
@@ -925,7 +965,7 @@ const BilanPage = () => {
                 {bilan.entries.length === 0 ? (
                   <div className="text-center py-6 text-muted-foreground">
                     <AlertCircle className="mx-auto h-12 w-12 mb-2 opacity-20" />
-                    <p>No time entries for this day.</p>
+                    <p>You didn't do any task today.</p>
                     {isDateToday(selectedDate) && (
                       <p className="text-sm">Add time to your tasks below.</p>
                     )}
@@ -1014,6 +1054,18 @@ const BilanPage = () => {
                                 >
                                   <Pencil className="h-4 w-4 mr-1" />
                                   Edit
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => markTaskAsDone(entry.task!)}
+                                  disabled={
+                                    !isDateToday(selectedDate) ||
+                                    entry.task?.status === "Done"
+                                  }
+                                >
+                                  <CheckCircle className="h-4 w-4 mr-1" />
+                                  Mark as Done
                                 </Button>
                                 <Button
                                   variant="ghost"
