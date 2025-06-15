@@ -176,7 +176,7 @@ router.post("/generate", async (req, res) => {
         });
 
         if (!existingNotification) {
-          const notificationTitle = `Task Reminder: ${task.title}`;
+          const notificationTitle = task.title;
           const taskTime = task.deadline ? new Date(task.deadline) : null;
 
           await prisma.notification.create({
@@ -219,7 +219,7 @@ router.post("/generate", async (req, res) => {
         });
 
         if (!existingNotification) {
-          const notificationTitle = `Event Reminder: ${event.title}`;
+          const notificationTitle = event.title;
           const eventTime = event.date_time ? new Date(event.date_time) : null;
 
           await prisma.notification.create({

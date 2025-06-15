@@ -12,10 +12,42 @@ import { AxiosError } from "axios";
 export type Notification = {
   id: string;
   title: string;
-  message: string;
-  timestamp: Date;
+  time: Date;
+  created_at: Date;
   read: boolean;
   type: string;
+};
+
+// Function to get a human-readable message based on notification type and time
+const getNotificationMessage = (type: string, time: Date, title: string) => {
+  const timeString = time.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const dateString = time.toLocaleDateString();
+
+  switch (type) {
+    case "task_due_in_1day":
+      return `Your task "${title}" is due tomorrow at ${timeString}.`;
+    case "event_in_1day":
+      return `Your event "${title}" is scheduled for tomorrow at ${timeString}.`;
+    case "task_due_in_6h":
+      return `Your task "${title}" is due in 6 hours at ${timeString}.`;
+    case "event_in_6h":
+      return `Your event "${title}" is in 6 hours at ${timeString}.`;
+    case "task_due_in_1h":
+      return `Your task "${title}" is due in 1 hour at ${timeString}.`;
+    case "event_in_1h":
+      return `Your event "${title}" is in 1 hour at ${timeString}.`;
+    case "task_due_in_15m":
+      return `Your task "${title}" is due in 15 minutes at ${timeString}.`;
+    case "event_in_15m":
+      return `Your event "${title}" is in 15 minutes at ${timeString}.`;
+    default:
+      return `Your ${
+        type.includes("task") ? "task" : "event"
+      } "${title}" is due at ${timeString} on ${dateString}.`;
+  }
 };
 
 // Function to get dot color based on notification type
@@ -70,16 +102,30 @@ const NotificationItem = ({
             <span className={cn("h-1 w-1 rounded-full", dotColorClass)} />
           )}
           <h4 className={`text-sm font-medium ${textColor}`}>
-            {notification.title}
+            {notification.type.includes("task")
+              ? `Task Reminder: ${notification.title}`
+              : notification.type.includes("event")
+              ? `Event Reminder: ${notification.title}`
+              : notification.title}
           </h4>
         </div>
 
         <span className={`text-xs opacity-80 ${textColor}`}>
-          {notification.timestamp.toLocaleDateString()}
+          {notification.created_at.toLocaleDateString([], {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
         </span>
       </div>
       <p className={`text-xs opacity-70 mt-1 ${textColor}`}>
-        {notification.message}
+        {getNotificationMessage(
+          notification.type,
+          notification.time,
+          notification.title
+        )}
       </p>
     </motion.div>
   );
@@ -169,10 +215,10 @@ export const NotificationPopover = ({
           (apiNotif) => ({
             id: apiNotif.id,
             title: apiNotif.title,
-            message: apiNotif.message,
+            time: new Date(apiNotif.time),
+            created_at: new Date(apiNotif.created_at),
             read: apiNotif.read,
             type: apiNotif.type,
-            timestamp: new Date(apiNotif.created_at),
           })
         );
         setNotifications(formattedNotifications);
