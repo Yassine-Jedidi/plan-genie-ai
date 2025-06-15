@@ -70,8 +70,16 @@ import {
   Clock,
   Pencil,
   Check,
+  CheckCircle,
+  XCircle,
+  RefreshCw,
+  FileText,
+  Circle,
+  CalendarPlus,
+  CalendarDays,
 } from "lucide-react";
 import { useId, useMemo, useRef, useState, useEffect } from "react";
+import React from "react";
 import { ManualTask, Task, taskService } from "@/services/taskService";
 import { toast } from "sonner";
 import {
@@ -133,6 +141,16 @@ const statusFilterFn: FilterFn<Task> = (
 // Due In filter function
 const dueInFilterFn: FilterFn<Task> = (row, columnId, filterValue) => {
   const deadline = row.getValue(columnId) as string | null;
+  const completedAt = row.original.completed_at; // Get completed_at from the original row object
+
+  // If the task is completed, it should generally not be filtered by due date categories.
+  // The only exception is if it was completed without a deadline and the 'noDeadline' filter is active.
+  if (completedAt) {
+    if (!deadline && filterValue.includes("noDeadline")) {
+      return true;
+    }
+    return false; // Exclude completed tasks from other time-based filters
+  }
 
   // If no deadline and "noDeadline" filter is active, show this task
   if (!deadline && filterValue.includes("noDeadline")) {
@@ -247,7 +265,13 @@ const columns: ColumnDef<Task>[] = [
 
         const formattedWithEmoji = (
           <span>
-            📅 {datePart} ·{" "}
+            <CalendarDays
+              className="inline-block me-1"
+              size={14}
+              strokeWidth={2}
+              aria-hidden="true"
+            />{" "}
+            {datePart} ·{" "}
             <Badge
               variant="outline"
               className="px-1.5 py-0.5 bg-slate-100 text-slate-800 text-xs font-medium"
@@ -283,6 +307,55 @@ const columns: ColumnDef<Task>[] = [
     accessorKey: "deadline",
     cell: ({ row }) => {
       const deadline = row.getValue("deadline") as string | null;
+      const completedAt = row.original.completed_at; // Access completed_at directly from original task object
+
+      if (completedAt) {
+        // Task is completed, determine if it was on time or late
+        try {
+          const completedDate = new Date(completedAt);
+          const deadlineDate = deadline ? new Date(deadline) : null;
+
+          if (deadlineDate && completedDate <= deadlineDate) {
+            return (
+              <Badge
+                variant="outline"
+                className="bg-green-100 text-green-800 border-green-300"
+              >
+                <CheckCircle
+                  className="inline-block me-1"
+                  size={14}
+                  strokeWidth={2}
+                  aria-hidden="true"
+                />{" "}
+                Completed On Time
+              </Badge>
+            );
+          } else {
+            return (
+              <Badge
+                variant="outline"
+                className="bg-red-100 text-red-800 border-red-300"
+              >
+                <XCircle
+                  className="inline-block me-1"
+                  size={14}
+                  strokeWidth={2}
+                  aria-hidden="true"
+                />{" "}
+                Completed Late
+              </Badge>
+            );
+          }
+        } catch {
+          return (
+            <span className="text-muted-foreground">
+              Completed (Invalid Date)
+            </span>
+          );
+        }
+      }
+
+      // If not completed, use existing "Due In" logic
       if (!deadline) return <span className="text-muted-foreground">—</span>;
 
       try {
@@ -295,7 +368,13 @@ const columns: ColumnDef<Task>[] = [
               variant="outline"
               className="bg-red-100 text-red-800 border-red-300"
             >
-              ⏱️ Overdue
+              <Clock
+                className="inline-block me-1"
+                size={14}
+                strokeWidth={2}
+                aria-hidden="true"
+              />{" "}
+              Overdue
             </Badge>
           );
         }
@@ -310,7 +389,13 @@ const columns: ColumnDef<Task>[] = [
             variant="outline"
             className="bg-blue-100 text-blue-800 border-blue-300"
           >
-            ⏱️ {timeRemaining} left
+            <Clock
+              className="inline-block me-1"
+              size={14}
+              strokeWidth={2}
+              aria-hidden="true"
+            />{" "}
+            {timeRemaining} left
           </Badge>
         );
       } catch {
@@ -333,10 +418,34 @@ const columns: ColumnDef<Task>[] = [
         Low: "bg-green-100 text-green-800 border-green-300",
       };
 
-      const priorityEmojis: Record<string, string> = {
-        High: "🔴",
-        Medium: "🟡",
-        Low: "🟢",
+      const priorityIcons: Record<string, React.ReactElement> = {
+        High: (
+          <Circle
+            className="inline-block me-1"
+            size={14}
+            fill="#ef4444"
+            stroke="none"
+            aria-hidden="true"
+          />
+        ),
+        Medium: (
+          <Circle
+            className="inline-block me-1"
+            size={14}
+            fill="#eab308"
+            stroke="none"
+            aria-hidden="true"
+          />
+        ),
+        Low: (
+          <Circle
+            className="inline-block me-1"
+            size={14}
+            fill="#22c55e"
+            stroke="none"
+            aria-hidden="true"
+          />
+        ),
       };
 
       const colorClass =
@@ -345,7 +454,7 @@ const columns: ColumnDef<Task>[] = [
 
       return (
         <Badge className={cn(colorClass)} variant="outline">
-          {priorityEmojis[priority] || ""} {priority}
+          {priorityIcons[priority] || ""} {priority}
         </Badge>
       );
     },
@@ -366,10 +475,31 @@ const columns: ColumnDef<Task>[] = [
         Planned: "bg-amber-100 text-amber-800 border-amber-300",
       };
 
-      const statusEmojis: Record<string, string> = {
-        Done: "✅",
-        "In Progress": "🔄",
-        Planned: "📝",
+      const statusIcons: Record<string, React.ReactElement> = {
+        Done: (
+          <CheckCircle
+            className="inline-block me-1"
+            size={14}
+            strokeWidth={2}
+            aria-hidden="true"
+          />
+        ),
+        "In Progress": (
+          <RefreshCw
+            className="inline-block me-1"
+            size={14}
+            strokeWidth={2}
+            aria-hidden="true"
+          />
+        ),
+        Planned: (
+          <FileText
+            className="inline-block me-1"
+            size={14}
+            strokeWidth={2}
+            aria-hidden="true"
+          />
+        ),
       };
 
       const colorClass =
@@ -377,7 +507,15 @@ const columns: ColumnDef<Task>[] = [
 
       return (
         <Badge className={cn(colorClass)} variant="outline">
-          {statusEmojis[status] || ""} {status || "Planned"}
+          {statusIcons[status] || (
+            <FileText
+              className="inline-block me-1"
+              size={14}
+              strokeWidth={2}
+              aria-hidden="true"
+            />
+          )}{" "}
+          {status || "Planned"}
         </Badge>
       );
     },
@@ -401,7 +539,17 @@ const columns: ColumnDef<Task>[] = [
           minute: "2-digit",
           hour12: false,
         });
-        return <span>✅ {formattedDate}</span>;
+        return (
+          <span>
+            <CheckCircle
+              className="inline-block me-1"
+              size={14}
+              strokeWidth={2}
+              aria-hidden="true"
+            />{" "}
+            {formattedDate}
+          </span>
+        );
       } catch {
         return <span className="text-muted-foreground">Invalid date</span>;
       }
@@ -420,7 +568,17 @@ const columns: ColumnDef<Task>[] = [
         year: "numeric",
       }).format(date);
 
-      return <span>🕒 {formattedDate}</span>;
+      return (
+        <span>
+          <CalendarPlus
+            className="inline-block me-1"
+            size={14}
+            strokeWidth={2}
+            aria-hidden="true"
+          />{" "}
+          {formattedDate}
+        </span>
+      );
     },
     size: 180,
   },
@@ -641,6 +799,15 @@ export default function TasksTable({ tasks }: TasksTableProps) {
     nextMonth.setMonth(nextMonth.getMonth() + 1);
 
     localTasks.forEach((task) => {
+      // If the task is completed, it generally shouldn't be counted in time-based due categories.
+      // It should only count in 'noDeadline' if it was completed and truly had no deadline.
+      if (task.completed_at) {
+        if (!task.deadline) {
+          noDeadline++;
+        }
+        return; // Skip counting in other categories if completed
+      }
+
       if (!task.deadline) {
         noDeadline++;
         return;
@@ -1025,7 +1192,13 @@ export default function TasksTable({ tasks }: TasksTableProps) {
               ?.setFilterValue(newFilter.length ? newFilter : undefined);
           }}
         >
-          📝 Planned
+          <FileText
+            className="inline-block me-1"
+            size={14}
+            strokeWidth={2}
+            aria-hidden="true"
+          />{" "}
+          Planned
           <span className="ml-1 inline-flex h-4 items-center rounded bg-background-200 px-1 text-xs font-medium text-amber-800">
             {`(${statusCounts.get("Planned") || 0})`}
           </span>
@@ -1051,7 +1224,13 @@ export default function TasksTable({ tasks }: TasksTableProps) {
               ?.setFilterValue(newFilter.length ? newFilter : undefined);
           }}
         >
-          🔄 In Progress
+          <RefreshCw
+            className="inline-block me-1"
+            size={14}
+            strokeWidth={2}
+            aria-hidden="true"
+          />{" "}
+          In Progress
           <span className="ml-1 inline-flex h-4 items-center rounded bg-background-200 px-1 text-xs font-medium text-blue-800">
             {`(${statusCounts.get("In Progress") || 0})`}
           </span>
@@ -1077,7 +1256,13 @@ export default function TasksTable({ tasks }: TasksTableProps) {
               ?.setFilterValue(newFilter.length ? newFilter : undefined);
           }}
         >
-          ✅ Done
+          <CheckCircle
+            className="inline-block me-1"
+            size={14}
+            strokeWidth={2}
+            aria-hidden="true"
+          />{" "}
+          Done
           <span className="ml-1 inline-flex h-4 items-center rounded bg-background-200 px-1 text-xs font-medium text-green-800">
             {`(${statusCounts.get("Done") || 0})`}
           </span>
