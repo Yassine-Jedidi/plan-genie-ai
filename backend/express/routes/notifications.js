@@ -86,9 +86,7 @@ router.post("/generate", async (req, res) => {
         });
 
         if (!existingNotification) {
-          const notificationTitle = `${
-            itemType === "task" ? "Task" : "Event"
-          } Reminder: ${item.title}`;
+          const notificationTitle = item.title;
           const itemTime =
             item.deadline || item.date_time
               ? new Date(item.deadline || item.date_time)
