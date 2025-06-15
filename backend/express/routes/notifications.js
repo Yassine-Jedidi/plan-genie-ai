@@ -73,9 +73,7 @@ router.post("/generate", async (req, res) => {
       userId,
       items,
       itemType,
-      notificationType,
-      timeDescription,
-      currentTime
+      notificationType
     ) => {
       let createdCount = 0;
       for (const item of items) {
@@ -93,17 +91,13 @@ router.post("/generate", async (req, res) => {
           } Reminder: ${item.title}`;
           const itemTime =
             item.deadline || item.date_time
-              ? new Date(item.deadline || item.date_time).toLocaleTimeString(
-                  [],
-                  { hour: "2-digit", minute: "2-digit", hour12: false }
-                )
-              : timeDescription;
-          const notificationMessage = `Your ${itemType} "${item.title}" is due ${timeDescription} at ${itemTime}.`;
+              ? new Date(item.deadline || item.date_time)
+              : null;
 
           await prisma.notification.create({
             data: {
               title: notificationTitle,
-              message: notificationMessage,
+              time: itemTime,
               type: notificationType,
               user_id: userId,
               [`${itemType}_id`]: item.id,
@@ -121,7 +115,6 @@ router.post("/generate", async (req, res) => {
       items,
       itemType,
       notificationType,
-      timeDescription,
       excludeTypes = []
     ) => {
       const filteredItems = [];
@@ -148,9 +141,7 @@ router.post("/generate", async (req, res) => {
         userId,
         filteredItems,
         itemType,
-        notificationType,
-        timeDescription,
-        new Date()
+        notificationType
       );
     };
 
@@ -186,19 +177,12 @@ router.post("/generate", async (req, res) => {
 
         if (!existingNotification) {
           const notificationTitle = `Task Reminder: ${task.title}`;
-          const taskTime = task.deadline
-            ? new Date(task.deadline).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              })
-            : "tomorrow";
-          const notificationMessage = `Your task "${task.title}" is due tomorrow at ${taskTime}.`;
+          const taskTime = task.deadline ? new Date(task.deadline) : null;
 
           await prisma.notification.create({
             data: {
               title: notificationTitle,
-              message: notificationMessage,
+              time: taskTime,
               type: "task_due_in_1day",
               user_id: user.id,
               task_id: task.id,
@@ -236,19 +220,12 @@ router.post("/generate", async (req, res) => {
 
         if (!existingNotification) {
           const notificationTitle = `Event Reminder: ${event.title}`;
-          const eventTime = event.date_time
-            ? new Date(event.date_time).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              })
-            : "tomorrow";
-          const notificationMessage = `Your event "${event.title}" is scheduled for tomorrow at ${eventTime}.`;
+          const eventTime = event.date_time ? new Date(event.date_time) : null;
 
           await prisma.notification.create({
             data: {
               title: notificationTitle,
-              message: notificationMessage,
+              time: eventTime,
               type: "event_in_1day",
               user_id: user.id,
               event_id: event.id,
@@ -281,8 +258,7 @@ router.post("/generate", async (req, res) => {
           user.id,
           tasksDueInFifteenMinutes,
           "task",
-          "task_due_in_15m",
-          "in 15 minutes"
+          "task_due_in_15m"
         );
       }
 
@@ -302,8 +278,7 @@ router.post("/generate", async (req, res) => {
           user.id,
           eventsInFifteenMinutes,
           "event",
-          "event_in_15m",
-          "in 15 minutes"
+          "event_in_15m"
         );
       }
 
@@ -325,7 +300,6 @@ router.post("/generate", async (req, res) => {
           tasksDueInOneHour,
           "task",
           "task_due_in_1h",
-          "in 1 hour",
           ["task_due_in_15m"] // Exclude if 15m notification already exists
         );
       }
@@ -347,7 +321,6 @@ router.post("/generate", async (req, res) => {
           eventsInOneHour,
           "event",
           "event_in_1h",
-          "in 1 hour",
           ["event_in_15m"] // Exclude if 15m notification already exists
         );
       }
@@ -370,7 +343,6 @@ router.post("/generate", async (req, res) => {
           tasksDueInSixHours,
           "task",
           "task_due_in_6h",
-          "in 6 hours",
           ["task_due_in_15m", "task_due_in_1h"] // Exclude if 15m or 1h notification exists
         );
       }
@@ -392,7 +364,6 @@ router.post("/generate", async (req, res) => {
           eventsInSixHours,
           "event",
           "event_in_6h",
-          "in 6 hours",
           ["event_in_15m", "event_in_1h"] // Exclude if 15m or 1h notification exists
         );
       }

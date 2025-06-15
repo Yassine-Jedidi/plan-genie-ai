@@ -173,7 +173,7 @@ exports.Prisma.BilanEntryScalarFieldEnum = {
 exports.Prisma.NotificationScalarFieldEnum = {
   id: 'id',
   title: 'title',
-  message: 'message',
+  time: 'time',
   type: 'type',
   read: 'read',
   created_at: 'created_at',

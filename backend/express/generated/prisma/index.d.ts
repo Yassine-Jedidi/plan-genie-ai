@@ -7234,7 +7234,7 @@ export namespace Prisma {
   export type NotificationMinAggregateOutputType = {
     id: string | null
     title: string | null
-    message: string | null
+    time: Date | null
     type: $Enums.NotificationType | null
     read: boolean | null
     created_at: Date | null
@@ -7246,7 +7246,7 @@ export namespace Prisma {
   export type NotificationMaxAggregateOutputType = {
     id: string | null
     title: string | null
-    message: string | null
+    time: Date | null
     type: $Enums.NotificationType | null
     read: boolean | null
     created_at: Date | null
@@ -7258,7 +7258,7 @@ export namespace Prisma {
   export type NotificationCountAggregateOutputType = {
     id: number
     title: number
-    message: number
+    time: number
     type: number
     read: number
     created_at: number
@@ -7272,7 +7272,7 @@ export namespace Prisma {
   export type NotificationMinAggregateInputType = {
     id?: true
     title?: true
-    message?: true
+    time?: true
     type?: true
     read?: true
     created_at?: true
@@ -7284,7 +7284,7 @@ export namespace Prisma {
   export type NotificationMaxAggregateInputType = {
     id?: true
     title?: true
-    message?: true
+    time?: true
     type?: true
     read?: true
     created_at?: true
@@ -7296,7 +7296,7 @@ export namespace Prisma {
   export type NotificationCountAggregateInputType = {
     id?: true
     title?: true
-    message?: true
+    time?: true
     type?: true
     read?: true
     created_at?: true
@@ -7381,7 +7381,7 @@ export namespace Prisma {
   export type NotificationGroupByOutputType = {
     id: string
     title: string
-    message: string
+    time: Date | null
     type: $Enums.NotificationType
     read: boolean
     created_at: Date
@@ -7410,7 +7410,7 @@ export namespace Prisma {
   export type NotificationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     title?: boolean
-    message?: boolean
+    time?: boolean
     type?: boolean
     read?: boolean
     created_at?: boolean
@@ -7425,7 +7425,7 @@ export namespace Prisma {
   export type NotificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     title?: boolean
-    message?: boolean
+    time?: boolean
     type?: boolean
     read?: boolean
     created_at?: boolean
@@ -7440,7 +7440,7 @@ export namespace Prisma {
   export type NotificationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     title?: boolean
-    message?: boolean
+    time?: boolean
     type?: boolean
     read?: boolean
     created_at?: boolean
@@ -7455,7 +7455,7 @@ export namespace Prisma {
   export type NotificationSelectScalar = {
     id?: boolean
     title?: boolean
-    message?: boolean
+    time?: boolean
     type?: boolean
     read?: boolean
     created_at?: boolean
@@ -7464,7 +7464,7 @@ export namespace Prisma {
     event_id?: boolean
   }
 
-  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "message" | "type" | "read" | "created_at" | "user_id" | "task_id" | "event_id", ExtArgs["result"]["notification"]>
+  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "time" | "type" | "read" | "created_at" | "user_id" | "task_id" | "event_id", ExtArgs["result"]["notification"]>
   export type NotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     task?: boolean | Notification$taskArgs<ExtArgs>
@@ -7491,7 +7491,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       title: string
-      message: string
+      time: Date | null
       type: $Enums.NotificationType
       read: boolean
       created_at: Date
@@ -7926,7 +7926,7 @@ export namespace Prisma {
   interface NotificationFieldRefs {
     readonly id: FieldRef<"Notification", 'String'>
     readonly title: FieldRef<"Notification", 'String'>
-    readonly message: FieldRef<"Notification", 'String'>
+    readonly time: FieldRef<"Notification", 'DateTime'>
     readonly type: FieldRef<"Notification", 'NotificationType'>
     readonly read: FieldRef<"Notification", 'Boolean'>
     readonly created_at: FieldRef<"Notification", 'DateTime'>
@@ -8470,7 +8470,7 @@ export namespace Prisma {
   export const NotificationScalarFieldEnum: {
     id: 'id',
     title: 'title',
-    message: 'message',
+    time: 'time',
     type: 'type',
     read: 'read',
     created_at: 'created_at',
@@ -8963,7 +8963,7 @@ export namespace Prisma {
     NOT?: NotificationWhereInput | NotificationWhereInput[]
     id?: StringFilter<"Notification"> | string
     title?: StringFilter<"Notification"> | string
-    message?: StringFilter<"Notification"> | string
+    time?: DateTimeNullableFilter<"Notification"> | Date | string | null
     type?: EnumNotificationTypeFilter<"Notification"> | $Enums.NotificationType
     read?: BoolFilter<"Notification"> | boolean
     created_at?: DateTimeFilter<"Notification"> | Date | string
@@ -8978,7 +8978,7 @@ export namespace Prisma {
   export type NotificationOrderByWithRelationInput = {
     id?: SortOrder
     title?: SortOrder
-    message?: SortOrder
+    time?: SortOrderInput | SortOrder
     type?: SortOrder
     read?: SortOrder
     created_at?: SortOrder
@@ -8996,7 +8996,7 @@ export namespace Prisma {
     OR?: NotificationWhereInput[]
     NOT?: NotificationWhereInput | NotificationWhereInput[]
     title?: StringFilter<"Notification"> | string
-    message?: StringFilter<"Notification"> | string
+    time?: DateTimeNullableFilter<"Notification"> | Date | string | null
     type?: EnumNotificationTypeFilter<"Notification"> | $Enums.NotificationType
     read?: BoolFilter<"Notification"> | boolean
     created_at?: DateTimeFilter<"Notification"> | Date | string
@@ -9011,7 +9011,7 @@ export namespace Prisma {
   export type NotificationOrderByWithAggregationInput = {
     id?: SortOrder
     title?: SortOrder
-    message?: SortOrder
+    time?: SortOrderInput | SortOrder
     type?: SortOrder
     read?: SortOrder
     created_at?: SortOrder
@@ -9029,7 +9029,7 @@ export namespace Prisma {
     NOT?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Notification"> | string
     title?: StringWithAggregatesFilter<"Notification"> | string
-    message?: StringWithAggregatesFilter<"Notification"> | string
+    time?: DateTimeNullableWithAggregatesFilter<"Notification"> | Date | string | null
     type?: EnumNotificationTypeWithAggregatesFilter<"Notification"> | $Enums.NotificationType
     read?: BoolWithAggregatesFilter<"Notification"> | boolean
     created_at?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
@@ -9439,7 +9439,7 @@ export namespace Prisma {
   export type NotificationCreateInput = {
     id?: string
     title: string
-    message: string
+    time?: Date | string | null
     type: $Enums.NotificationType
     read?: boolean
     created_at?: Date | string
@@ -9451,7 +9451,7 @@ export namespace Prisma {
   export type NotificationUncheckedCreateInput = {
     id?: string
     title: string
-    message: string
+    time?: Date | string | null
     type: $Enums.NotificationType
     read?: boolean
     created_at?: Date | string
@@ -9463,7 +9463,7 @@ export namespace Prisma {
   export type NotificationUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    message?: StringFieldUpdateOperationsInput | string
+    time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9475,7 +9475,7 @@ export namespace Prisma {
   export type NotificationUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    message?: StringFieldUpdateOperationsInput | string
+    time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9487,7 +9487,7 @@ export namespace Prisma {
   export type NotificationCreateManyInput = {
     id?: string
     title: string
-    message: string
+    time?: Date | string | null
     type: $Enums.NotificationType
     read?: boolean
     created_at?: Date | string
@@ -9499,7 +9499,7 @@ export namespace Prisma {
   export type NotificationUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    message?: StringFieldUpdateOperationsInput | string
+    time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9508,7 +9508,7 @@ export namespace Prisma {
   export type NotificationUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    message?: StringFieldUpdateOperationsInput | string
+    time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9930,7 +9930,7 @@ export namespace Prisma {
   export type NotificationCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
-    message?: SortOrder
+    time?: SortOrder
     type?: SortOrder
     read?: SortOrder
     created_at?: SortOrder
@@ -9942,7 +9942,7 @@ export namespace Prisma {
   export type NotificationMaxOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
-    message?: SortOrder
+    time?: SortOrder
     type?: SortOrder
     read?: SortOrder
     created_at?: SortOrder
@@ -9954,7 +9954,7 @@ export namespace Prisma {
   export type NotificationMinOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
-    message?: SortOrder
+    time?: SortOrder
     type?: SortOrder
     read?: SortOrder
     created_at?: SortOrder
@@ -10743,7 +10743,7 @@ export namespace Prisma {
   export type NotificationCreateWithoutUserInput = {
     id?: string
     title: string
-    message: string
+    time?: Date | string | null
     type: $Enums.NotificationType
     read?: boolean
     created_at?: Date | string
@@ -10754,7 +10754,7 @@ export namespace Prisma {
   export type NotificationUncheckedCreateWithoutUserInput = {
     id?: string
     title: string
-    message: string
+    time?: Date | string | null
     type: $Enums.NotificationType
     read?: boolean
     created_at?: Date | string
@@ -10881,7 +10881,7 @@ export namespace Prisma {
     NOT?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
     id?: StringFilter<"Notification"> | string
     title?: StringFilter<"Notification"> | string
-    message?: StringFilter<"Notification"> | string
+    time?: DateTimeNullableFilter<"Notification"> | Date | string | null
     type?: EnumNotificationTypeFilter<"Notification"> | $Enums.NotificationType
     read?: BoolFilter<"Notification"> | boolean
     created_at?: DateTimeFilter<"Notification"> | Date | string
@@ -10958,7 +10958,7 @@ export namespace Prisma {
   export type NotificationCreateWithoutTaskInput = {
     id?: string
     title: string
-    message: string
+    time?: Date | string | null
     type: $Enums.NotificationType
     read?: boolean
     created_at?: Date | string
@@ -10969,7 +10969,7 @@ export namespace Prisma {
   export type NotificationUncheckedCreateWithoutTaskInput = {
     id?: string
     title: string
-    message: string
+    time?: Date | string | null
     type: $Enums.NotificationType
     read?: boolean
     created_at?: Date | string
@@ -11115,7 +11115,7 @@ export namespace Prisma {
   export type NotificationCreateWithoutEventInput = {
     id?: string
     title: string
-    message: string
+    time?: Date | string | null
     type: $Enums.NotificationType
     read?: boolean
     created_at?: Date | string
@@ -11126,7 +11126,7 @@ export namespace Prisma {
   export type NotificationUncheckedCreateWithoutEventInput = {
     id?: string
     title: string
-    message: string
+    time?: Date | string | null
     type: $Enums.NotificationType
     read?: boolean
     created_at?: Date | string
@@ -11677,7 +11677,7 @@ export namespace Prisma {
   export type NotificationCreateManyUserInput = {
     id?: string
     title: string
-    message: string
+    time?: Date | string | null
     type: $Enums.NotificationType
     read?: boolean
     created_at?: Date | string
@@ -11777,7 +11777,7 @@ export namespace Prisma {
   export type NotificationUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    message?: StringFieldUpdateOperationsInput | string
+    time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11788,7 +11788,7 @@ export namespace Prisma {
   export type NotificationUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    message?: StringFieldUpdateOperationsInput | string
+    time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11799,7 +11799,7 @@ export namespace Prisma {
   export type NotificationUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    message?: StringFieldUpdateOperationsInput | string
+    time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11819,7 +11819,7 @@ export namespace Prisma {
   export type NotificationCreateManyTaskInput = {
     id?: string
     title: string
-    message: string
+    time?: Date | string | null
     type: $Enums.NotificationType
     read?: boolean
     created_at?: Date | string
@@ -11857,7 +11857,7 @@ export namespace Prisma {
   export type NotificationUpdateWithoutTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    message?: StringFieldUpdateOperationsInput | string
+    time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11868,7 +11868,7 @@ export namespace Prisma {
   export type NotificationUncheckedUpdateWithoutTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    message?: StringFieldUpdateOperationsInput | string
+    time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11879,7 +11879,7 @@ export namespace Prisma {
   export type NotificationUncheckedUpdateManyWithoutTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    message?: StringFieldUpdateOperationsInput | string
+    time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11890,7 +11890,7 @@ export namespace Prisma {
   export type NotificationCreateManyEventInput = {
     id?: string
     title: string
-    message: string
+    time?: Date | string | null
     type: $Enums.NotificationType
     read?: boolean
     created_at?: Date | string
@@ -11901,7 +11901,7 @@ export namespace Prisma {
   export type NotificationUpdateWithoutEventInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    message?: StringFieldUpdateOperationsInput | string
+    time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11912,7 +11912,7 @@ export namespace Prisma {
   export type NotificationUncheckedUpdateWithoutEventInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    message?: StringFieldUpdateOperationsInput | string
+    time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11923,7 +11923,7 @@ export namespace Prisma {
   export type NotificationUncheckedUpdateManyWithoutEventInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    message?: StringFieldUpdateOperationsInput | string
+    time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     read?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
