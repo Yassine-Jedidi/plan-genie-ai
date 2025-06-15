@@ -2742,6 +2742,7 @@ export namespace Prisma {
     deadline_text: string | null
     priority: string | null
     status: string | null
+    completed_at: Date | null
     created_at: Date | null
     updated_at: Date | null
     user_id: string | null
@@ -2754,6 +2755,7 @@ export namespace Prisma {
     deadline_text: string | null
     priority: string | null
     status: string | null
+    completed_at: Date | null
     created_at: Date | null
     updated_at: Date | null
     user_id: string | null
@@ -2766,6 +2768,7 @@ export namespace Prisma {
     deadline_text: number
     priority: number
     status: number
+    completed_at: number
     created_at: number
     updated_at: number
     user_id: number
@@ -2780,6 +2783,7 @@ export namespace Prisma {
     deadline_text?: true
     priority?: true
     status?: true
+    completed_at?: true
     created_at?: true
     updated_at?: true
     user_id?: true
@@ -2792,6 +2796,7 @@ export namespace Prisma {
     deadline_text?: true
     priority?: true
     status?: true
+    completed_at?: true
     created_at?: true
     updated_at?: true
     user_id?: true
@@ -2804,6 +2809,7 @@ export namespace Prisma {
     deadline_text?: true
     priority?: true
     status?: true
+    completed_at?: true
     created_at?: true
     updated_at?: true
     user_id?: true
@@ -2889,6 +2895,7 @@ export namespace Prisma {
     deadline_text: string | null
     priority: string | null
     status: string | null
+    completed_at: Date | null
     created_at: Date
     updated_at: Date
     user_id: string
@@ -2918,6 +2925,7 @@ export namespace Prisma {
     deadline_text?: boolean
     priority?: boolean
     status?: boolean
+    completed_at?: boolean
     created_at?: boolean
     updated_at?: boolean
     user_id?: boolean
@@ -2934,6 +2942,7 @@ export namespace Prisma {
     deadline_text?: boolean
     priority?: boolean
     status?: boolean
+    completed_at?: boolean
     created_at?: boolean
     updated_at?: boolean
     user_id?: boolean
@@ -2947,6 +2956,7 @@ export namespace Prisma {
     deadline_text?: boolean
     priority?: boolean
     status?: boolean
+    completed_at?: boolean
     created_at?: boolean
     updated_at?: boolean
     user_id?: boolean
@@ -2960,12 +2970,13 @@ export namespace Prisma {
     deadline_text?: boolean
     priority?: boolean
     status?: boolean
+    completed_at?: boolean
     created_at?: boolean
     updated_at?: boolean
     user_id?: boolean
   }
 
-  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "deadline" | "deadline_text" | "priority" | "status" | "created_at" | "updated_at" | "user_id", ExtArgs["result"]["task"]>
+  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "deadline" | "deadline_text" | "priority" | "status" | "completed_at" | "created_at" | "updated_at" | "user_id", ExtArgs["result"]["task"]>
   export type TaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     bilanEntries?: boolean | Task$bilanEntriesArgs<ExtArgs>
@@ -2993,6 +3004,7 @@ export namespace Prisma {
       deadline_text: string | null
       priority: string | null
       status: string | null
+      completed_at: Date | null
       created_at: Date
       updated_at: Date
       user_id: string
@@ -3428,6 +3440,7 @@ export namespace Prisma {
     readonly deadline_text: FieldRef<"Task", 'String'>
     readonly priority: FieldRef<"Task", 'String'>
     readonly status: FieldRef<"Task", 'String'>
+    readonly completed_at: FieldRef<"Task", 'DateTime'>
     readonly created_at: FieldRef<"Task", 'DateTime'>
     readonly updated_at: FieldRef<"Task", 'DateTime'>
     readonly user_id: FieldRef<"Task", 'String'>
@@ -8422,6 +8435,7 @@ export namespace Prisma {
     deadline_text: 'deadline_text',
     priority: 'priority',
     status: 'status',
+    completed_at: 'completed_at',
     created_at: 'created_at',
     updated_at: 'updated_at',
     user_id: 'user_id'
@@ -8690,6 +8704,7 @@ export namespace Prisma {
     deadline_text?: StringNullableFilter<"Task"> | string | null
     priority?: StringNullableFilter<"Task"> | string | null
     status?: StringNullableFilter<"Task"> | string | null
+    completed_at?: DateTimeNullableFilter<"Task"> | Date | string | null
     created_at?: DateTimeFilter<"Task"> | Date | string
     updated_at?: DateTimeFilter<"Task"> | Date | string
     user_id?: StringFilter<"Task"> | string
@@ -8705,6 +8720,7 @@ export namespace Prisma {
     deadline_text?: SortOrderInput | SortOrder
     priority?: SortOrderInput | SortOrder
     status?: SortOrderInput | SortOrder
+    completed_at?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     user_id?: SortOrder
@@ -8723,6 +8739,7 @@ export namespace Prisma {
     deadline_text?: StringNullableFilter<"Task"> | string | null
     priority?: StringNullableFilter<"Task"> | string | null
     status?: StringNullableFilter<"Task"> | string | null
+    completed_at?: DateTimeNullableFilter<"Task"> | Date | string | null
     created_at?: DateTimeFilter<"Task"> | Date | string
     updated_at?: DateTimeFilter<"Task"> | Date | string
     user_id?: StringFilter<"Task"> | string
@@ -8738,6 +8755,7 @@ export namespace Prisma {
     deadline_text?: SortOrderInput | SortOrder
     priority?: SortOrderInput | SortOrder
     status?: SortOrderInput | SortOrder
+    completed_at?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     user_id?: SortOrder
@@ -8756,6 +8774,7 @@ export namespace Prisma {
     deadline_text?: StringNullableWithAggregatesFilter<"Task"> | string | null
     priority?: StringNullableWithAggregatesFilter<"Task"> | string | null
     status?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    completed_at?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
     created_at?: DateTimeWithAggregatesFilter<"Task"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"Task"> | Date | string
     user_id?: StringWithAggregatesFilter<"Task"> | string
@@ -9152,6 +9171,7 @@ export namespace Prisma {
     deadline_text?: string | null
     priority?: string | null
     status?: string | null
+    completed_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
     user: UserCreateNestedOneWithoutTasksInput
@@ -9166,6 +9186,7 @@ export namespace Prisma {
     deadline_text?: string | null
     priority?: string | null
     status?: string | null
+    completed_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
     user_id: string
@@ -9180,6 +9201,7 @@ export namespace Prisma {
     deadline_text?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
+    completed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutTasksNestedInput
@@ -9194,6 +9216,7 @@ export namespace Prisma {
     deadline_text?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
+    completed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user_id?: StringFieldUpdateOperationsInput | string
@@ -9208,6 +9231,7 @@ export namespace Prisma {
     deadline_text?: string | null
     priority?: string | null
     status?: string | null
+    completed_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
     user_id: string
@@ -9220,6 +9244,7 @@ export namespace Prisma {
     deadline_text?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
+    completed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9231,6 +9256,7 @@ export namespace Prisma {
     deadline_text?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
+    completed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user_id?: StringFieldUpdateOperationsInput | string
@@ -9738,6 +9764,7 @@ export namespace Prisma {
     deadline_text?: SortOrder
     priority?: SortOrder
     status?: SortOrder
+    completed_at?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     user_id?: SortOrder
@@ -9750,6 +9777,7 @@ export namespace Prisma {
     deadline_text?: SortOrder
     priority?: SortOrder
     status?: SortOrder
+    completed_at?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     user_id?: SortOrder
@@ -9762,6 +9790,7 @@ export namespace Prisma {
     deadline_text?: SortOrder
     priority?: SortOrder
     status?: SortOrder
+    completed_at?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     user_id?: SortOrder
@@ -10655,6 +10684,7 @@ export namespace Prisma {
     deadline_text?: string | null
     priority?: string | null
     status?: string | null
+    completed_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
     bilanEntries?: BilanEntryCreateNestedManyWithoutTaskInput
@@ -10668,6 +10698,7 @@ export namespace Prisma {
     deadline_text?: string | null
     priority?: string | null
     status?: string | null
+    completed_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
     bilanEntries?: BilanEntryUncheckedCreateNestedManyWithoutTaskInput
@@ -10798,6 +10829,7 @@ export namespace Prisma {
     deadline_text?: StringNullableFilter<"Task"> | string | null
     priority?: StringNullableFilter<"Task"> | string | null
     status?: StringNullableFilter<"Task"> | string | null
+    completed_at?: DateTimeNullableFilter<"Task"> | Date | string | null
     created_at?: DateTimeFilter<"Task"> | Date | string
     updated_at?: DateTimeFilter<"Task"> | Date | string
     user_id?: StringFilter<"Task"> | string
@@ -11355,6 +11387,7 @@ export namespace Prisma {
     deadline_text?: string | null
     priority?: string | null
     status?: string | null
+    completed_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
     user: UserCreateNestedOneWithoutTasksInput
@@ -11368,6 +11401,7 @@ export namespace Prisma {
     deadline_text?: string | null
     priority?: string | null
     status?: string | null
+    completed_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
     user_id: string
@@ -11424,6 +11458,7 @@ export namespace Prisma {
     deadline_text?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
+    completed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutTasksNestedInput
@@ -11437,6 +11472,7 @@ export namespace Prisma {
     deadline_text?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
+    completed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user_id?: StringFieldUpdateOperationsInput | string
@@ -11487,6 +11523,7 @@ export namespace Prisma {
     deadline_text?: string | null
     priority?: string | null
     status?: string | null
+    completed_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
     user: UserCreateNestedOneWithoutTasksInput
@@ -11500,6 +11537,7 @@ export namespace Prisma {
     deadline_text?: string | null
     priority?: string | null
     status?: string | null
+    completed_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
     user_id: string
@@ -11597,6 +11635,7 @@ export namespace Prisma {
     deadline_text?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
+    completed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutTasksNestedInput
@@ -11610,6 +11649,7 @@ export namespace Prisma {
     deadline_text?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
+    completed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user_id?: StringFieldUpdateOperationsInput | string
@@ -11654,6 +11694,7 @@ export namespace Prisma {
     deadline_text?: string | null
     priority?: string | null
     status?: string | null
+    completed_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -11692,6 +11733,7 @@ export namespace Prisma {
     deadline_text?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
+    completed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     bilanEntries?: BilanEntryUpdateManyWithoutTaskNestedInput
@@ -11705,6 +11747,7 @@ export namespace Prisma {
     deadline_text?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
+    completed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     bilanEntries?: BilanEntryUncheckedUpdateManyWithoutTaskNestedInput
@@ -11718,6 +11761,7 @@ export namespace Prisma {
     deadline_text?: NullableStringFieldUpdateOperationsInput | string | null
     priority?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
+    completed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }

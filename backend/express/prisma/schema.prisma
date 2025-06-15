@@ -40,6 +40,7 @@ model Task {
   deadline_text String?
   priority      String?
   status        String?
+  completed_at  DateTime?
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt
   user_id       String

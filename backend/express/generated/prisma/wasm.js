@@ -137,6 +137,7 @@ exports.Prisma.TaskScalarFieldEnum = {
   deadline_text: 'deadline_text',
   priority: 'priority',
   status: 'status',
+  completed_at: 'completed_at',
   created_at: 'created_at',
   updated_at: 'updated_at',
   user_id: 'user_id'
