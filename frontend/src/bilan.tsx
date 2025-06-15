@@ -1203,15 +1203,26 @@ const BilanPage = () => {
                                   <CheckCircle className="h-4 w-4 mr-1" />
                                   Mark as Done
                                 </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="text-destructive hover:text-destructive"
-                                  onClick={() => deleteTimeEntry(entry.id)}
-                                  disabled={!isDateToday(selectedDate)}
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="text-destructive hover:text-destructive"
+                                        onClick={() =>
+                                          deleteTimeEntry(entry.id)
+                                        }
+                                        disabled={!isDateToday(selectedDate)}
+                                      >
+                                        <X className="h-4 w-4" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Delete this time entry</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
                               </div>
                             )}
                           </TableCell>
