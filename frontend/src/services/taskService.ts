@@ -11,7 +11,7 @@ export interface Task {
   deadline_text?: string | null;
   priority: string | null;
   status: string | null;
-  completed_at: string | null;
+  completed_at?: string | null;
   created_at: string;
   updated_at: string;
   user_id: string;
@@ -122,6 +122,7 @@ export const taskService = {
         deadline: task.deadline,
         priority: task.priority,
         status: task.status,
+        completed_at: task.completed_at,
       });
       return data;
     } catch (error) {

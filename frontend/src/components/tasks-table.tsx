@@ -385,6 +385,30 @@ const columns: ColumnDef<Task>[] = [
     filterFn: statusFilterFn,
   },
   {
+    header: "Completed At",
+    accessorKey: "completed_at",
+    cell: ({ row }) => {
+      const date = row.getValue("completed_at") as string | null;
+      if (!date) return <span className="text-muted-foreground">—</span>;
+
+      try {
+        const formattedDate = formatDate(date, {
+          weekday: "long",
+          month: "long",
+          day: "2-digit",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: false,
+        });
+        return <span>✅ {formattedDate}</span>;
+      } catch {
+        return <span className="text-muted-foreground">Invalid date</span>;
+      }
+    },
+    size: 180,
+  },
+  {
     header: "Created",
     accessorKey: "created_at",
     cell: ({ row }) => {
@@ -754,6 +778,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
             const updatedTask = await taskService.updateTask({
               ...taskToUpdate,
               status: "Done",
+              completed_at: new Date().toISOString(),
             });
             setLocalTasks((prev) =>
               prev.map((t) => (t.id === updatedTask.id ? updatedTask : t))
@@ -938,11 +963,25 @@ export default function TasksTable({ tasks }: TasksTableProps) {
         return;
       }
 
-      const updatedTask = await taskService.updateTask(selectedTask);
+      // Logic to handle completed_at based on status change
+      const taskToUpdate = { ...selectedTask }; // Create a copy to modify
+      if (taskToUpdate.status === "Done") {
+        // Only set completed_at if it's becoming 'Done' and not already set
+        if (!taskToUpdate.completed_at) {
+          taskToUpdate.completed_at = new Date().toISOString();
+        }
+      } else {
+        // If status is not 'Done', clear completed_at
+        taskToUpdate.completed_at = null;
+      }
+
+      const resultUpdatedTask = await taskService.updateTask(taskToUpdate);
 
       // Update the local state
       setLocalTasks((prev) =>
-        prev.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+        prev.map((task) =>
+          task.id === resultUpdatedTask.id ? resultUpdatedTask : task
+        )
       );
 
       // Reset selected task and close dialog

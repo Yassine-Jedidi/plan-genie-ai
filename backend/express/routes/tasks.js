@@ -248,8 +248,8 @@ router.delete("/:taskId", async (req, res) => {
 router.put("/:taskId", async (req, res) => {
   try {
     const { taskId } = req.params;
+    const { title, deadline, priority, status, completed_at } = req.body;
     const userId = req.user.id;
-    const { title, deadline, priority, status } = req.body;
 
     if (!taskId || !title || !deadline || !priority || !status) {
       return res.status(400).json({
@@ -284,6 +284,7 @@ router.put("/:taskId", async (req, res) => {
         deadline: deadline ? new Date(deadline) : null,
         priority,
         status,
+        completed_at: status === "Done" ? completed_at : null,
       },
     });
 
