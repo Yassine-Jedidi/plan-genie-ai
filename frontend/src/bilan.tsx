@@ -45,7 +45,7 @@ import {
   Info,
   CheckCircle,
 } from "lucide-react";
-import { cn, formatDate } from "@/lib/utils";
+import { cn, formatDate, formatTime as formatTimeUtils } from "@/lib/utils";
 import { DatePicker } from "@/components/date-picker";
 import {
   Tooltip,
@@ -127,7 +127,7 @@ const BilanPage = () => {
 
     try {
       if (isToday(deadline)) {
-        return "Today";
+        return `Today at ${formatTimeUtils(deadline)}`;
       }
 
       return formatDate(deadline, {
@@ -166,10 +166,8 @@ const BilanPage = () => {
     if (!deadline) return false;
 
     try {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      return isBefore(deadline, today);
+      const now = new Date(); // Use current time for comparison
+      return isBefore(deadline, now);
     } catch {
       return false;
     }
@@ -389,7 +387,12 @@ const BilanPage = () => {
     try {
       setLoadingTasks(true);
       const tasksData = await taskService.getTasks();
-      setTasks(tasksData);
+      // Convert deadline strings to Date objects for consistent comparisons
+      const processedTasks = tasksData.map((task) => ({
+        ...task,
+        deadline: task.deadline ? new Date(task.deadline) : null,
+      }));
+      setTasks(processedTasks);
     } catch (error) {
       console.error("Error fetching tasks:", error);
       toast.error("Failed to load tasks. Please try again.");
