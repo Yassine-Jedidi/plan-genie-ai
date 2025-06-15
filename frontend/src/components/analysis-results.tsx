@@ -125,22 +125,70 @@ export function AnalysisResults({
     if (!text) return { originalText: text, parsedDate: null };
 
     try {
-      // First try with French parser
-      let parsedDate = frenchParser.parseDate(text);
+      const now = new Date(); // Get the current date and time
+      console.log(`Current 'now' for parsing: ${now.toLocaleString()}`); // Log the current date and time
+
+      // First try with French parser, providing the current date as reference
+      let parsedDate = frenchParser.parseDate(text, now);
       console.log(
         `French parser: "${text}" → ${
-          parsedDate ? parsedDate.toLocaleDateString() : "null"
+          parsedDate ? parsedDate.toLocaleString() : "null"
         }`
       );
 
-      // Fall back to English parser if French fails
+      // If French parser gives today's date for 'tomorrow' or 'demain', advance it by one day
+      if (parsedDate && parsedDate.toDateString() === now.toDateString()) {
+        const lowerCaseText = text.toLowerCase();
+        if (
+          lowerCaseText.includes("tomorrow") ||
+          lowerCaseText.includes("demain")
+        ) {
+          parsedDate.setDate(parsedDate.getDate() + 1);
+          console.log(
+            "Adjusted for 'tomorrow' misinterpretation by French parser."
+          );
+        }
+      }
+
+      // Fall back to English parser if French fails, providing the current date as reference
       if (!parsedDate) {
-        parsedDate = englishParser.parseDate(text);
+        parsedDate = englishParser.parseDate(text, now);
         console.log(
           `English parser: "${text}" → ${
-            parsedDate ? parsedDate.toLocaleDateString() : "null"
+            parsedDate ? parsedDate.toLocaleString() : "null"
           }`
         );
+      }
+
+      // Logic for future dates for days of the week when only day name is provided
+      if (parsedDate) {
+        const now = new Date(); // Re-fetch current time for accurate comparison
+        const dayNames = [
+          "lundi",
+          "mardi",
+          "mercredi",
+          "jeudi",
+          "vendredi",
+          "samedi",
+          "dimanche", // French
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday", // English
+        ];
+        const lowerCaseText = text.toLowerCase().trim();
+        const isDayOfWeek = dayNames.some((day) => lowerCaseText === day);
+
+        // If it's a day of the week and it's in the past (or earlier today), move it to next week
+        if (isDayOfWeek && parsedDate < now) {
+          parsedDate.setDate(parsedDate.getDate() + 7);
+          console.log(
+            `Adjusted '${text}' to next occurrence (moved by 7 days) as it was in the past.`
+          );
+        }
       }
 
       return {
@@ -331,7 +379,7 @@ export function AnalysisResults({
               updatedEntities["DATE_HEURE_PARSED"] = [parsed.parsedDate];
               modifiedPayload = true;
             }
-          } catch (_) {
+          } catch {
             // Not JSON, try to parse it directly if DATE_HEURE_PARSED is not already set
             if (!updatedEntities["DATE_HEURE_PARSED"]?.length) {
               const { parsedDate } = parseDate(
@@ -373,7 +421,7 @@ export function AnalysisResults({
             updatedEntities["DELAI_PARSED"] = [parsed.parsedDate];
             modifiedPayload = true;
           }
-        } catch (_) {
+        } catch {
           // Not JSON, try to parse it directly if DELAI_PARSED is not already set
           if (!updatedEntities["DELAI_PARSED"]?.length) {
             const { parsedDate } = parseDate(updatedEntities["DELAI"][0]);
