@@ -143,21 +143,19 @@ const BilanPage = () => {
     }
   };
 
-  // Check if a task deadline is approaching (within 3 days)
+  // Check if a task deadline is approaching (within 7 days, excluding overdue tasks)
   const isDeadlineApproaching = (deadline: Date | null) => {
     if (!deadline) return false;
 
     try {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      // Task is due today or in the past
-      if (isBefore(deadline, addDays(today, 1))) {
-        return true;
+      const now = new Date();
+      // Ensure the deadline is in the future (not overdue)
+      if (isBefore(deadline, now)) {
+        return false; // Already overdue, or in the past
       }
 
-      // Task is due within the next 7 days
-      return isBefore(deadline, addDays(today, 8));
+      // Check if the deadline is within the next 7 days from now
+      return isBefore(deadline, addDays(now, 7));
     } catch {
       return false;
     }
@@ -849,13 +847,130 @@ const BilanPage = () => {
         task.status !== "Done"
     );
 
-    // Filter tasks with no urgent deadlines
+    // Filter tasks with no urgent deadlines (i.e., beyond 7 days or no deadline)
     const otherTasks = tasksWithoutEntries.filter(
       (task) =>
         !isDeadlineApproaching(task.deadline) && !isTaskOverdue(task.deadline)
     );
 
     if (otherTasks.length === 0) return null;
+
+    return (
+      <Card className="mt-8 border-slate-300">
+        <CardHeader className="bg-slate-50 dark:bg-slate-950/40 rounded-t-lg">
+          <CardTitle className="text-xl flex items-center">
+            <Calendar className="h-5 w-5 mr-2 text-slate-600" />
+            <span>Tasks Beyond 7 Days</span>
+          </CardTitle>
+          <CardDescription>
+            Tasks with deadlines further in the future
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Task</TableHead>
+                <TableHead>Deadline</TableHead>
+                <TableHead>Priority</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {otherTasks.map((task) => (
+                <React.Fragment key={task.id}>
+                  <TableRow>
+                    <TableCell className="font-medium">{task.title}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className="bg-slate-100 text-slate-800 border-slate-300"
+                      >
+                        {formatDeadline(task.deadline) || "No deadline"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {task.priority ? (
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            task.priority === "High" &&
+                              "bg-red-100 text-red-800 border-red-300",
+                            task.priority === "Medium" &&
+                              "bg-yellow-100 text-yellow-800 border-yellow-300",
+                            task.priority === "Low" &&
+                              "bg-green-100 text-green-800 border-green-300"
+                          )}
+                        >
+                          {task.priority}
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground">None</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          task.status === "Done" &&
+                            "bg-green-100 text-green-800 border-green-300",
+                          task.status === "In Progress" &&
+                            "bg-blue-100 text-blue-800 border-blue-300",
+                          (!task.status || task.status === "Planned") &&
+                            "bg-amber-100 text-amber-800 border-amber-300"
+                        )}
+                      >
+                        {task.status || "Planned"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {editingTaskId === task.id ? (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={cancelEditing}
+                        >
+                          <X className="h-4 w-4 mr-1" />
+                          Cancel
+                        </Button>
+                      ) : (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => startEditing(task.id)}
+                          >
+                            <Clock className="h-4 w-4 mr-1" />
+                            Add Time
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => markTaskAsDone(task)}
+                            disabled={!isDateToday(selectedDate)}
+                          >
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                            Mark as Done
+                          </Button>
+                        </>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                  {editingTaskId === task.id && (
+                    <TableRow>
+                      <TableCell colSpan={5}>
+                        {renderTimeEntryForm(task.id)}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    );
   };
 
   return (
