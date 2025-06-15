@@ -473,6 +473,7 @@ const BilanPage = () => {
       await taskService.updateTask({
         ...task,
         status: "Done",
+        completed_at: new Date().toISOString(),
       });
       toast.success("Task marked as done!");
       // Refresh tasks and bilans
