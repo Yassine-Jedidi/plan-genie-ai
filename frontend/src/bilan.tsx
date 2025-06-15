@@ -289,8 +289,21 @@ const BilanPage = () => {
 
       await bilanService.updateEntry(bilan.id, taskId, minutes, notesInput);
 
-      // Refresh bilan data
-      await fetchBilanForDate(selectedDate);
+      // Find the task and update its status to "In Progress" if it's not already "Done"
+      const taskToUpdate = tasks.find((task) => task.id === taskId);
+      if (
+        taskToUpdate &&
+        taskToUpdate.status !== "Done" &&
+        taskToUpdate.status !== "In Progress"
+      ) {
+        await taskService.updateTask({
+          ...taskToUpdate,
+          status: "In Progress",
+        });
+      }
+
+      // Refresh bilan data and tasks concurrently
+      await Promise.all([fetchBilanForDate(selectedDate), fetchTasks()]);
 
       toast.success("Task time updated successfully");
       cancelEditing();
@@ -388,10 +401,15 @@ const BilanPage = () => {
       setLoadingTasks(true);
       const tasksData = await taskService.getTasks();
       // Convert deadline strings to Date objects for consistent comparisons
-      const processedTasks = tasksData.map((task) => ({
-        ...task,
-        deadline: task.deadline ? new Date(task.deadline) : null,
-      }));
+      const processedTasks = tasksData.map((task) => {
+        console.log(`Original deadline string: ${task.deadline}`);
+        const deadlineDate = task.deadline ? new Date(task.deadline) : null;
+        console.log(`Processed deadline Date object: ${deadlineDate}`);
+        return {
+          ...task,
+          deadline: deadlineDate,
+        };
+      });
       setTasks(processedTasks);
     } catch (error) {
       console.error("Error fetching tasks:", error);
