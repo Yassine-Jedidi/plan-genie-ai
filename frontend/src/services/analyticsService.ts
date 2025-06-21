@@ -18,6 +18,7 @@ export interface TaskAnalytics {
   overdue1_3Days: number;
   overdue4_7Days: number;
   overdueMoreThan7Days: number;
+  totalMinutesWorked: number;
 }
 
 export interface AnalyticsData {

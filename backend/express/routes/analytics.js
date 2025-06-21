@@ -20,6 +20,7 @@ const calculateTaskAnalytics = (tasks, todayStart) => {
     overdue1_3Days: 0,
     overdue4_7Days: 0,
     overdueMoreThan7Days: 0,
+    totalMinutesWorked: 0,
   };
 
   tasks.forEach((task) => {
@@ -65,6 +66,13 @@ const calculateTaskAnalytics = (tasks, todayStart) => {
         console.error("Invalid date in task: ", task.deadline, e);
       }
     }
+    // Calculate total minutes worked from bilan entries
+    if (task.bilanEntries && task.bilanEntries.length > 0) {
+      initialAnalytics.totalMinutesWorked += task.bilanEntries.reduce(
+        (sum, entry) => sum + entry.minutes_spent,
+        0
+      );
+    }
   });
 
   const total = initialAnalytics.done + initialAnalytics.undone;
@@ -84,6 +92,9 @@ router.get("/overall", async (req, res) => {
     const tasks = await prisma.task.findMany({
       where: {
         user_id: userId,
+      },
+      include: {
+        bilanEntries: true, // Include bilan entries
       },
     });
 

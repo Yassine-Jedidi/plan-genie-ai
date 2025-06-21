@@ -13,6 +13,7 @@ import {
   ArrowDown,
   Minus,
   AlertTriangle,
+  Clock,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
@@ -30,6 +31,7 @@ const initialAnalyticsState: AnalyticsData = {
     overdue1_3Days: 0,
     overdue4_7Days: 0,
     overdueMoreThan7Days: 0,
+    totalMinutesWorked: 0,
   },
   today: {
     done: 0,
@@ -42,6 +44,7 @@ const initialAnalyticsState: AnalyticsData = {
     overdue1_3Days: 0,
     overdue4_7Days: 0,
     overdueMoreThan7Days: 0,
+    totalMinutesWorked: 0,
   },
   thisWeek: {
     done: 0,
@@ -54,6 +57,7 @@ const initialAnalyticsState: AnalyticsData = {
     overdue1_3Days: 0,
     overdue4_7Days: 0,
     overdueMoreThan7Days: 0,
+    totalMinutesWorked: 0,
   },
   thisMonth: {
     done: 0,
@@ -66,6 +70,7 @@ const initialAnalyticsState: AnalyticsData = {
     overdue1_3Days: 0,
     overdue4_7Days: 0,
     overdueMoreThan7Days: 0,
+    totalMinutesWorked: 0,
   },
 };
 
@@ -92,6 +97,20 @@ const Analytics = () => {
 
     fetchAnalytics();
   }, []);
+
+  // Format minutes as hours and minutes
+  const formatTime = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+
+    if (hours === 0) {
+      return `${mins}m`;
+    } else if (mins === 0) {
+      return `${hours}h`;
+    } else {
+      return `${hours}h ${mins}m`;
+    }
+  };
 
   const renderPriorityCards = (data: TaskAnalytics) => (
     <Card className="mt-6">
@@ -292,6 +311,40 @@ const Analytics = () => {
     </Card>
   );
 
+  const renderTotalTimeCard = (data: TaskAnalytics) => (
+    <Card className="mt-6">
+      <CardHeader>
+        <CardTitle className="text-xl font-semibold">
+          Total Time Spent
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-center justify-between">
+          <div className="text-2xl font-bold">
+            {formatTime(data.totalMinutesWorked)}
+          </div>
+          <Clock className="h-6 w-6 text-teal-500" />
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          Total time recorded for tasks.
+        </p>
+      </CardContent>
+    </Card>
+  );
+
+  const renderTotalTimeCardSkeleton = () => (
+    <Card className="mt-6">
+      <CardHeader>
+        <CardTitle className="text-xl font-semibold">
+          Total Time Spent
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="h-10 w-32" />
+      </CardContent>
+    </Card>
+  );
+
   if (loading) {
     return (
       <div className="p-4 max-w-[1200px] mx-auto text-primary">
@@ -334,6 +387,7 @@ const Analytics = () => {
             </Card>
             {renderPriorityCardSkeletons()}
             {renderOverdueCardSkeleton()}
+            {renderTotalTimeCardSkeleton()}
           </TabsContent>
           <TabsContent value="today">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -364,6 +418,7 @@ const Analytics = () => {
             </Card>
             {renderPriorityCardSkeletons()}
             {renderOverdueCardSkeleton()}
+            {renderTotalTimeCardSkeleton()}
           </TabsContent>
           <TabsContent value="this-week">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -394,6 +449,7 @@ const Analytics = () => {
             </Card>
             {renderPriorityCardSkeletons()}
             {renderOverdueCardSkeleton()}
+            {renderTotalTimeCardSkeleton()}
           </TabsContent>
           <TabsContent value="this-month">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -424,6 +480,7 @@ const Analytics = () => {
             </Card>
             {renderPriorityCardSkeletons()}
             {renderOverdueCardSkeleton()}
+            {renderTotalTimeCardSkeleton()}
           </TabsContent>
         </Tabs>
       </div>
@@ -502,6 +559,7 @@ const Analytics = () => {
           </Card>
           {renderPriorityCards(analyticsData.all)}
           {renderOverdueCard(analyticsData.all)}
+          {renderTotalTimeCard(analyticsData.all)}
         </TabsContent>
         <TabsContent value="today">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -559,6 +617,7 @@ const Analytics = () => {
           </Card>
           {renderPriorityCards(analyticsData.today)}
           {renderOverdueCard(analyticsData.today)}
+          {renderTotalTimeCard(analyticsData.today)}
         </TabsContent>
         <TabsContent value="this-week">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -616,6 +675,7 @@ const Analytics = () => {
           </Card>
           {renderPriorityCards(analyticsData.thisWeek)}
           {renderOverdueCard(analyticsData.thisWeek)}
+          {renderTotalTimeCard(analyticsData.thisWeek)}
         </TabsContent>
         <TabsContent value="this-month">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -673,6 +733,7 @@ const Analytics = () => {
           </Card>
           {renderPriorityCards(analyticsData.thisMonth)}
           {renderOverdueCard(analyticsData.thisMonth)}
+          {renderTotalTimeCard(analyticsData.thisMonth)}
         </TabsContent>
       </Tabs>
     </div>
