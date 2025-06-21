@@ -6,8 +6,8 @@ const router = express.Router();
 // Apply authentication middleware to all routes
 router.use(authenticateUser);
 
-// Helper function to calculate analytics for a given set of tasks
-const calculateTaskAnalytics = (tasks, todayStart) => {
+// Helper function to calculate analytics for a given set of tasks and their associated bilan entries
+const calculateTaskAnalytics = (tasks, bilanEntries, todayStart) => {
   const initialPriorityBreakdown = { low: 0, medium: 0, high: 0 };
   const initialAnalytics = {
     done: 0,
@@ -66,14 +66,13 @@ const calculateTaskAnalytics = (tasks, todayStart) => {
         console.error("Invalid date in task: ", task.deadline, e);
       }
     }
-    // Calculate total minutes worked from bilan entries
-    if (task.bilanEntries && task.bilanEntries.length > 0) {
-      initialAnalytics.totalMinutesWorked += task.bilanEntries.reduce(
-        (sum, entry) => sum + entry.minutes_spent,
-        0
-      );
-    }
   });
+
+  // Calculate total minutes worked from provided bilan entries
+  initialAnalytics.totalMinutesWorked = bilanEntries.reduce(
+    (sum, entry) => sum + entry.minutes_spent,
+    0
+  );
 
   const total = initialAnalytics.done + initialAnalytics.undone;
   initialAnalytics.completionPercentage =
@@ -93,17 +92,31 @@ router.get("/overall", async (req, res) => {
       where: {
         user_id: userId,
       },
+    });
+
+    const bilans = await prisma.bilan.findMany({
+      where: {
+        user_id: userId,
+      },
       include: {
-        bilanEntries: true, // Include bilan entries
+        entries: true,
       },
     });
+
+    const allBilanEntries = bilans.flatMap((bilan) =>
+      bilan.entries.map((entry) => ({ ...entry, bilanDate: bilan.date }))
+    );
 
     const now = new Date();
     const todayStart = new Date(now);
     todayStart.setHours(0, 0, 0, 0);
 
     // All tasks analytics
-    const allAnalytics = calculateTaskAnalytics(tasks, todayStart);
+    const allAnalytics = calculateTaskAnalytics(
+      tasks,
+      allBilanEntries,
+      todayStart
+    );
 
     // Today's tasks analytics
     const tomorrow = new Date(todayStart);
@@ -113,7 +126,15 @@ router.get("/overall", async (req, res) => {
       const deadlineDate = new Date(task.deadline);
       return deadlineDate >= todayStart && deadlineDate < tomorrow;
     });
-    const todayAnalytics = calculateTaskAnalytics(todayTasks, todayStart);
+    const todayBilanEntries = allBilanEntries.filter((entry) => {
+      const entryDate = new Date(entry.created_at);
+      return entryDate >= todayStart && entryDate < tomorrow;
+    });
+    const todayAnalytics = calculateTaskAnalytics(
+      todayTasks,
+      todayBilanEntries,
+      todayStart
+    );
 
     // This Week's tasks analytics
     const currentWeekStart = new Date(now);
@@ -125,32 +146,43 @@ router.get("/overall", async (req, res) => {
     ); // Adjust to Monday
 
     const currentWeekEnd = new Date(currentWeekStart);
-    currentWeekEnd.setDate(currentWeekEnd.getDate() + 6);
-    currentWeekEnd.setHours(23, 59, 59, 999);
+    currentWeekEnd.setDate(currentWeekEnd.getDate() + 7);
+    currentWeekEnd.setHours(0, 0, 0, 0);
 
     const thisWeekTasks = tasks.filter((task) => {
       if (!task.deadline) return false;
       const deadlineDate = new Date(task.deadline);
-      return deadlineDate >= currentWeekStart && deadlineDate <= currentWeekEnd;
+      return deadlineDate >= currentWeekStart && deadlineDate < currentWeekEnd;
     });
-    const thisWeekAnalytics = calculateTaskAnalytics(thisWeekTasks, todayStart);
+    const thisWeekBilanEntries = allBilanEntries.filter((entry) => {
+      const entryDate = new Date(entry.created_at);
+      return entryDate >= currentWeekStart && entryDate < currentWeekEnd;
+    });
+    const thisWeekAnalytics = calculateTaskAnalytics(
+      thisWeekTasks,
+      thisWeekBilanEntries,
+      todayStart
+    );
 
     // This Month's tasks analytics
     const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     currentMonthStart.setHours(0, 0, 0, 0);
 
-    const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    currentMonthEnd.setHours(23, 59, 59, 999);
+    const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    nextMonthStart.setHours(0, 0, 0, 0);
 
     const thisMonthTasks = tasks.filter((task) => {
       if (!task.deadline) return false;
       const deadlineDate = new Date(task.deadline);
-      return (
-        deadlineDate >= currentMonthStart && deadlineDate <= currentMonthEnd
-      );
+      return deadlineDate >= currentMonthStart && deadlineDate < nextMonthStart;
+    });
+    const thisMonthBilanEntries = allBilanEntries.filter((entry) => {
+      const entryDate = new Date(entry.created_at);
+      return entryDate >= currentMonthStart && entryDate < nextMonthStart;
     });
     const thisMonthAnalytics = calculateTaskAnalytics(
       thisMonthTasks,
+      thisMonthBilanEntries,
       todayStart
     );
 
