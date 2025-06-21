@@ -23,6 +23,7 @@ import SettingsPage from "./settings";
 import { EventsCalendar } from "./events-calendar";
 import BilanPage from "./bilan";
 import { NotificationPopover } from "./components/notification-popover";
+import Analytics from "./analytics";
 
 function AppContent() {
   const location = useLocation();
@@ -33,14 +34,16 @@ function AppContent() {
     location.pathname !== "/settings" &&
     location.pathname !== "/tasks-kanban" &&
     location.pathname !== "/events" &&
-    location.pathname !== "/daily";
+    location.pathname !== "/daily" &&
+    location.pathname !== "/analytics";
   const showSidebar =
     location.pathname === "/home" ||
     location.pathname === "/tasks" ||
     location.pathname === "/tasks-kanban" ||
     location.pathname === "/settings" ||
     location.pathname === "/events" ||
-    location.pathname === "/daily";
+    location.pathname === "/daily" ||
+    location.pathname === "/analytics";
 
   return (
     <ThemeProvider
@@ -109,6 +112,18 @@ function AppContent() {
                   <div className="relative w-full flex-1 flex">
                     <AppSidebar />
                     <BilanPage />
+                    <div className="absolute top-4 right-4">
+                      <NotificationPopover />
+                    </div>
+                  </div>
+                }
+              />
+              <Route
+                path="/analytics"
+                element={
+                  <div className="relative w-full flex-1 flex">
+                    <AppSidebar />
+                    <Analytics />
                     <div className="absolute top-4 right-4">
                       <NotificationPopover />
                     </div>
