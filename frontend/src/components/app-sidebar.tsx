@@ -18,9 +18,9 @@ import {
   ClipboardList,
   Settings,
   LogOut,
-  LifeBuoy,
   BarChart,
   ClipboardCheck,
+  LayoutDashboard,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -65,9 +65,9 @@ const items = [
     icon: BarChart,
   },
   {
-    title: "Help & Support",
-    url: "#",
-    icon: LifeBuoy,
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: LayoutDashboard,
   },
 ];
 

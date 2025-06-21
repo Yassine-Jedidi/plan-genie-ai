@@ -21,6 +21,7 @@ const calculateTaskAnalytics = (tasks, bilanEntries, todayStart) => {
     overdue4_7Days: 0,
     overdueMoreThan7Days: 0,
     totalMinutesWorked: 0,
+    minutesSpentByPriority: { ...initialPriorityBreakdown },
   };
 
   tasks.forEach((task) => {
@@ -68,11 +69,18 @@ const calculateTaskAnalytics = (tasks, bilanEntries, todayStart) => {
     }
   });
 
-  // Calculate total minutes worked from provided bilan entries
-  initialAnalytics.totalMinutesWorked = bilanEntries.reduce(
-    (sum, entry) => sum + entry.minutes_spent,
-    0
-  );
+  // Calculate total minutes worked and minutes spent by priority from provided bilan entries
+  bilanEntries.forEach((entry) => {
+    const task = tasks.find((t) => t.id === entry.task_id);
+    if (task) {
+      const priority = task.priority?.toLowerCase() || "medium";
+      initialAnalytics.totalMinutesWorked += entry.minutes_spent;
+      if (initialAnalytics.minutesSpentByPriority[priority] !== undefined) {
+        initialAnalytics.minutesSpentByPriority[priority] +=
+          entry.minutes_spent;
+      }
+    }
+  });
 
   const total = initialAnalytics.done + initialAnalytics.undone;
   initialAnalytics.completionPercentage =
@@ -99,12 +107,20 @@ router.get("/overall", async (req, res) => {
         user_id: userId,
       },
       include: {
-        entries: true,
+        entries: {
+          include: {
+            task: true,
+          },
+        },
       },
     });
 
     const allBilanEntries = bilans.flatMap((bilan) =>
-      bilan.entries.map((entry) => ({ ...entry, bilanDate: bilan.date }))
+      bilan.entries.map((entry) => ({
+        ...entry,
+        bilanDate: bilan.date,
+        task: entry.task,
+      }))
     );
 
     const now = new Date();

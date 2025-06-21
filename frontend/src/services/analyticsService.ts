@@ -14,6 +14,7 @@ export interface TaskAnalytics {
   priorityCounts: PriorityBreakdown;
   donePriorityCounts: PriorityBreakdown;
   undonePriorityCounts: PriorityBreakdown;
+  minutesSpentByPriority: PriorityBreakdown;
   overdue: number;
   overdue1_3Days: number;
   overdue4_7Days: number;

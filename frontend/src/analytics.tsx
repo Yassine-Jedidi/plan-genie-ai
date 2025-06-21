@@ -32,6 +32,7 @@ const initialAnalyticsState: AnalyticsData = {
     overdue4_7Days: 0,
     overdueMoreThan7Days: 0,
     totalMinutesWorked: 0,
+    minutesSpentByPriority: { low: 0, medium: 0, high: 0 },
   },
   today: {
     done: 0,
@@ -45,6 +46,7 @@ const initialAnalyticsState: AnalyticsData = {
     overdue4_7Days: 0,
     overdueMoreThan7Days: 0,
     totalMinutesWorked: 0,
+    minutesSpentByPriority: { low: 0, medium: 0, high: 0 },
   },
   thisWeek: {
     done: 0,
@@ -58,6 +60,7 @@ const initialAnalyticsState: AnalyticsData = {
     overdue4_7Days: 0,
     overdueMoreThan7Days: 0,
     totalMinutesWorked: 0,
+    minutesSpentByPriority: { low: 0, medium: 0, high: 0 },
   },
   thisMonth: {
     done: 0,
@@ -71,6 +74,7 @@ const initialAnalyticsState: AnalyticsData = {
     overdue4_7Days: 0,
     overdueMoreThan7Days: 0,
     totalMinutesWorked: 0,
+    minutesSpentByPriority: { low: 0, medium: 0, high: 0 },
   },
 };
 
@@ -136,6 +140,9 @@ const Analytics = () => {
                 Done: {data.donePriorityCounts.low}, Undone:{" "}
                 {data.undonePriorityCounts.low}
               </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Time Spent: {formatTime(data.minutesSpentByPriority.low)}
+              </p>
             </CardContent>
           </Card>
           <Card>
@@ -153,6 +160,9 @@ const Analytics = () => {
                 Done: {data.donePriorityCounts.medium}, Undone:{" "}
                 {data.undonePriorityCounts.medium}
               </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Time Spent: {formatTime(data.minutesSpentByPriority.medium)}
+              </p>
             </CardContent>
           </Card>
           <Card>
@@ -169,6 +179,9 @@ const Analytics = () => {
               <p className="text-xs text-muted-foreground">
                 Done: {data.donePriorityCounts.high}, Undone:{" "}
                 {data.undonePriorityCounts.high}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Time Spent: {formatTime(data.minutesSpentByPriority.high)}
               </p>
             </CardContent>
           </Card>
@@ -191,7 +204,8 @@ const Analytics = () => {
               <CardTitle>Low Priority</CardTitle>
             </CardHeader>
             <CardContent>
-              <Skeleton className="h-10 w-20" />
+              <Skeleton className="h-10 w-20 mb-2" />
+              <Skeleton className="h-4 w-24" />
             </CardContent>
           </Card>
           <Card>
@@ -199,7 +213,8 @@ const Analytics = () => {
               <CardTitle>Medium Priority</CardTitle>
             </CardHeader>
             <CardContent>
-              <Skeleton className="h-10 w-20" />
+              <Skeleton className="h-10 w-20 mb-2" />
+              <Skeleton className="h-4 w-24" />
             </CardContent>
           </Card>
           <Card>
@@ -207,7 +222,8 @@ const Analytics = () => {
               <CardTitle>High Priority</CardTitle>
             </CardHeader>
             <CardContent>
-              <Skeleton className="h-10 w-20" />
+              <Skeleton className="h-10 w-20 mb-2" />
+              <Skeleton className="h-4 w-24" />
             </CardContent>
           </Card>
         </div>
