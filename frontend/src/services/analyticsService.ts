@@ -7,6 +7,12 @@ interface PriorityBreakdown {
   high: number;
 }
 
+export interface EventAnalytics {
+  totalEvents: number;
+  upcomingEvents: number;
+  pastEvents: number;
+}
+
 export interface TaskAnalytics {
   done: number;
   undone: number;
@@ -23,10 +29,10 @@ export interface TaskAnalytics {
 }
 
 export interface AnalyticsData {
-  all: TaskAnalytics;
-  today: TaskAnalytics;
-  thisWeek: TaskAnalytics;
-  thisMonth: TaskAnalytics;
+  all: TaskAnalytics & { events: EventAnalytics };
+  today: TaskAnalytics & { events: EventAnalytics };
+  thisWeek: TaskAnalytics & { events: EventAnalytics };
+  thisMonth: TaskAnalytics & { events: EventAnalytics };
 }
 
 export const analyticsService = {

@@ -91,12 +91,42 @@ const calculateTaskAnalytics = (tasks, bilanEntries, todayStart) => {
   return initialAnalytics;
 };
 
+// Helper function to calculate analytics for a given set of events
+const calculateEventAnalytics = (events, referenceDate) => {
+  let totalEvents = events.length;
+  let upcomingEvents = 0;
+  let pastEvents = 0;
+
+  events.forEach((event) => {
+    if (event.date_time) {
+      const eventDateTime = new Date(event.date_time);
+      if (eventDateTime >= referenceDate) {
+        upcomingEvents++;
+      } else {
+        pastEvents++;
+      }
+    }
+  });
+
+  return {
+    totalEvents,
+    upcomingEvents,
+    pastEvents,
+  };
+};
+
 // GET endpoint for overall analytics
 router.get("/overall", async (req, res) => {
   try {
     const userId = req.user.id;
 
     const tasks = await prisma.task.findMany({
+      where: {
+        user_id: userId,
+      },
+    });
+
+    const events = await prisma.event.findMany({
       where: {
         user_id: userId,
       },
@@ -133,6 +163,7 @@ router.get("/overall", async (req, res) => {
       allBilanEntries,
       todayStart
     );
+    const allEventAnalytics = calculateEventAnalytics(events, todayStart);
 
     // Today's tasks analytics
     const tomorrow = new Date(todayStart);
@@ -149,6 +180,15 @@ router.get("/overall", async (req, res) => {
     const todayAnalytics = calculateTaskAnalytics(
       todayTasks,
       todayBilanEntries,
+      todayStart
+    );
+    const todayEvents = events.filter((event) => {
+      if (!event.date_time) return false;
+      const eventDateTime = new Date(event.date_time);
+      return eventDateTime >= todayStart && eventDateTime < tomorrow;
+    });
+    const todayEventAnalytics = calculateEventAnalytics(
+      todayEvents,
       todayStart
     );
 
@@ -179,6 +219,17 @@ router.get("/overall", async (req, res) => {
       thisWeekBilanEntries,
       todayStart
     );
+    const thisWeekEvents = events.filter((event) => {
+      if (!event.date_time) return false;
+      const eventDateTime = new Date(event.date_time);
+      return (
+        eventDateTime >= currentWeekStart && eventDateTime < currentWeekEnd
+      );
+    });
+    const thisWeekEventAnalytics = calculateEventAnalytics(
+      thisWeekEvents,
+      todayStart
+    );
 
     // This Month's tasks analytics
     const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -201,12 +252,23 @@ router.get("/overall", async (req, res) => {
       thisMonthBilanEntries,
       todayStart
     );
+    const thisMonthEvents = events.filter((event) => {
+      if (!event.date_time) return false;
+      const eventDateTime = new Date(event.date_time);
+      return (
+        eventDateTime >= currentMonthStart && eventDateTime < nextMonthStart
+      );
+    });
+    const thisMonthEventAnalytics = calculateEventAnalytics(
+      thisMonthEvents,
+      todayStart
+    );
 
     res.status(200).json({
-      all: allAnalytics,
-      today: todayAnalytics,
-      thisWeek: thisWeekAnalytics,
-      thisMonth: thisMonthAnalytics,
+      all: { ...allAnalytics, events: allEventAnalytics },
+      today: { ...todayAnalytics, events: todayEventAnalytics },
+      thisWeek: { ...thisWeekAnalytics, events: thisWeekEventAnalytics },
+      thisMonth: { ...thisMonthAnalytics, events: thisMonthEventAnalytics },
     });
   } catch (error) {
     console.error("Error fetching analytics data:", error);

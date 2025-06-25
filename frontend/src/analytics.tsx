@@ -3,6 +3,7 @@ import {
   analyticsService,
   AnalyticsData,
   TaskAnalytics,
+  EventAnalytics,
 } from "./services/analyticsService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -33,6 +34,7 @@ const initialAnalyticsState: AnalyticsData = {
     overdueMoreThan7Days: 0,
     totalMinutesWorked: 0,
     minutesSpentByPriority: { low: 0, medium: 0, high: 0 },
+    events: { totalEvents: 0, upcomingEvents: 0, pastEvents: 0 },
   },
   today: {
     done: 0,
@@ -47,6 +49,7 @@ const initialAnalyticsState: AnalyticsData = {
     overdueMoreThan7Days: 0,
     totalMinutesWorked: 0,
     minutesSpentByPriority: { low: 0, medium: 0, high: 0 },
+    events: { totalEvents: 0, upcomingEvents: 0, pastEvents: 0 },
   },
   thisWeek: {
     done: 0,
@@ -61,6 +64,7 @@ const initialAnalyticsState: AnalyticsData = {
     overdueMoreThan7Days: 0,
     totalMinutesWorked: 0,
     minutesSpentByPriority: { low: 0, medium: 0, high: 0 },
+    events: { totalEvents: 0, upcomingEvents: 0, pastEvents: 0 },
   },
   thisMonth: {
     done: 0,
@@ -75,6 +79,7 @@ const initialAnalyticsState: AnalyticsData = {
     overdueMoreThan7Days: 0,
     totalMinutesWorked: 0,
     minutesSpentByPriority: { low: 0, medium: 0, high: 0 },
+    events: { totalEvents: 0, upcomingEvents: 0, pastEvents: 0 },
   },
 };
 
@@ -361,6 +366,94 @@ const Analytics = () => {
     </Card>
   );
 
+  const renderEventCards = (data: EventAnalytics) => (
+    <Card className="mt-6">
+      <CardHeader>
+        <CardTitle className="text-xl font-semibold">Event Overview</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Events
+              </CardTitle>
+              <BarChart className="h-4 w-4 text-blue-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{data.totalEvents}</div>
+              <p className="text-xs text-muted-foreground">
+                Total number of events created.
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Upcoming Events
+              </CardTitle>
+              <Clock className="h-4 w-4 text-purple-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{data.upcomingEvents}</div>
+              <p className="text-xs text-muted-foreground">
+                Events scheduled for the future.
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Past Events</CardTitle>
+              <CheckCircle className="h-4 w-4 text-gray-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{data.pastEvents}</div>
+              <p className="text-xs text-muted-foreground">
+                Events that have already occurred.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderEventCardSkeletons = () => (
+    <Card className="mt-6">
+      <CardHeader>
+        <CardTitle className="text-xl font-semibold">Event Overview</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Total Events</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-10 w-20" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Upcoming Events</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-10 w-20" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Past Events</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-10 w-20" />
+            </CardContent>
+          </Card>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   if (loading) {
     return (
       <div className="p-4 max-w-[1200px] mx-auto text-primary">
@@ -401,6 +494,7 @@ const Analytics = () => {
                 <Skeleton className="h-6 w-full" />
               </CardContent>
             </Card>
+            {renderEventCardSkeletons()}
             {renderPriorityCardSkeletons()}
             {renderOverdueCardSkeleton()}
             {renderTotalTimeCardSkeleton()}
@@ -432,6 +526,7 @@ const Analytics = () => {
                 <Skeleton className="h-6 w-full" />
               </CardContent>
             </Card>
+            {renderEventCardSkeletons()}
             {renderPriorityCardSkeletons()}
             {renderOverdueCardSkeleton()}
             {renderTotalTimeCardSkeleton()}
@@ -463,6 +558,7 @@ const Analytics = () => {
                 <Skeleton className="h-6 w-full" />
               </CardContent>
             </Card>
+            {renderEventCardSkeletons()}
             {renderPriorityCardSkeletons()}
             {renderOverdueCardSkeleton()}
             {renderTotalTimeCardSkeleton()}
@@ -494,6 +590,7 @@ const Analytics = () => {
                 <Skeleton className="h-6 w-full" />
               </CardContent>
             </Card>
+            {renderEventCardSkeletons()}
             {renderPriorityCardSkeletons()}
             {renderOverdueCardSkeleton()}
             {renderTotalTimeCardSkeleton()}
@@ -573,6 +670,7 @@ const Analytics = () => {
               </p>
             </CardContent>
           </Card>
+          {renderEventCards(analyticsData.all.events)}
           {renderPriorityCards(analyticsData.all)}
           {renderOverdueCard(analyticsData.all)}
           {renderTotalTimeCard(analyticsData.all)}
@@ -631,6 +729,7 @@ const Analytics = () => {
               </p>
             </CardContent>
           </Card>
+          {renderEventCards(analyticsData.today.events)}
           {renderPriorityCards(analyticsData.today)}
           {renderOverdueCard(analyticsData.today)}
           {renderTotalTimeCard(analyticsData.today)}
@@ -689,6 +788,7 @@ const Analytics = () => {
               </p>
             </CardContent>
           </Card>
+          {renderEventCards(analyticsData.thisWeek.events)}
           {renderPriorityCards(analyticsData.thisWeek)}
           {renderOverdueCard(analyticsData.thisWeek)}
           {renderTotalTimeCard(analyticsData.thisWeek)}
@@ -747,6 +847,7 @@ const Analytics = () => {
               </p>
             </CardContent>
           </Card>
+          {renderEventCards(analyticsData.thisMonth.events)}
           {renderPriorityCards(analyticsData.thisMonth)}
           {renderOverdueCard(analyticsData.thisMonth)}
           {renderTotalTimeCard(analyticsData.thisMonth)}
