@@ -457,7 +457,7 @@ const Dashboard = () => {
                     outerRadius={80}
                     label
                   >
-                    {tasksByStatus.map((entry, index) => (
+                    {tasksByStatus.map((_, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}
@@ -495,7 +495,7 @@ const Dashboard = () => {
                     content={<ChartLegendContent nameKey="name" />}
                   />
                   <Bar dataKey="count">
-                    {tasksByPriority.map((entry, index) => (
+                    {tasksByPriority.map((_, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}
@@ -528,7 +528,7 @@ const Dashboard = () => {
                     content={<ChartLegendContent nameKey="name" />}
                   />
                   <Bar dataKey="count">
-                    {tasksByDeadline.map((entry, index) => (
+                    {tasksByDeadline.map((_, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}
@@ -563,7 +563,7 @@ const Dashboard = () => {
                     outerRadius={80}
                     label
                   >
-                    {completionData.map((entry, index) => (
+                    {completionData.map((_, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}
@@ -601,7 +601,7 @@ const Dashboard = () => {
                     content={<ChartLegendContent nameKey="name" />}
                   />
                   <Bar dataKey="count">
-                    {timeByPriority.map((entry, index) => (
+                    {timeByPriority.map((_, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}
@@ -712,7 +712,7 @@ const Dashboard = () => {
                     outerRadius={80}
                     label
                   >
-                    {eventDistribution.map((entry, index) => (
+                    {eventDistribution.map((_, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}
