@@ -190,6 +190,18 @@ const Dashboard = () => {
   const processBilanChartData = (fetchedBilans: Bilan[]) => {
     // Chart 4: Total Time Spent per Day
     const dailyTime: { [key: string]: number } = {};
+    const today = new Date();
+    // Initialize dailyTime for the last 15 days with 0 minutes
+    for (let i = 0; i < 15; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      const formattedDate = date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+      dailyTime[formattedDate] = 0;
+    }
+
     fetchedBilans.forEach((bilan) => {
       const date = new Date(bilan.date).toLocaleDateString("en-US", {
         month: "short",
@@ -240,9 +252,24 @@ const Dashboard = () => {
   const processEventChartData = (fetchedEvents: Event[]) => {
     // Chart: Events by Day
     const dailyEvents: { [key: string]: number } = {};
+    const today = new Date();
     const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    thirtyDaysAgo.setDate(today.getDate() - 30);
     thirtyDaysAgo.setHours(0, 0, 0, 0);
+
+    // Initialize dailyEvents for the last 30 days with 0 events
+    for (let i = 0; i <= 30; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      date.setHours(0, 0, 0, 0);
+      if (date >= thirtyDaysAgo) {
+        const formattedDate = date.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        });
+        dailyEvents[formattedDate] = 0;
+      }
+    }
 
     fetchedEvents.forEach((event) => {
       const eventDate = new Date(event.date_time);
@@ -618,7 +645,7 @@ const Dashboard = () => {
             <CardHeader>
               <CardTitle>Time Spent Daily</CardTitle>
               <CardDescription>
-                Total minutes spent on tasks per day.
+                Total minutes spent on tasks per day (last 15 days).
               </CardDescription>
             </CardHeader>
             <CardContent>
