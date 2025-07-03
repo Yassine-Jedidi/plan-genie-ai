@@ -26,48 +26,35 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from "@/components/ui/chart";
-import { taskService, Task } from "@/services/taskService";
 import { toast } from "sonner";
-import { bilanService, Bilan } from "@/services/bilanService";
-import api from "@/components/api/api";
-import { eventService, Event } from "@/services/eventService";
 import { useAuth } from "@/hooks/use-auth";
 import { LayoutDashboard, BarChart2, CalendarDays } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { dashboardService, DashboardData } from "@/services/dashboardService";
+import {
+  BarChart as ReBarChart,
+  Bar as ReBar,
+  XAxis as ReXAxis,
+  YAxis as ReYAxis,
+  CartesianGrid as ReCartesianGrid,
+  Tooltip as ReTooltip,
+  ResponsiveContainer as ReResponsiveContainer,
+} from "recharts";
 
 interface ChartDataItem {
   name: string;
   count: number;
 }
 
-// Define the necessary analytics interfaces directly in this file
-interface TaskAnalytics {
-  done: number;
-  undone: number;
-  completionPercentage: number;
-  priorityCounts: { low: number; medium: number; high: number };
-  donePriorityCounts: { low: number; medium: number; high: number };
-  undonePriorityCounts: { low: number; medium: number; high: number };
-  overdue: number;
-  overdue1_3Days: number;
-  overdue4_7Days: number;
-  overdueMoreThan7Days: number;
-  totalMinutesWorked: number;
-  minutesSpentByPriority: { low: number; medium: number; high: number };
-}
-
-interface EventAnalytics {
-  totalEvents: number;
-  upcomingEvents: number;
-  pastEvents: number;
-}
-
-interface OverallAnalyticsResponse {
-  all: TaskAnalytics & { events: EventAnalytics };
-  today: TaskAnalytics & { events: EventAnalytics };
-  thisWeek: TaskAnalytics & { events: EventAnalytics };
-  thisMonth: TaskAnalytics & { events: EventAnalytics };
-}
+const FULL_DAY_NAMES: Record<string, string> = {
+  Mon: "Monday",
+  Tue: "Tuesday",
+  Wed: "Wednesday",
+  Thu: "Thursday",
+  Fri: "Friday",
+  Sat: "Saturday",
+  Sun: "Sunday",
+};
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -81,6 +68,10 @@ const Dashboard = () => {
   const [eventDistribution, setEventDistribution] = useState<ChartDataItem[]>(
     []
   );
+  const [dailyCompletionRates, setDailyCompletionRates] = useState<
+    { day: string; completed: number; total: number }[]
+  >([]);
+  const [weekDateRange, setWeekDateRange] = useState<string>("");
 
   const { user } = useAuth();
 
@@ -88,18 +79,39 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       if (!user) return;
       try {
-        const fetchedTasks = await taskService.getTasks();
-        processChartData(fetchedTasks);
+        // Fetch new dashboard data (including dailyCompletionRates)
+        const dashboardData: DashboardData =
+          await dashboardService.getDashboardData();
+        setDailyCompletionRates(dashboardData.dailyCompletionRates);
+        setTasksByStatus(dashboardData.tasksByStatus);
+        setTasksByPriority(dashboardData.tasksByPriority);
+        setTasksByDeadline(dashboardData.tasksByDeadline);
+        setCompletionData(dashboardData.completionData);
+        setTimeByPriority(dashboardData.timeByPriority);
+        setTimeSpentPerDay(dashboardData.timeSpentPerDay);
+        setEventsByDay(dashboardData.eventsByDay);
+        setEventDistribution(dashboardData.eventDistribution);
 
-        const fetchedBilans = await bilanService.getRecentBilans(7);
-        processBilanChartData(fetchedBilans);
+        // Calculate and set current week number and date range
+        const now = new Date();
+        const dayOfWeek = now.getDay(); // 0 (Sun) - 6 (Sat)
+        const diffToMonday = (dayOfWeek + 6) % 7; // Days to subtract to get to Monday
+        const monday = new Date(now);
+        monday.setDate(now.getDate() - diffToMonday);
+        monday.setHours(0, 0, 0, 0);
 
-        const { data: fetchedAnalytics } =
-          await api.get<OverallAnalyticsResponse>("/analytics/overall");
-        processAnalyticsChartData(fetchedAnalytics);
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6); // Monday + 6 days = Sunday
+        sunday.setHours(23, 59, 59, 999);
 
-        const fetchedEvents = await eventService.getEvents(user.id);
-        processEventChartData(fetchedEvents);
+        const options: Intl.DateTimeFormatOptions = {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+        };
+        const formattedMonday = monday.toLocaleDateString("en-US", options);
+        const formattedSunday = sunday.toLocaleDateString("en-US", options);
+        setWeekDateRange(`${formattedMonday} - ${formattedSunday}`);
       } catch (error) {
         toast.error("Failed to load dashboard data.");
         console.error("Error fetching dashboard data:", error);
@@ -107,210 +119,8 @@ const Dashboard = () => {
         setLoading(false);
       }
     };
-
     fetchDashboardData();
   }, [user]);
-
-  const processChartData = (fetchedTasks: Task[]) => {
-    // Chart 1: Tasks by Status
-    const statusCounts: { [key: string]: number } = {};
-    fetchedTasks.forEach((task) => {
-      const status = task.status || "Unknown";
-      statusCounts[status] = (statusCounts[status] || 0) + 1;
-    });
-    const statusChartData: ChartDataItem[] = Object.keys(statusCounts).map(
-      (status) => ({
-        name: status,
-        count: statusCounts[status],
-      })
-    );
-    setTasksByStatus(statusChartData);
-
-    // Chart 2: Tasks by Priority
-    const priorityCounts: { [key: string]: number } = {};
-    fetchedTasks.forEach((task) => {
-      const priority = task.priority || "Unknown";
-      priorityCounts[priority] = (priorityCounts[priority] || 0) + 1;
-    });
-    const priorityChartData: ChartDataItem[] = Object.keys(priorityCounts).map(
-      (priority) => ({
-        name: priority,
-        count: priorityCounts[priority],
-      })
-    );
-    // Sort priorityChartData to be Low, Medium, High
-    priorityChartData.sort((a, b) => {
-      const order = { Low: 1, Medium: 2, High: 3, Unknown: 4 };
-      return (
-        order[a.name as keyof typeof order] -
-        order[b.name as keyof typeof order]
-      );
-    });
-    setTasksByPriority(priorityChartData);
-
-    // Chart 3: Tasks by Deadline
-    const deadlineCounts: { [key: string]: number } = {
-      "Completed On Time": 0,
-      "Completed Late": 0,
-      Overdue: 0,
-      Upcoming: 0,
-    };
-
-    const now = new Date();
-
-    fetchedTasks.forEach((task) => {
-      if (task.status === "Done" && task.completed_at) {
-        const completedDate = new Date(task.completed_at);
-        const deadlineDate = task.deadline ? new Date(task.deadline) : null;
-
-        if (deadlineDate && completedDate <= deadlineDate) {
-          deadlineCounts["Completed On Time"]++;
-        } else {
-          deadlineCounts["Completed Late"]++;
-        }
-      } else if (task.deadline) {
-        const deadlineDate = new Date(task.deadline);
-        if (deadlineDate < now) {
-          deadlineCounts["Overdue"]++;
-        } else {
-          deadlineCounts["Upcoming"]++;
-        }
-      }
-    });
-
-    const deadlineChartData: ChartDataItem[] = Object.keys(deadlineCounts).map(
-      (range) => ({
-        name: range,
-        count: deadlineCounts[range],
-      })
-    );
-    setTasksByDeadline(deadlineChartData);
-  };
-
-  const processBilanChartData = (fetchedBilans: Bilan[]) => {
-    // Chart 4: Total Time Spent per Day
-    const dailyTime: { [key: string]: number } = {};
-    const today = new Date();
-    // Initialize dailyTime for the last 15 days with 0 minutes
-    for (let i = 0; i < 15; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - i);
-      const formattedDate = date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
-      dailyTime[formattedDate] = 0;
-    }
-
-    fetchedBilans.forEach((bilan) => {
-      const date = new Date(bilan.date).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
-      const totalMinutesForDay = bilan.entries.reduce(
-        (sum, entry) => sum + entry.minutes_spent,
-        0
-      );
-      dailyTime[date] = (dailyTime[date] || 0) + totalMinutesForDay;
-    });
-    const timeSpentPerDayData: ChartDataItem[] = Object.keys(dailyTime).map(
-      (date) => ({
-        name: date,
-        count: dailyTime[date],
-      })
-    );
-    // Sort by date to ensure the line chart is correct
-    timeSpentPerDayData.sort(
-      (a, b) => new Date(a.name).getTime() - new Date(b.name).getTime()
-    );
-    setTimeSpentPerDay(timeSpentPerDayData);
-  };
-
-  const processAnalyticsChartData = (
-    fetchedAnalytics: OverallAnalyticsResponse
-  ) => {
-    // Chart 6: Overall Task Completion Percentage
-    const done = fetchedAnalytics.all.done;
-    const undone = fetchedAnalytics.all.undone;
-
-    const completionChartData: ChartDataItem[] = [
-      { name: "Done", count: done },
-      { name: "Undone", count: undone },
-    ];
-    setCompletionData(completionChartData);
-
-    // Chart 7: Time Spent by Priority
-    const minutesSpentByPriority = fetchedAnalytics.all.minutesSpentByPriority;
-    const timeByPriorityData: ChartDataItem[] = [
-      { name: "Low", count: minutesSpentByPriority.low },
-      { name: "Medium", count: minutesSpentByPriority.medium },
-      { name: "High", count: minutesSpentByPriority.high },
-    ];
-    setTimeByPriority(timeByPriorityData);
-  };
-
-  const processEventChartData = (fetchedEvents: Event[]) => {
-    // Chart: Events by Day
-    const dailyEvents: { [key: string]: number } = {};
-    const today = new Date();
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(today.getDate() - 30);
-    thirtyDaysAgo.setHours(0, 0, 0, 0);
-
-    // Initialize dailyEvents for the last 30 days with 0 events
-    for (let i = 0; i <= 30; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - i);
-      date.setHours(0, 0, 0, 0);
-      if (date >= thirtyDaysAgo) {
-        const formattedDate = date.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        });
-        dailyEvents[formattedDate] = 0;
-      }
-    }
-
-    fetchedEvents.forEach((event) => {
-      const eventDate = new Date(event.date_time);
-      if (eventDate >= thirtyDaysAgo) {
-        // Only count events from the last 30 days
-        const date = eventDate.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        });
-        dailyEvents[date] = (dailyEvents[date] || 0) + 1;
-      }
-    });
-    const eventsByDayData: ChartDataItem[] = Object.keys(dailyEvents).map(
-      (date) => ({
-        name: date,
-        count: dailyEvents[date],
-      })
-    );
-    eventsByDayData.sort(
-      (a, b) => new Date(a.name).getTime() - new Date(b.name).getTime()
-    );
-    setEventsByDay(eventsByDayData);
-
-    // Chart: Upcoming vs. Past Events
-    const now = new Date();
-    let upcoming = 0;
-    let past = 0;
-    fetchedEvents.forEach((event) => {
-      const eventDate = new Date(event.date_time);
-      if (eventDate >= now) {
-        upcoming++;
-      } else {
-        past++;
-      }
-    });
-    const eventDistributionData: ChartDataItem[] = [
-      { name: "Upcoming", count: upcoming },
-      { name: "Past", count: past },
-    ];
-    setEventDistribution(eventDistributionData);
-  };
 
   if (loading) {
     return (
@@ -319,6 +129,38 @@ const Dashboard = () => {
           <LayoutDashboard className="w-8 h-8 text-primary" />
           Dashboard Overview
         </h1>
+
+        {/* Skeleton for Task Completion Rate Section (Top) */}
+        <div className="w-full max-w-7xl mb-8">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-1/4 mb-2" />
+              <Skeleton className="h-4 w-1/3" />
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col lg:flex-row gap-8 items-stretch">
+                {/* Progress Bars Skeleton */}
+                <div className="flex-1 space-y-3 min-w-[220px] flex flex-col justify-center">
+                  {Array.from({ length: 7 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center space-x-4"
+                      style={{ height: "1.5rem" }}
+                    >
+                      <Skeleton className="h-4 w-12" />
+                      <Skeleton className="flex-1 h-4 w-full" />
+                      <Skeleton className="h-4 w-12" />
+                    </div>
+                  ))}
+                </div>
+                {/* Bar Chart Skeleton */}
+                <div className="flex-1 min-w-[140px] h-56">
+                  <Skeleton className="h-full w-full" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         <div className="w-full max-w-7xl mb-8">
           <h2 className="text-2xl font-thin mb-6 text-center lg:text-left flex items-center gap-2">
@@ -452,6 +294,104 @@ const Dashboard = () => {
         <LayoutDashboard className="w-8 h-8 text-primary" />
         Dashboard Overview
       </h1>
+
+      {/* --- Task Completion Rate Section (Top) --- */}
+      <div className="w-full max-w-7xl mb-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Task Completion Rate</CardTitle>
+            <CardDescription>
+              Completion rate for each day of the current week.
+              {weekDateRange && ` (${weekDateRange})`}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col lg:flex-row gap-8 items-stretch">
+              {/* Progress Bars */}
+              <div className="flex-1 space-y-3 min-w-[220px] flex flex-col justify-center">
+                {dailyCompletionRates.map((item) => {
+                  const percent =
+                    item.total > 0 ? (item.completed / item.total) * 100 : 0;
+                  return (
+                    <div
+                      key={item.day}
+                      className="flex items-center space-x-4"
+                      style={{ height: "1.5rem" }} // 24px per bar
+                    >
+                      <span className="w-12 font-medium text-sm">
+                        {item.day}
+                      </span>
+                      <div className="flex-1 h-4 bg-primary-foreground rounded-full overflow-hidden relative border border-primary">
+                        <div
+                          className="h-4 bg-primary rounded-full absolute left-0 top-0 transition-all"
+                          style={{ width: `${percent}%` }}
+                        ></div>
+                      </div>
+                      <span className="w-12 text-right text-xs text-muted-foreground">
+                        {item.completed}/{item.total}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+              {/* Bar Chart */}
+              <div className="flex-1 min-w-[140px] h-56">
+                <ChartContainer config={{}}>
+                  <ReResponsiveContainer width="100%" height="100%">
+                    <ReBarChart
+                      data={dailyCompletionRates.map((item) => ({
+                        day: item.day,
+                        completed: item.completed,
+                        total: item.total,
+                        percent:
+                          item.total > 0
+                            ? Math.round((item.completed / item.total) * 100)
+                            : 0,
+                      }))}
+                      layout="horizontal"
+                      margin={{ top: 10, right: 20, left: 20, bottom: 60 }}
+                      barCategoryGap={10}
+                      barSize={18}
+                    >
+                      <ReCartesianGrid strokeDasharray="3 3" />
+                      <ReXAxis type="category" dataKey="day" />
+                      <ReYAxis
+                        type="number"
+                        dataKey="percent"
+                        tickFormatter={(v) => `${v}%`}
+                      />
+                      <ReTooltip
+                        content={({ active, payload, label }) => {
+                          if (active && payload && payload.length) {
+                            const data = payload[0].payload;
+                            const fullDay = FULL_DAY_NAMES[label] || label;
+                            return (
+                              <div className="bg-white p-2 border rounded shadow-md text-sm text-black">
+                                <p className="font-bold">{fullDay}</p>
+                                <p>
+                                  Completion: {data.completed}/{data.total} (
+                                  {data.percent}%)
+                                </p>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
+                      <ReBar
+                        dataKey="percent"
+                        fill="hsl(var(--primary))"
+                        radius={[8, 8, 0, 0]}
+                        isAnimationActive={false}
+                      />
+                    </ReBarChart>
+                  </ReResponsiveContainer>
+                </ChartContainer>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       <div className="w-full max-w-7xl mb-8">
         <h2 className="text-2xl font-thin mb-6 text-center lg:text-left flex items-center gap-2">

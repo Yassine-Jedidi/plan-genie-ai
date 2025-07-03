@@ -15,6 +15,7 @@ export interface DashboardData {
   timeSpentPerDay: ChartDataItem[];
   eventsByDay: ChartDataItem[];
   eventDistribution: ChartDataItem[];
+  dailyCompletionRates: { day: string; completed: number; total: number }[];
 }
 
 export const dashboardService = {

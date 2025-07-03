@@ -207,6 +207,44 @@ router.get("/overall", async (req, res) => {
       { name: "Past", count: past },
     ];
 
+    // --- Task Completion Rate for Each Day (Mon-Sun) ---
+    // Get start of current week (Monday)
+    const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const todayDate = new Date();
+    const dayOfWeek = todayDate.getDay(); // 0 (Sun) - 6 (Sat)
+    // Calculate how many days to subtract to get to Monday
+    const diffToMonday = (dayOfWeek + 6) % 7;
+    const monday = new Date(todayDate);
+    monday.setDate(todayDate.getDate() - diffToMonday);
+    monday.setHours(0, 0, 0, 0);
+
+    // Prepare a map for each weekday
+    const dailyCompletionRates = weekDays.map((day, i) => {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + i);
+      date.setHours(0, 0, 0, 0);
+      // Get all tasks with a deadline on this day
+      const tasksForDay = fetchedTasks.filter((task) => {
+        if (!task.deadline) return false;
+        const deadline = new Date(task.deadline);
+        deadline.setHours(0, 0, 0, 0);
+        return deadline.getTime() === date.getTime();
+      });
+      // Of those, how many are completed on or before this day (using completed_at)?
+      const completed = tasksForDay.filter((task) => {
+        if (task.status !== "Done" || !task.completed_at) return false;
+        const completedAt = new Date(task.completed_at);
+        completedAt.setHours(0, 0, 0, 0);
+        // completed_at is on or before the deadline day
+        return completedAt.getTime() <= date.getTime();
+      }).length;
+      return {
+        day,
+        completed,
+        total: tasksForDay.length,
+      };
+    });
+
     res.status(200).json({
       tasksByStatus,
       tasksByPriority,
@@ -216,6 +254,7 @@ router.get("/overall", async (req, res) => {
       timeSpentPerDay,
       eventsByDay,
       eventDistribution,
+      dailyCompletionRates,
     });
   } catch (error) {
     console.error("Error fetching dashboard data:", error);
