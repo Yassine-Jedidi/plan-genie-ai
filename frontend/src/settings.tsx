@@ -266,7 +266,9 @@ export default function SettingsPage() {
           <TabsContent value="notifications" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Notification Settings</CardTitle>
+                <CardTitle className="text-primary">
+                  Notification Settings
+                </CardTitle>
                 <CardDescription>
                   Manage your notification preferences. Enable or disable
                   notifications for tasks and events below.
