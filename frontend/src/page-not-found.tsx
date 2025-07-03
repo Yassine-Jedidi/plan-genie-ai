@@ -33,10 +33,10 @@ function MessageDisplay() {
       }`}
     >
       <div className="flex flex-col items-center text-center space-y-6">
-        <div className="text-7xl font-extrabold text-primary-foreground md:text-9xl">
+        <div className="text-7xl font-extrabold text-black md:text-9xl">
           404
         </div>
-        <h1 className="text-3xl font-bold tracking-tight text-primary-foreground md:text-4xl">
+        <h1 className="text-3xl font-bold tracking-tight text-black md:text-4xl">
           Page Not Found
         </h1>
         <p className="max-w-md text-muted-foreground leading-relaxed">
