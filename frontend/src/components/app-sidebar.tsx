@@ -55,7 +55,7 @@ const items = [
     icon: Calendar,
   },
   {
-    title: "Daily Summary",
+    title: "Daily",
     url: "/daily",
     icon: ClipboardCheck,
   },

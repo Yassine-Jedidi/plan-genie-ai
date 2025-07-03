@@ -1004,7 +1004,7 @@ const BilanPage = () => {
       <div className="p-4 flex flex-col h-[calc(100vh-60px)] overflow-auto">
         <div className="flex justify-between items-center mb-4">
           <div className="flex flex-col">
-            <h1 className="text-2xl font-bold">Daily Summary</h1>
+            <h1 className="text-2xl font-bold">Daily</h1>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>

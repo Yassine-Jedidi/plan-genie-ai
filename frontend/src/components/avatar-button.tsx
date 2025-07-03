@@ -117,7 +117,7 @@ function AvatarButton() {
                 className="opacity-60"
                 aria-hidden="true"
               />
-              <span>Daily Summary</span>
+              <span>Daily</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate("/dashboard")}>
               <LayoutDashboard

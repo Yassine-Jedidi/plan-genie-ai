@@ -585,7 +585,7 @@ const Dashboard = () => {
             <CardHeader>
               <CardTitle>Time Spent Daily</CardTitle>
               <CardDescription>
-                Total minutes spent on tasks per day (last 15 days).
+                Total minutes spent on tasks per day (last 30 days).
               </CardDescription>
             </CardHeader>
             <CardContent>
