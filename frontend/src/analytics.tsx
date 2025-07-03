@@ -19,6 +19,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SidebarTrigger } from "./components/ui/sidebar";
 
 const initialAnalyticsState: AnalyticsData = {
   all: {
@@ -456,11 +457,169 @@ const Analytics = () => {
 
   if (loading) {
     return (
+      <main className="flex-1 min-w-0 w-full">
+        <div className="px-4 py-2">
+          <SidebarTrigger className="h-4 w-4 mt-2" />
+        </div>
+        <div className="p-4 max-w-[1200px] mx-auto text-primary">
+          <div className="text-3xl font-bold mb-6 flex items-center">
+            <BarChart className="mr-2" /> Analytics
+          </div>
+          <Tabs defaultValue="all" className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger value="today">Today</TabsTrigger>
+              <TabsTrigger value="this-week">This Week</TabsTrigger>
+              <TabsTrigger value="this-month">This Month</TabsTrigger>
+            </TabsList>
+            <TabsContent value="all">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Done Tasks</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-10 w-20" />
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Undone Tasks</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-10 w-20" />
+                  </CardContent>
+                </Card>
+              </div>
+              <Card className="mt-4 mb-4">
+                <CardHeader>
+                  <CardTitle>Completion Progress</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-6 w-full" />
+                </CardContent>
+              </Card>
+              {renderEventCardSkeletons()}
+              {renderPriorityCardSkeletons()}
+              {renderOverdueCardSkeleton()}
+              {renderTotalTimeCardSkeleton()}
+            </TabsContent>
+            <TabsContent value="today">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Done Today</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-10 w-20" />
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Undone Today</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-10 w-20" />
+                  </CardContent>
+                </Card>
+              </div>
+              <Card className="mt-4">
+                <CardHeader>
+                  <CardTitle>Completion Progress</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-6 w-full" />
+                </CardContent>
+              </Card>
+              {renderEventCardSkeletons()}
+              {renderPriorityCardSkeletons()}
+              {renderOverdueCardSkeleton()}
+              {renderTotalTimeCardSkeleton()}
+            </TabsContent>
+            <TabsContent value="this-week">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Done This Week</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-10 w-20" />
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Undone This Week</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-10 w-20" />
+                  </CardContent>
+                </Card>
+              </div>
+              <Card className="mt-4">
+                <CardHeader>
+                  <CardTitle>Completion Progress</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-6 w-full" />
+                </CardContent>
+              </Card>
+              {renderEventCardSkeletons()}
+              {renderPriorityCardSkeletons()}
+              {renderOverdueCardSkeleton()}
+              {renderTotalTimeCardSkeleton()}
+            </TabsContent>
+            <TabsContent value="this-month">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Done This Month</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-10 w-20" />
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Undone This Month</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-10 w-20" />
+                  </CardContent>
+                </Card>
+              </div>
+              <Card className="mt-4">
+                <CardHeader>
+                  <CardTitle>Completion Progress</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-6 w-full" />
+                </CardContent>
+              </Card>
+              {renderEventCardSkeletons()}
+              {renderPriorityCardSkeletons()}
+              {renderOverdueCardSkeleton()}
+              {renderTotalTimeCardSkeleton()}
+            </TabsContent>
+          </Tabs>
+        </div>
+      </main>
+    );
+  }
+
+  if (error) {
+    return <div className="p-4 text-red-500">Error: {error}</div>;
+  }
+
+  return (
+    <main className="flex-1 min-w-0 w-full">
+      <div className="px-4 py-2">
+        <SidebarTrigger className="h-4 w-4 mt-2" />
+      </div>
       <div className="p-4 max-w-[1200px] mx-auto text-primary">
         <div className="text-3xl font-bold mb-6 flex items-center">
           <BarChart className="mr-2" /> Analytics
         </div>
-        <Tabs defaultValue="all" className="w-full">
+        <Tabs defaultValue="all" className="w-full mt-4">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="today">Today</TabsTrigger>
@@ -470,51 +629,94 @@ const Analytics = () => {
           <TabsContent value="all">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <Card>
-                <CardHeader>
-                  <CardTitle>Done Tasks</CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Done Tasks
+                  </CardTitle>
+                  <CheckCircle className="h-4 w-4 text-green-500" />
                 </CardHeader>
                 <CardContent>
-                  <Skeleton className="h-10 w-20" />
+                  <div className="text-2xl font-bold">
+                    {analyticsData.all.done}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Number of tasks marked as complete.
+                  </p>
                 </CardContent>
               </Card>
               <Card>
-                <CardHeader>
-                  <CardTitle>Undone Tasks</CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Undone Tasks
+                  </CardTitle>
+                  <XCircle className="h-4 w-4 text-red-500" />
                 </CardHeader>
                 <CardContent>
-                  <Skeleton className="h-10 w-20" />
+                  <div className="text-2xl font-bold">
+                    {analyticsData.all.undone}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Number of tasks that are still pending.
+                  </p>
                 </CardContent>
               </Card>
             </div>
-            <Card className="mt-4 mb-4">
+            <Card className="mt-4 mb-4 col-span-full">
               <CardHeader>
                 <CardTitle>Completion Progress</CardTitle>
               </CardHeader>
               <CardContent>
-                <Skeleton className="h-6 w-full" />
+                <div className="flex items-center space-x-2">
+                  <Progress
+                    value={analyticsData.all.completionPercentage}
+                    className="w-[90%]"
+                  />
+                  <span className="text-sm font-medium">
+                    {analyticsData.all.completionPercentage}%
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Overall progress of your tasks.
+                </p>
               </CardContent>
             </Card>
-            {renderEventCardSkeletons()}
-            {renderPriorityCardSkeletons()}
-            {renderOverdueCardSkeleton()}
-            {renderTotalTimeCardSkeleton()}
+            {renderEventCards(analyticsData.all.events)}
+            {renderPriorityCards(analyticsData.all)}
+            {renderOverdueCard(analyticsData.all)}
+            {renderTotalTimeCard(analyticsData.all)}
           </TabsContent>
           <TabsContent value="today">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card>
-                <CardHeader>
-                  <CardTitle>Done Today</CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Done Today
+                  </CardTitle>
+                  <CheckCircle className="h-4 w-4 text-green-500" />
                 </CardHeader>
                 <CardContent>
-                  <Skeleton className="h-10 w-20" />
+                  <div className="text-2xl font-bold">
+                    {analyticsData.today.done}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Tasks completed today.
+                  </p>
                 </CardContent>
               </Card>
               <Card>
-                <CardHeader>
-                  <CardTitle>Undone Today</CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Undone Today
+                  </CardTitle>
+                  <XCircle className="h-4 w-4 text-red-500" />
                 </CardHeader>
                 <CardContent>
-                  <Skeleton className="h-10 w-20" />
+                  <div className="text-2xl font-bold">
+                    {analyticsData.today.undone}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Tasks with a deadline today that are not yet complete.
+                  </p>
                 </CardContent>
               </Card>
             </div>
@@ -523,30 +725,57 @@ const Analytics = () => {
                 <CardTitle>Completion Progress</CardTitle>
               </CardHeader>
               <CardContent>
-                <Skeleton className="h-6 w-full" />
+                <div className="flex items-center space-x-2">
+                  <Progress
+                    value={analyticsData.today.completionPercentage}
+                    className="w-[90%]"
+                  />
+                  <span className="text-sm font-medium">
+                    {analyticsData.today.completionPercentage}%
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Overall progress of your tasks due today.
+                </p>
               </CardContent>
             </Card>
-            {renderEventCardSkeletons()}
-            {renderPriorityCardSkeletons()}
-            {renderOverdueCardSkeleton()}
-            {renderTotalTimeCardSkeleton()}
+            {renderEventCards(analyticsData.today.events)}
+            {renderPriorityCards(analyticsData.today)}
+            {renderOverdueCard(analyticsData.today)}
+            {renderTotalTimeCard(analyticsData.today)}
           </TabsContent>
           <TabsContent value="this-week">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card>
-                <CardHeader>
-                  <CardTitle>Done This Week</CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Done This Week
+                  </CardTitle>
+                  <CheckCircle className="h-4 w-4 text-green-500" />
                 </CardHeader>
                 <CardContent>
-                  <Skeleton className="h-10 w-20" />
+                  <div className="text-2xl font-bold">
+                    {analyticsData.thisWeek.done}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Tasks completed this week.
+                  </p>
                 </CardContent>
               </Card>
               <Card>
-                <CardHeader>
-                  <CardTitle>Undone This Week</CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Undone This Week
+                  </CardTitle>
+                  <XCircle className="h-4 w-4 text-red-500" />
                 </CardHeader>
                 <CardContent>
-                  <Skeleton className="h-10 w-20" />
+                  <div className="text-2xl font-bold">
+                    {analyticsData.thisWeek.undone}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Tasks with a deadline this week that are not yet complete.
+                  </p>
                 </CardContent>
               </Card>
             </div>
@@ -555,30 +784,57 @@ const Analytics = () => {
                 <CardTitle>Completion Progress</CardTitle>
               </CardHeader>
               <CardContent>
-                <Skeleton className="h-6 w-full" />
+                <div className="flex items-center space-x-2">
+                  <Progress
+                    value={analyticsData.thisWeek.completionPercentage}
+                    className="w-[90%]"
+                  />
+                  <span className="text-sm font-medium">
+                    {analyticsData.thisWeek.completionPercentage}%
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Overall progress of your tasks due this week.
+                </p>
               </CardContent>
             </Card>
-            {renderEventCardSkeletons()}
-            {renderPriorityCardSkeletons()}
-            {renderOverdueCardSkeleton()}
-            {renderTotalTimeCardSkeleton()}
+            {renderEventCards(analyticsData.thisWeek.events)}
+            {renderPriorityCards(analyticsData.thisWeek)}
+            {renderOverdueCard(analyticsData.thisWeek)}
+            {renderTotalTimeCard(analyticsData.thisWeek)}
           </TabsContent>
           <TabsContent value="this-month">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card>
-                <CardHeader>
-                  <CardTitle>Done This Month</CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Done This Month
+                  </CardTitle>
+                  <CheckCircle className="h-4 w-4 text-green-500" />
                 </CardHeader>
                 <CardContent>
-                  <Skeleton className="h-10 w-20" />
+                  <div className="text-2xl font-bold">
+                    {analyticsData.thisMonth.done}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Tasks completed this month.
+                  </p>
                 </CardContent>
               </Card>
               <Card>
-                <CardHeader>
-                  <CardTitle>Undone This Month</CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Undone This Month
+                  </CardTitle>
+                  <XCircle className="h-4 w-4 text-red-500" />
                 </CardHeader>
                 <CardContent>
-                  <Skeleton className="h-10 w-20" />
+                  <div className="text-2xl font-bold">
+                    {analyticsData.thisMonth.undone}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Tasks with a deadline this month that are not yet complete.
+                  </p>
                 </CardContent>
               </Card>
             </div>
@@ -587,273 +843,28 @@ const Analytics = () => {
                 <CardTitle>Completion Progress</CardTitle>
               </CardHeader>
               <CardContent>
-                <Skeleton className="h-6 w-full" />
+                <div className="flex items-center space-x-2">
+                  <Progress
+                    value={analyticsData.thisMonth.completionPercentage}
+                    className="w-[90%]"
+                  />
+                  <span className="text-sm font-medium">
+                    {analyticsData.thisMonth.completionPercentage}%
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Overall progress of your tasks due this month.
+                </p>
               </CardContent>
             </Card>
-            {renderEventCardSkeletons()}
-            {renderPriorityCardSkeletons()}
-            {renderOverdueCardSkeleton()}
-            {renderTotalTimeCardSkeleton()}
+            {renderEventCards(analyticsData.thisMonth.events)}
+            {renderPriorityCards(analyticsData.thisMonth)}
+            {renderOverdueCard(analyticsData.thisMonth)}
+            {renderTotalTimeCard(analyticsData.thisMonth)}
           </TabsContent>
         </Tabs>
       </div>
-    );
-  }
-
-  if (error) {
-    return <div className="p-4 text-red-500">Error: {error}</div>;
-  }
-
-  return (
-    <div className="p-4 max-w-[1200px] mx-auto text-primary">
-      <div className="text-3xl font-bold mb-6 flex items-center">
-        <BarChart className="mr-2" /> Analytics
-      </div>
-      <Tabs defaultValue="all" className="w-full mt-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="today">Today</TabsTrigger>
-          <TabsTrigger value="this-week">This Week</TabsTrigger>
-          <TabsTrigger value="this-month">This Month</TabsTrigger>
-        </TabsList>
-        <TabsContent value="all">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Done Tasks
-                </CardTitle>
-                <CheckCircle className="h-4 w-4 text-green-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {analyticsData.all.done}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Number of tasks marked as complete.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Undone Tasks
-                </CardTitle>
-                <XCircle className="h-4 w-4 text-red-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {analyticsData.all.undone}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Number of tasks that are still pending.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-          <Card className="mt-4 mb-4 col-span-full">
-            <CardHeader>
-              <CardTitle>Completion Progress</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center space-x-2">
-                <Progress
-                  value={analyticsData.all.completionPercentage}
-                  className="w-[90%]"
-                />
-                <span className="text-sm font-medium">
-                  {analyticsData.all.completionPercentage}%
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Overall progress of your tasks.
-              </p>
-            </CardContent>
-          </Card>
-          {renderEventCards(analyticsData.all.events)}
-          {renderPriorityCards(analyticsData.all)}
-          {renderOverdueCard(analyticsData.all)}
-          {renderTotalTimeCard(analyticsData.all)}
-        </TabsContent>
-        <TabsContent value="today">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Done Today
-                </CardTitle>
-                <CheckCircle className="h-4 w-4 text-green-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {analyticsData.today.done}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Tasks completed today.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Undone Today
-                </CardTitle>
-                <XCircle className="h-4 w-4 text-red-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {analyticsData.today.undone}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Tasks with a deadline today that are not yet complete.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-          <Card className="mt-4">
-            <CardHeader>
-              <CardTitle>Completion Progress</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center space-x-2">
-                <Progress
-                  value={analyticsData.today.completionPercentage}
-                  className="w-[90%]"
-                />
-                <span className="text-sm font-medium">
-                  {analyticsData.today.completionPercentage}%
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Overall progress of your tasks due today.
-              </p>
-            </CardContent>
-          </Card>
-          {renderEventCards(analyticsData.today.events)}
-          {renderPriorityCards(analyticsData.today)}
-          {renderOverdueCard(analyticsData.today)}
-          {renderTotalTimeCard(analyticsData.today)}
-        </TabsContent>
-        <TabsContent value="this-week">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Done This Week
-                </CardTitle>
-                <CheckCircle className="h-4 w-4 text-green-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {analyticsData.thisWeek.done}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Tasks completed this week.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Undone This Week
-                </CardTitle>
-                <XCircle className="h-4 w-4 text-red-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {analyticsData.thisWeek.undone}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Tasks with a deadline this week that are not yet complete.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-          <Card className="mt-4">
-            <CardHeader>
-              <CardTitle>Completion Progress</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center space-x-2">
-                <Progress
-                  value={analyticsData.thisWeek.completionPercentage}
-                  className="w-[90%]"
-                />
-                <span className="text-sm font-medium">
-                  {analyticsData.thisWeek.completionPercentage}%
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Overall progress of your tasks due this week.
-              </p>
-            </CardContent>
-          </Card>
-          {renderEventCards(analyticsData.thisWeek.events)}
-          {renderPriorityCards(analyticsData.thisWeek)}
-          {renderOverdueCard(analyticsData.thisWeek)}
-          {renderTotalTimeCard(analyticsData.thisWeek)}
-        </TabsContent>
-        <TabsContent value="this-month">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Done This Month
-                </CardTitle>
-                <CheckCircle className="h-4 w-4 text-green-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {analyticsData.thisMonth.done}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Tasks completed this month.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Undone This Month
-                </CardTitle>
-                <XCircle className="h-4 w-4 text-red-500" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {analyticsData.thisMonth.undone}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Tasks with a deadline this month that are not yet complete.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-          <Card className="mt-4">
-            <CardHeader>
-              <CardTitle>Completion Progress</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center space-x-2">
-                <Progress
-                  value={analyticsData.thisMonth.completionPercentage}
-                  className="w-[90%]"
-                />
-                <span className="text-sm font-medium">
-                  {analyticsData.thisMonth.completionPercentage}%
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Overall progress of your tasks due this month.
-              </p>
-            </CardContent>
-          </Card>
-          {renderEventCards(analyticsData.thisMonth.events)}
-          {renderPriorityCards(analyticsData.thisMonth)}
-          {renderOverdueCard(analyticsData.thisMonth)}
-          {renderTotalTimeCard(analyticsData.thisMonth)}
-        </TabsContent>
-      </Tabs>
-    </div>
+    </main>
   );
 };
 
