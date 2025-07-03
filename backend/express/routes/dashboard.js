@@ -123,15 +123,15 @@ router.get("/overall", async (req, res) => {
     // Declare today and fifteenDaysAgo once for both timeSpentPerDay and eventsByDay
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const fifteenDaysAgo = new Date(today);
-    fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 14); // 15 days including today
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29); // 30 days including today
 
     // Process bilans data for time spent per day
     const dailyTime = {};
-    // Fill dailyTime with 0 for each day in the last 15 days
-    for (let i = 0; i < 15; i++) {
-      const date = new Date(fifteenDaysAgo);
-      date.setDate(fifteenDaysAgo.getDate() + i);
+    // Fill dailyTime with 0 for each day in the last 30 days
+    for (let i = 0; i < 30; i++) {
+      const date = new Date(thirtyDaysAgo);
+      date.setDate(thirtyDaysAgo.getDate() + i);
       const dateStr = date.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
@@ -141,7 +141,7 @@ router.get("/overall", async (req, res) => {
     fetchedBilans.forEach((bilan) => {
       const date = new Date(bilan.date);
       date.setHours(0, 0, 0, 0);
-      if (date >= fifteenDaysAgo && date <= today) {
+      if (date >= thirtyDaysAgo && date <= today) {
         const dateStr = date.toLocaleDateString("en-US", {
           month: "short",
           day: "numeric",
@@ -165,10 +165,10 @@ router.get("/overall", async (req, res) => {
 
     // Process events data
     const dailyEvents = {};
-    // Fill dailyEvents with 0 for each day in the last 15 days
-    for (let i = 0; i < 15; i++) {
-      const date = new Date(fifteenDaysAgo);
-      date.setDate(fifteenDaysAgo.getDate() + i);
+    // Fill dailyEvents with 0 for each day in the last 30 days
+    for (let i = 0; i < 30; i++) {
+      const date = new Date(thirtyDaysAgo);
+      date.setDate(thirtyDaysAgo.getDate() + i);
       const dateStr = date.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
@@ -178,7 +178,7 @@ router.get("/overall", async (req, res) => {
     fetchedEvents.forEach((event) => {
       const eventDate = new Date(event.date_time);
       eventDate.setHours(0, 0, 0, 0);
-      if (eventDate >= fifteenDaysAgo && eventDate <= today) {
+      if (eventDate >= thirtyDaysAgo && eventDate <= today) {
         const date = eventDate.toLocaleDateString("en-US", {
           month: "short",
           day: "numeric",
