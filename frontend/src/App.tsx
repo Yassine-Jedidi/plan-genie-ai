@@ -25,28 +25,16 @@ import BilanPage from "./bilan";
 import { NotificationPopover } from "./components/notification-popover";
 import Analytics from "./analytics";
 import DashboardPage from "./dashboard";
+import NotFoundPage from "./page-not-found";
 
 function AppContent() {
   const location = useLocation();
   const showNavbar =
-    location.pathname !== "/home" &&
-    location.pathname !== "/tasks" &&
-    location.pathname !== "/auth/callback" &&
-    location.pathname !== "/settings" &&
-    location.pathname !== "/tasks-kanban" &&
-    location.pathname !== "/events" &&
-    location.pathname !== "/daily" &&
-    location.pathname !== "/analytics" &&
-    location.pathname !== "/dashboard";
-  const showSidebar =
-    location.pathname === "/home" ||
-    location.pathname === "/tasks" ||
-    location.pathname === "/tasks-kanban" ||
-    location.pathname === "/settings" ||
-    location.pathname === "/events" ||
-    location.pathname === "/daily" ||
-    location.pathname === "/analytics" ||
-    location.pathname === "/dashboard";
+    location.pathname === "/" ||
+    location.pathname === "/sign-in" ||
+    location.pathname === "/sign-up" ||
+    location.pathname === "/forgot-password" ||
+    location.pathname === "/reset-password";
 
   return (
     <ThemeProvider
@@ -57,110 +45,119 @@ function AppContent() {
     >
       {showNavbar && <Navbar />}
 
-      {showSidebar ? (
-        <SidebarProvider>
-          <Routes>
-            <Route element={<ProtectedRoute />}>
-              <Route
-                path="/home"
-                element={
-                  <div className="relative w-full flex-1 flex">
-                    <AppSidebar />
-                    <HomePage />
-                    <div className="absolute top-4 right-4">
-                      <NotificationPopover />
-                    </div>
-                  </div>
-                }
-              />
-              <Route
-                path="/tasks"
-                element={
-                  <div className="relative w-full flex-1 flex">
-                    <AppSidebar />
-                    <TasksPage />
-                    <div className="absolute top-4 right-4">
-                      <NotificationPopover />
-                    </div>
-                  </div>
-                }
-              />
-              <Route
-                path="/settings"
-                element={
-                  <div className="relative w-full flex-1 flex">
-                    <AppSidebar />
-                    <SettingsPage />
-                    <div className="absolute top-4 right-4">
-                      <NotificationPopover />
-                    </div>
-                  </div>
-                }
-              />
-              <Route
-                path="/events"
-                element={
-                  <div className="relative w-full flex-1 flex">
-                    <AppSidebar />
-                    <EventsCalendar />
-                    <div className="absolute top-4 right-4">
-                      <NotificationPopover />
-                    </div>
-                  </div>
-                }
-              />
-              <Route
-                path="/daily"
-                element={
-                  <div className="relative w-full flex-1 flex">
-                    <AppSidebar />
-                    <BilanPage />
-                    <div className="absolute top-4 right-4">
-                      <NotificationPopover />
-                    </div>
-                  </div>
-                }
-              />
-              <Route
-                path="/analytics"
-                element={
-                  <div className="relative w-full flex-1 flex">
-                    <AppSidebar />
-                    <Analytics />
-                    <div className="absolute top-4 right-4">
-                      <NotificationPopover />
-                    </div>
-                  </div>
-                }
-              />
-              <Route
-                path="/dashboard"
-                element={
-                  <div className="relative w-full flex-1 flex">
-                    <AppSidebar />
-                    <DashboardPage />
-                    <div className="absolute top-4 right-4">
-                      <NotificationPopover />
-                    </div>
-                  </div>
-                }
-              />
-            </Route>
-          </Routes>
-        </SidebarProvider>
-      ) : (
-        <Routes>
-          <Route path="/" element={<Hero />} />
+      <Routes>
+        {/* Public routes */}
+        <Route path="/" element={<Hero />} />
+        <Route path="/sign-in" element={<SignInPage />} />
+        <Route path="/sign-up" element={<SignUpPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
 
-          {/* Public routes - redirect if already authenticated */}
-          <Route path="/sign-in" element={<SignInPage />} />
-          <Route path="/sign-up" element={<SignUpPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
-
-          <Route path="/auth/callback" element={<AuthCallback />} />
-        </Routes>
-      )}
+        {/* Protected routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route
+            path="/home"
+            element={
+              <SidebarProvider>
+                <div className="relative w-full flex-1 flex">
+                  <AppSidebar />
+                  <HomePage />
+                  <div className="absolute top-4 right-4">
+                    <NotificationPopover />
+                  </div>
+                </div>
+              </SidebarProvider>
+            }
+          />
+          <Route
+            path="/tasks"
+            element={
+              <SidebarProvider>
+                <div className="relative w-full flex-1 flex">
+                  <AppSidebar />
+                  <TasksPage />
+                  <div className="absolute top-4 right-4">
+                    <NotificationPopover />
+                  </div>
+                </div>
+              </SidebarProvider>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <SidebarProvider>
+                <div className="relative w-full flex-1 flex">
+                  <AppSidebar />
+                  <SettingsPage />
+                  <div className="absolute top-4 right-4">
+                    <NotificationPopover />
+                  </div>
+                </div>
+              </SidebarProvider>
+            }
+          />
+          <Route
+            path="/events"
+            element={
+              <SidebarProvider>
+                <div className="relative w-full flex-1 flex">
+                  <AppSidebar />
+                  <EventsCalendar />
+                  <div className="absolute top-4 right-4">
+                    <NotificationPopover />
+                  </div>
+                </div>
+              </SidebarProvider>
+            }
+          />
+          <Route
+            path="/daily"
+            element={
+              <SidebarProvider>
+                <div className="relative w-full flex-1 flex">
+                  <AppSidebar />
+                  <BilanPage />
+                  <div className="absolute top-4 right-4">
+                    <NotificationPopover />
+                  </div>
+                </div>
+              </SidebarProvider>
+            }
+          />
+          <Route
+            path="/analytics"
+            element={
+              <SidebarProvider>
+                <div className="relative w-full flex-1 flex">
+                  <AppSidebar />
+                  <Analytics />
+                  <div className="absolute top-4 right-4">
+                    <NotificationPopover />
+                  </div>
+                </div>
+              </SidebarProvider>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <SidebarProvider>
+                <div className="relative w-full flex-1 flex">
+                  <AppSidebar />
+                  <DashboardPage />
+                  <div className="absolute top-4 right-4">
+                    <NotificationPopover />
+                  </div>
+                </div>
+              </SidebarProvider>
+            }
+          />
+        </Route>
+        {/* Catch-all route for 404 page */}
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
 
       <Toaster />
     </ThemeProvider>
