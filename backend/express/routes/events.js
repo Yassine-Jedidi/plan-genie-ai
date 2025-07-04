@@ -193,4 +193,96 @@ router.post("/manual", async (req, res) => {
   }
 });
 
+// Update event
+router.put("/:eventId", async (req, res) => {
+  try {
+    if (!prisma) {
+      return res
+        .status(500)
+        .json({ error: "Database connection not available" });
+    }
+
+    const { eventId } = req.params;
+    const { title, date_time } = req.body;
+
+    if (!title || !date_time) {
+      return res
+        .status(400)
+        .json({ error: "Title and date_time are required" });
+    }
+
+    // Check if event exists and belongs to the user
+    const existingEvent = await prisma.event.findFirst({
+      where: {
+        id: eventId,
+        user_id: req.user.id,
+      },
+    });
+
+    if (!existingEvent) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    // Parse date_time if it's a string
+    const parsedDateTime =
+      typeof date_time === "string" ? new Date(date_time) : date_time;
+
+    // Validate date
+    if (isNaN(parsedDateTime.getTime())) {
+      return res.status(400).json({ error: "Invalid date format" });
+    }
+
+    const updatedEvent = await prisma.event.update({
+      where: {
+        id: eventId,
+      },
+      data: {
+        title,
+        date_time: parsedDateTime,
+      },
+    });
+
+    return res.status(200).json(updatedEvent);
+  } catch (error) {
+    console.error("Error updating event:", error);
+    res.status(500).json({ error: "Failed to update event: " + error.message });
+  }
+});
+
+// Delete event
+router.delete("/:eventId", async (req, res) => {
+  try {
+    if (!prisma) {
+      return res
+        .status(500)
+        .json({ error: "Database connection not available" });
+    }
+
+    const { eventId } = req.params;
+
+    // Check if event exists and belongs to the user
+    const existingEvent = await prisma.event.findFirst({
+      where: {
+        id: eventId,
+        user_id: req.user.id,
+      },
+    });
+
+    if (!existingEvent) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    await prisma.event.delete({
+      where: {
+        id: eventId,
+      },
+    });
+
+    return res.status(200).json({ message: "Event deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting event:", error);
+    res.status(500).json({ error: "Failed to delete event: " + error.message });
+  }
+});
+
 module.exports = router;

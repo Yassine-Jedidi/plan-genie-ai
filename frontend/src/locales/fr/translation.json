@@ -27,12 +27,15 @@
     "fri": "Ven",
     "sat": "Sam",
     "createNewEvent": "Créer un nouvel événement",
+    "editEvent": "Modifier l'événement",
     "title": "Titre",
     "dateTime": "Date & Heure",
     "enterTime": "Entrer l'heure",
     "cancel": "Annuler",
     "creating": "Création...",
-    "createEvent": "Créer l'événement"
+    "updating": "Mise à jour...",
+    "createEvent": "Créer l'événement",
+    "updateEvent": "Mettre à jour l'événement"
   },
   "datePicker": {
     "pickADate": "Choisissez une date"

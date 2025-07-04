@@ -21,6 +21,11 @@ export interface CalendarEventForApi {
   date_time: string;
 }
 
+export interface UpdateEventData {
+  title: string;
+  date_time: string;
+}
+
 export const eventService = {
   async saveEvent(analysisResult: AnalysisResult): Promise<Event> {
     try {
@@ -55,6 +60,29 @@ export const eventService = {
         throw new Error(error.response.data?.error || "Failed to save event");
       }
       throw new Error("Failed to save event");
+    }
+  },
+
+  async updateEvent(eventId: string, eventData: UpdateEventData): Promise<Event> {
+    try {
+      const { data } = await api.put(`/events/${eventId}`, eventData);
+      return data;
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        throw new Error(error.response.data?.error || "Failed to update event");
+      }
+      throw new Error("Failed to update event");
+    }
+  },
+
+  async deleteEvent(eventId: string): Promise<void> {
+    try {
+      await api.delete(`/events/${eventId}`);
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        throw new Error(error.response.data?.error || "Failed to delete event");
+      }
+      throw new Error("Failed to delete event");
     }
   },
 };

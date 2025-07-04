@@ -27,12 +27,15 @@
     "fri": "Fri",
     "sat": "Sat",
     "createNewEvent": "Create New Event",
+    "editEvent": "Edit Event",
     "title": "Title",
     "dateTime": "Date & Time",
     "enterTime": "Enter time",
     "cancel": "Cancel",
     "creating": "Creating...",
-    "createEvent": "Create Event"
+    "updating": "Updating...",
+    "createEvent": "Create Event",
+    "updateEvent": "Update Event"
   },
   "datePicker": {
     "pickADate": "Pick a date"

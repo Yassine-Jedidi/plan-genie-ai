@@ -30,6 +30,7 @@ import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CalendarEvent, Event, eventService } from "@/services/eventService";
 import { EventDialog } from "@/components/event-dialog";
+import { EditEventDialog } from "@/components/edit-event-dialog";
 import { Calendar } from "@/components/date-time-picker";
 import {
   Dialog,
@@ -74,6 +75,9 @@ export function FullScreenCalendar({
   );
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [isNewEventDialogOpen, setIsNewEventDialogOpen] = React.useState(false);
+  const [isEditEventDialogOpen, setIsEditEventDialogOpen] =
+    React.useState(false);
+  const [eventToEdit, setEventToEdit] = React.useState<Event | null>(null);
   const [newEvent, setNewEvent] = React.useState<CalendarEvent>({
     title: "",
     date_time: new Date(),
@@ -138,6 +142,33 @@ export function FullScreenCalendar({
         toast.error("Failed to create event: " + error.message);
         setIsLoading(false);
       });
+  };
+
+  const handleEditEvent = (event: Event) => {
+    setEventToEdit(event);
+    setIsEditEventDialogOpen(true);
+  };
+
+  const handleDeleteEvent = async (eventId: string) => {
+    try {
+      await eventService.deleteEvent(eventId);
+      toast.success("Event deleted successfully");
+      if (onEventChange) {
+        onEventChange();
+      }
+    } catch (error) {
+      toast.error(
+        `Failed to delete event: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
+  };
+
+  const handleEventUpdated = () => {
+    if (onEventChange) {
+      onEventChange();
+    }
   };
 
   const filteredData = React.useMemo(() => {
@@ -467,6 +498,15 @@ export function FullScreenCalendar({
         onClose={() => setIsDialogOpen(false)}
         selectedDate={selectedDay}
         events={selectedDayEvents}
+        onEditEvent={handleEditEvent}
+        onDeleteEvent={handleDeleteEvent}
+      />
+
+      <EditEventDialog
+        isOpen={isEditEventDialogOpen}
+        onClose={() => setIsEditEventDialogOpen(false)}
+        event={eventToEdit}
+        onEventUpdated={handleEventUpdated}
       />
 
       <Dialog
