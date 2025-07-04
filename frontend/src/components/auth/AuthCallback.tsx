@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
+import { useTranslation } from "react-i18next";
 import api from "@/components/api/api";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
@@ -16,10 +17,13 @@ interface TokenData {
 export function AuthCallback() {
   const navigate = useNavigate();
   const { checkAuth } = useAuth();
+  const { t } = useTranslation();
   const [tokenData, setTokenData] = useState<TokenData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
-  const [statusMessage, setStatusMessage] = useState("Initializing...");
+  const [statusMessage, setStatusMessage] = useState(
+    t("auth.callback.statusMessages.initializing")
+  );
   const [retries, setRetries] = useState(0);
   const [isStuck, setIsStuck] = useState(false);
   // processingStage is used for debugging and monitoring auth flow progress
@@ -135,9 +139,14 @@ export function AuthCallback() {
 
     // Then begin the first animation - FASTER
     setTimeout(() => {
-      startProgressIncrement(1, 10, 300, "Initializing authentication...");
+      startProgressIncrement(
+        1,
+        10,
+        300,
+        t("auth.callback.statusMessages.initializingAuth")
+      );
     }, 50);
-  }, []);
+  }, [t]);
 
   // Define the exchangeTokens function before it's referenced
   const exchangeTokens = async () => {
@@ -148,14 +157,24 @@ export function AuthCallback() {
 
     try {
       // Progress during API call preparation - FASTER
-      startProgressIncrement(30, 45, 300, "Preparing token exchange...");
+      startProgressIncrement(
+        30,
+        45,
+        300,
+        t("auth.callback.statusMessages.preparingTokenExchange")
+      );
 
       // Short delay to show the preparation step - FASTER
       await new Promise((resolve) => setTimeout(resolve, 200));
 
       // Progress during actual API call - FASTER
       setProcessingStage(2);
-      startProgressIncrement(45, 60, 500, "Exchanging tokens with server...");
+      startProgressIncrement(
+        45,
+        60,
+        500,
+        t("auth.callback.statusMessages.exchangingTokens")
+      );
 
       const response = await api.post(
         "/auth/callback/token-exchange",
@@ -163,19 +182,29 @@ export function AuthCallback() {
       );
 
       if (!response.data.success) {
-        throw new Error("Failed to exchange tokens");
+        throw new Error(t("auth.callback.errors.failedToExchange"));
       }
 
       // Progress after successful API call - FASTER
       setProcessingStage(3);
-      startProgressIncrement(60, 75, 300, "Establishing secure session...");
+      startProgressIncrement(
+        60,
+        75,
+        300,
+        t("auth.callback.statusMessages.establishingSession")
+      );
 
       // Allow cookies to be set with a shorter delay - FASTER
       await new Promise((resolve) => setTimeout(resolve, 400));
 
       // Progress during auth check - FASTER
       setProcessingStage(4);
-      startProgressIncrement(75, 90, 400, "Validating your account...");
+      startProgressIncrement(
+        75,
+        90,
+        400,
+        t("auth.callback.statusMessages.validatingAccount")
+      );
 
       try {
         // Try checking auth with retry mechanism
@@ -193,14 +222,12 @@ export function AuthCallback() {
           // Try one more time
           await checkAuth();
         } else {
-          throw new Error(
-            "Failed to verify authentication after multiple attempts"
-          );
+          throw new Error(t("auth.callback.errors.failedToVerify"));
         }
       }
 
       if (!successToastShown.current) {
-        toast.success("Successfully signed in with Google!");
+        toast.success(t("auth.callback.success.signedInWithGoogle"));
         successToastShown.current = true;
       }
 
@@ -210,7 +237,7 @@ export function AuthCallback() {
         90,
         100,
         500,
-        "Redirecting to home page...",
+        t("auth.callback.statusMessages.redirecting"),
         () => {
           // Set navigationReadyRef to true to indicate progress is complete
           navigationReadyRef.current = true;
@@ -223,20 +250,32 @@ export function AuthCallback() {
 
       // If we've already tried multiple times, show the error
       if (retries >= maxRetries) {
-        setError(err instanceof Error ? err.message : "Authentication failed");
+        setError(
+          err instanceof Error
+            ? err.message
+            : t("auth.callback.errors.genericFailure")
+        );
       } else {
         // Otherwise try again with an incremental delay
         setRetries((prev) => prev + 1);
         const retryDelay = 1000 * (retries + 1); // Incremental backoff
 
         setStatusMessage(
-          `Retrying... (Attempt ${retries + 1}/${maxRetries + 1})`
+          t("auth.callback.statusMessages.retrying", {
+            attempt: retries + 1,
+            maxAttempts: maxRetries + 1,
+          })
         );
 
         // Retry the entire exchange process
         setTimeout(() => {
           // Reset progress to start fresh
-          startProgressIncrement(30, 45, 300, "Preparing token exchange...");
+          startProgressIncrement(
+            30,
+            45,
+            300,
+            t("auth.callback.statusMessages.preparingTokenExchange")
+          );
           exchangeTokens();
         }, retryDelay);
       }
@@ -250,7 +289,7 @@ export function AuthCallback() {
       progress,
       100,
       300,
-      "Proceeding to home page...",
+      t("auth.callback.statusMessages.proceedingToHome"),
       () => {
         // Navigate after quick progress completion
         navigate("/home", { replace: true });
@@ -266,7 +305,7 @@ export function AuthCallback() {
     // Try to refresh auth one more time
     checkAuth()
       .then(() => {
-        toast.success("Successfully signed in!");
+        toast.success(t("auth.callback.success.signedIn"));
       })
       .catch(() => {
         // Silent fail - we're proceeding anyway
@@ -280,10 +319,15 @@ export function AuthCallback() {
     // Reset progress to an earlier stage
     setProgressSafe(30);
     setProcessingStage(1);
-    setStatusMessage("Retrying authentication...");
+    setStatusMessage(t("auth.callback.statusMessages.retryingAuth"));
 
     // Retry the authentication flow
-    startProgressIncrement(30, 45, 300, "Preparing token exchange...");
+    startProgressIncrement(
+      30,
+      45,
+      300,
+      t("auth.callback.statusMessages.preparingTokenExchange")
+    );
 
     // If we have token data, retry the exchange
     if (tokenData) {
@@ -300,7 +344,7 @@ export function AuthCallback() {
   useEffect(() => {
     const hash = window.location.hash;
     if (!hash) {
-      setError("No hash fragment found");
+      setError(t("auth.callback.errors.noHashFragment"));
       return;
     }
 
@@ -314,13 +358,18 @@ export function AuthCallback() {
     };
 
     if (!data.access_token) {
-      setError("No access token found in URL");
+      setError(t("auth.callback.errors.noAccessToken"));
       return;
     }
 
     setTokenData(data);
-    startProgressIncrement(10, 30, 400, "Verifying credentials..."); // Faster duration
-  }, []);
+    startProgressIncrement(
+      10,
+      30,
+      400,
+      t("auth.callback.statusMessages.verifyingCredentials")
+    ); // Faster duration
+  }, [t]);
 
   // Second stage: Exchange tokens with backend
   useEffect(() => {
@@ -332,8 +381,8 @@ export function AuthCallback() {
   // Final stage: Handle errors
   useEffect(() => {
     if (error && !errorToastShown.current) {
-      setStatusMessage("Authentication failed");
-      toast.error("Failed to sign in with Google. Please try again.");
+      setStatusMessage(t("auth.callback.statusMessages.authenticationFailed"));
+      toast.error(t("auth.callback.errors.genericFailure"));
       errorToastShown.current = true;
 
       // Short delay before navigating away
@@ -343,7 +392,7 @@ export function AuthCallback() {
         });
       }, 1000);
     }
-  }, [error, navigate]);
+  }, [error, navigate, t]);
 
   // Handle successful silent auth
   useEffect(() => {
@@ -357,12 +406,12 @@ export function AuthCallback() {
           const response = await api.get("/auth/me");
           if (response.data?.user) {
             // User is actually authenticated
-            toast.success("Successfully signed in with Google!");
+            toast.success(t("auth.callback.success.signedInWithGoogle"));
             successToastShown.current = true;
 
             // Make sure we're at 100% before navigating
             setProgressSafe(100);
-            setStatusMessage("Redirecting to home page...");
+            setStatusMessage(t("auth.callback.statusMessages.redirecting"));
 
             // Brief pause to show 100% completion
             setTimeout(() => {
@@ -381,12 +430,14 @@ export function AuthCallback() {
       const timeout = setTimeout(checkSilentAuth, 1500);
       return () => clearTimeout(timeout);
     }
-  }, [error, navigate]);
+  }, [error, navigate, t]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <div className="text-center w-full max-w-md px-4">
-        <h2 className="text-xl font-semibold mb-4">Completing Sign In</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          {t("auth.callback.title")}
+        </h2>
         <div className="w-full mb-4">
           <Progress value={progress} />
         </div>
@@ -395,27 +446,30 @@ export function AuthCallback() {
         </p>
         {retries > 0 && !isStuck && (
           <p className="text-amber-600 text-sm mt-2">
-            Retrying connection... ({retries}/{maxRetries + 1})
+            {t("auth.callback.retry.retryingConnection", {
+              current: retries,
+              max: maxRetries + 1,
+            })}
           </p>
         )}
 
         {isStuck && (
           <div className="mt-6 flex flex-col gap-3">
             <p className="text-amber-600">
-              It looks like the sign-in process might be stuck.
+              {t("auth.callback.retry.stuckMessage")}
             </p>
             <div className="flex gap-3 justify-center">
               <button
                 onClick={handleRetry}
                 className="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 rounded-md text-sm font-medium transition-colors"
               >
-                Retry
+                {t("auth.callback.retry.retryButton")}
               </button>
               <button
                 onClick={handleManualProceed}
                 className="px-4 py-2 bg-primary/90 hover:bg-primary text-white rounded-md text-sm font-medium transition-colors"
               >
-                Proceed to Home Page
+                {t("auth.callback.retry.proceedButton")}
               </button>
             </div>
           </div>

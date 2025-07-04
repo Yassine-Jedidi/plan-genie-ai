@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useTranslation } from "react-i18next";
 import { Check, Globe } from "lucide-react";
+import { useEffect } from "react";
 
 const LANGUAGES = [
   { code: "en", label: "language.english", flag: "🇺🇸" },
@@ -18,9 +19,23 @@ export function LanguageSwitch({ className }: { className?: string }) {
   const { i18n, t } = useTranslation();
   const currentLang = i18n.language;
 
-  const handleChange = (code: string) => {
-    i18n.changeLanguage(code);
+  const handleChange = async (code: string) => {
+    try {
+      await i18n.changeLanguage(code);
+      console.log(`Language changed to: ${code}`);
+      console.log(
+        `Saved to localStorage: ${localStorage.getItem("i18nextLng")}`
+      );
+    } catch (error) {
+      console.error("Error changing language:", error);
+    }
   };
+
+  // Debug: Log when language changes
+  useEffect(() => {
+    console.log(`Current language: ${currentLang}`);
+    console.log(`localStorage value: ${localStorage.getItem("i18nextLng")}`);
+  }, [currentLang]);
 
   const current = LANGUAGES.find((l) => l.code === currentLang) || LANGUAGES[0];
 

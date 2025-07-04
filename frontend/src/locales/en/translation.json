@@ -663,5 +663,41 @@
     "logout": "Logout",
     "signedOutSuccessfully": "Signed out successfully!",
     "failedToSignOut": "Failed to sign out. Please try again."
+  },
+  "auth": {
+    "callback": {
+      "title": "Completing Sign In",
+      "statusMessages": {
+        "initializing": "Initializing...",
+        "initializingAuth": "Initializing authentication...",
+        "verifyingCredentials": "Verifying credentials...",
+        "preparingTokenExchange": "Preparing token exchange...",
+        "exchangingTokens": "Exchanging tokens with server...",
+        "establishingSession": "Establishing secure session...",
+        "validatingAccount": "Validating your account...",
+        "redirecting": "Redirecting to home page...",
+        "proceedingToHome": "Proceeding to home page...",
+        "retrying": "Retrying... (Attempt {{attempt}}/{{maxAttempts}})",
+        "retryingAuth": "Retrying authentication...",
+        "authenticationFailed": "Authentication failed"
+      },
+      "errors": {
+        "noHashFragment": "No hash fragment found",
+        "noAccessToken": "No access token found in URL",
+        "failedToExchange": "Failed to exchange tokens",
+        "failedToVerify": "Failed to verify authentication after multiple attempts",
+        "genericFailure": "Failed to sign in with Google. Please try again."
+      },
+      "success": {
+        "signedInWithGoogle": "Successfully signed in with Google!",
+        "signedIn": "Successfully signed in!"
+      },
+      "retry": {
+        "retryingConnection": "Retrying connection... ({{current}}/{{max}})",
+        "stuckMessage": "It looks like the sign-in process might be stuck.",
+        "retryButton": "Retry",
+        "proceedButton": "Proceed to Home Page"
+      }
+    }
   }
 } 

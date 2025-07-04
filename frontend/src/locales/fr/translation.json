@@ -664,5 +664,41 @@
     "logout": "Déconnexion",
     "signedOutSuccessfully": "Déconnexion réussie !",
     "failedToSignOut": "Échec de la déconnexion. Veuillez réessayer."
+  },
+  "auth": {
+    "callback": {
+      "title": "Finalisation de la connexion",
+      "statusMessages": {
+        "initializing": "Initialisation...",
+        "initializingAuth": "Initialisation de l'authentification...",
+        "verifyingCredentials": "Vérification des identifiants...",
+        "preparingTokenExchange": "Préparation de l'échange de jetons...",
+        "exchangingTokens": "Échange de jetons avec le serveur...",
+        "establishingSession": "Établissement de la session sécurisée...",
+        "validatingAccount": "Validation de votre compte...",
+        "redirecting": "Redirection vers la page d'accueil...",
+        "proceedingToHome": "Accès à la page d'accueil...",
+        "retrying": "Nouvelle tentative... (Tentative {{attempt}}/{{maxAttempts}})",
+        "retryingAuth": "Nouvelle tentative d'authentification...",
+        "authenticationFailed": "Échec de l'authentification"
+      },
+      "errors": {
+        "noHashFragment": "Aucun fragment de hachage trouvé",
+        "noAccessToken": "Aucun jeton d'accès trouvé dans l'URL",
+        "failedToExchange": "Échec de l'échange de jetons",
+        "failedToVerify": "Échec de la vérification de l'authentification après plusieurs tentatives",
+        "genericFailure": "Échec de la connexion avec Google. Veuillez réessayer."
+      },
+      "success": {
+        "signedInWithGoogle": "Connexion réussie avec Google !",
+        "signedIn": "Connexion réussie !"
+      },
+      "retry": {
+        "retryingConnection": "Nouvelle tentative de connexion... ({{current}}/{{max}})",
+        "stuckMessage": "Il semble que le processus de connexion soit bloqué.",
+        "retryButton": "Réessayer",
+        "proceedButton": "Accéder à la page d'accueil"
+      }
+    }
   }
 } 
