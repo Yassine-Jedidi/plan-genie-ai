@@ -1,5 +1,5 @@
 import { Calendar, CheckSquare, Mic, Sparkles } from "lucide-react";
-import heroImage from "@/assets/hero-image.png";
+import heroImage from "@/assets/hero-image2.png";
 import { useTranslation } from "react-i18next";
 
 export function HeroSection() {

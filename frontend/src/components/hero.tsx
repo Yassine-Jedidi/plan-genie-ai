@@ -7,6 +7,8 @@ import { Link } from "react-router-dom";
 import { HeroSection } from "./hero-section";
 import { Component as FAQSection } from "./faq-section";
 import { useTranslation } from "react-i18next";
+import { ContainerScroll } from "./container-scroll-animation";
+import heroImage from "@/assets/hero-image.png";
 
 function Hero() {
   const { t } = useTranslation();
@@ -86,6 +88,29 @@ function Hero() {
             <Link to="/sign-up">
               <GetStartedButton />
             </Link>
+          </div>
+          <div className="flex flex-col overflow-hidden">
+            <ContainerScroll
+              titleComponent={
+                <>
+                  <h1 className="text-4xl font-semibold text-black dark:text-white">
+                    Transform your notes into <br />
+                    <span className="text-7xl  font-bold mt-1 leading-none">
+                      Organized Tasks and Events
+                    </span>
+                  </h1>
+                </>
+              }
+            >
+              <img
+                src={heroImage}
+                alt="hero"
+                height={720}
+                width={1400}
+                className="mx-auto rounded-2xl object-cover h-full object-left-top"
+                draggable={false}
+              />
+            </ContainerScroll>
           </div>
 
           <HeroSection />
