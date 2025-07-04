@@ -41,6 +41,7 @@ import {
   ResponsiveContainer as ReResponsiveContainer,
 } from "recharts";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useTranslation } from "react-i18next";
 
 interface ChartDataItem {
   name: string;
@@ -75,6 +76,7 @@ const Dashboard = () => {
   const [weekDateRange, setWeekDateRange] = useState<string>("");
 
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -132,7 +134,7 @@ const Dashboard = () => {
         <div className="flex flex-col items-center justify-center min-h-screen py-2 w-full mx-4">
           <h1 className="text-3xl font-semibold mb-8 text-primary flex items-center gap-3">
             <LayoutDashboard className="w-8 h-8 text-primary" />
-            Dashboard Overview
+            {t("dashboard.dashboardOverview")}
           </h1>
 
           {/* Skeleton for Task Completion Rate Section (Top) */}
@@ -170,7 +172,7 @@ const Dashboard = () => {
           <div className="w-full max-w-7xl mb-8">
             <h2 className="text-2xl font-thin mb-6 text-center lg:text-left flex items-center gap-2">
               <BarChart2 className="w-6 h-6 text-primary" />
-              Task Analytics
+              {t("dashboard.taskAnalytics")}
             </h2>
             <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -190,7 +192,7 @@ const Dashboard = () => {
           <div className="w-full max-w-7xl mt-8">
             <h2 className="text-2xl font-thin mb-6 text-center lg:text-left flex items-center gap-2">
               <CalendarDays className="w-6 h-6 text-primary" />
-              Event Analytics
+              {t("dashboard.eventAnalytics")}
             </h2>
             <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
               {Array.from({ length: 2 }).map((_, i) => (
@@ -302,16 +304,16 @@ const Dashboard = () => {
       <div className="flex flex-col items-center justify-center min-h-screen py-2 w-full mx-4">
         <h1 className="text-3xl font-semibold mb-8 text-primary flex items-center gap-3">
           <LayoutDashboard className="w-8 h-8 text-primary" />
-          Dashboard Overview
+          {t("dashboard.dashboardOverview")}
         </h1>
 
         {/* --- Task Completion Rate Section (Top) --- */}
         <div className="w-full max-w-7xl mb-8">
           <Card>
             <CardHeader>
-              <CardTitle>Task Completion Rate</CardTitle>
+              <CardTitle>{t("dashboard.taskCompletionRate")}</CardTitle>
               <CardDescription>
-                Completion rate for each day of the current week.
+                {t("dashboard.completionRateForWeek")}{" "}
                 {weekDateRange && ` (${weekDateRange})`}
               </CardDescription>
             </CardHeader>
@@ -406,15 +408,15 @@ const Dashboard = () => {
         <div className="w-full max-w-7xl mb-8">
           <h2 className="text-2xl font-thin mb-6 text-center lg:text-left flex items-center gap-2">
             <BarChart2 className="w-6 h-6 text-primary" />
-            Task Analytics
+            {t("dashboard.taskAnalytics")}
           </h2>
           <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
             {/* Chart 1: Tasks by Status - Pie Chart */}
             <Card className="col-span-1">
               <CardHeader>
-                <CardTitle>Tasks by Status</CardTitle>
+                <CardTitle>{t("dashboard.tasksByStatus")}</CardTitle>
                 <CardDescription>
-                  Distribution of tasks by their current status.
+                  {t("dashboard.distributionByStatus")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -452,9 +454,9 @@ const Dashboard = () => {
             {/* Chart 2: Tasks by Priority - Bar Chart */}
             <Card className="col-span-1">
               <CardHeader>
-                <CardTitle>Tasks by Priority</CardTitle>
+                <CardTitle>{t("dashboard.tasksByPriority")}</CardTitle>
                 <CardDescription>
-                  Number of tasks categorized by priority.
+                  {t("dashboard.numberOfTasksByPriority")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -487,8 +489,10 @@ const Dashboard = () => {
             {/* Chart 3: Tasks by Deadline - Horizontal Bar Chart */}
             <Card className="col-span-1">
               <CardHeader>
-                <CardTitle>Tasks by Deadline</CardTitle>
-                <CardDescription>Overview of task deadlines.</CardDescription>
+                <CardTitle>{t("dashboard.tasksByDeadline")}</CardTitle>
+                <CardDescription>
+                  {t("dashboard.overviewOfDeadlines")}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ChartContainer config={deadlineChartConfig}>
@@ -520,9 +524,9 @@ const Dashboard = () => {
             {/* Chart 6: Overall Task Completion Percentage - Pie Chart */}
             <Card className="col-span-1">
               <CardHeader>
-                <CardTitle>Overall Task Completion</CardTitle>
+                <CardTitle>{t("dashboard.overallTaskCompletion")}</CardTitle>
                 <CardDescription>
-                  Percentage of tasks completed.
+                  {t("dashboard.percentageOfTasksCompleted")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -560,9 +564,9 @@ const Dashboard = () => {
             {/* Chart 7: Time Spent by Priority - Bar Chart */}
             <Card className="col-span-1">
               <CardHeader>
-                <CardTitle>Time Spent by Priority</CardTitle>
+                <CardTitle>{t("dashboard.timeSpentByPriority")}</CardTitle>
                 <CardDescription>
-                  Minutes spent on tasks categorized by priority.
+                  {t("dashboard.minutesSpentByPriority")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -595,9 +599,9 @@ const Dashboard = () => {
             {/* Chart 4: Total Time Spent per Day - Line Chart (now chart 4 in new numbering) */}
             <Card className="col-span-1">
               <CardHeader>
-                <CardTitle>Time Spent Daily</CardTitle>
+                <CardTitle>{t("dashboard.timeSpentDaily")}</CardTitle>
                 <CardDescription>
-                  Total minutes spent on tasks per day (last 30 days).
+                  {t("dashboard.totalMinutesSpentPerDay")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -630,15 +634,15 @@ const Dashboard = () => {
         <div className="w-full max-w-7xl mt-8">
           <h2 className="text-2xl font-thin mb-6 text-center lg:text-left flex items-center gap-2">
             <CalendarDays className="w-6 h-6 text-primary" />
-            Event Analytics
+            {t("dashboard.eventAnalytics")}
           </h2>
           <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
             {/* Chart 8: Events by Day - Line Chart (now chart 5) */}
             <Card className="col-span-1">
               <CardHeader>
-                <CardTitle>Events by Day</CardTitle>
+                <CardTitle>{t("dashboard.eventsByDay")}</CardTitle>
                 <CardDescription>
-                  Number of events scheduled per day (last 30 days).
+                  {t("dashboard.numberOfEventsPerDay")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -669,9 +673,9 @@ const Dashboard = () => {
             {/* Chart 9: Event Distribution (Upcoming vs. Past) - Pie Chart (now chart 6) */}
             <Card className="col-span-1">
               <CardHeader>
-                <CardTitle>Event Distribution</CardTitle>
+                <CardTitle>{t("dashboard.eventDistribution")}</CardTitle>
                 <CardDescription>
-                  Breakdown of upcoming and past events.
+                  {t("dashboard.breakdownUpcomingPast")}
                 </CardDescription>
               </CardHeader>
               <CardContent>

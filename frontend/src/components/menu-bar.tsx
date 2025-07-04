@@ -4,10 +4,12 @@ import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslation } from "react-i18next";
 
 function MenuBar() {
   const [open, setOpen] = useState<boolean>(false);
   const { user, loading } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <div className="relative md:hidden">
@@ -19,7 +21,7 @@ function MenuBar() {
         size="icon"
         onClick={() => setOpen((prevState) => !prevState)}
         aria-expanded={open}
-        aria-label={open ? "Close menu" : "Open menu"}
+        aria-label={open ? t("menuBar.closeMenu") : t("menuBar.openMenu")}
       >
         {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
       </Button>
@@ -30,21 +32,21 @@ function MenuBar() {
             className="block px-4 py-2 text-foreground hover:bg-accent"
             onClick={() => setOpen(false)}
           >
-            Features
+            {t("menuBar.features")}
           </a>
           <a
             href="#pricing"
             className="block px-4 py-2 text-foreground hover:bg-accent"
             onClick={() => setOpen(false)}
           >
-            Pricing
+            {t("menuBar.pricing")}
           </a>
           <a
             href="#contact"
             className="block px-4 py-2 text-foreground hover:bg-accent"
             onClick={() => setOpen(false)}
           >
-            Contact
+            {t("menuBar.contact")}
           </a>
           {!user && (
             <>
@@ -62,7 +64,7 @@ function MenuBar() {
                       className="w-full"
                       onClick={() => setOpen(false)}
                     >
-                      Sign In
+                      {t("menuBar.signIn")}
                     </Button>
                   </Link>
                   <Link to="/sign-up" className="block">
@@ -71,7 +73,7 @@ function MenuBar() {
                       className="w-full"
                       onClick={() => setOpen(false)}
                     >
-                      Sign Up
+                      {t("menuBar.signUp")}
                     </Button>
                   </Link>
                 </div>

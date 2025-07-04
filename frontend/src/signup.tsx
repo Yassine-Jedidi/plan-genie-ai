@@ -20,6 +20,7 @@ import { AxiosError } from "axios";
 import { toast } from "sonner";
 import { Password } from "./components/password";
 import { VerifyPassword } from "./components/verify-password";
+import { useTranslation } from "react-i18next";
 
 // Define Zod schema for validation
 const signUpSchema = z.object({
@@ -33,6 +34,7 @@ const signUpSchema = z.object({
 });
 
 function SignUpPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const passwordInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
@@ -68,13 +70,13 @@ function SignUpPage() {
     setValidationErrors({});
 
     if (!turnstileToken) {
-      toast.error("Please complete the Turnstile verification");
+      toast.error(t("signUp.completeTurnstile"));
       setLoading(false);
       return;
     }
 
     if (formData.password !== formData.verifyPassword) {
-      toast.error("Passwords do not match");
+      toast.error(t("signUp.passwordsNoMatch"));
       setLoading(false);
       return;
     }
@@ -88,8 +90,17 @@ function SignUpPage() {
     if (!result.success) {
       const formattedErrors: { email?: string; password?: string } = {};
       result.error.errors.forEach((err) => {
-        formattedErrors[err.path[0] as keyof typeof formattedErrors] =
-          err.message;
+        formattedErrors[err.path[0] as keyof typeof formattedErrors] = t(
+          `signUp.validation.${
+            err.message.includes("uppercase")
+              ? "uppercase"
+              : err.message.includes("lowercase")
+              ? "lowercase"
+              : err.message.includes("number")
+              ? "number"
+              : "minLength"
+          }`
+        );
       });
 
       setValidationErrors(formattedErrors);
@@ -105,7 +116,7 @@ function SignUpPage() {
       });
       navigate("/sign-in", {
         state: {
-          message: "Account created successfully! Please sign in to continue.",
+          message: t("signUp.success"),
         },
       });
     } catch (err) {
@@ -113,14 +124,14 @@ function SignUpPage() {
         toast.error(
           err.response.data?.message ||
             err.response.data?.error ||
-            "An unknown error occurred."
+            t("signUp.errorUnknown")
         );
       } else if (err instanceof AxiosError && err.request) {
-        toast.error("No response from the server. Please try again later.");
+        toast.error(t("signUp.errorNoResponse"));
       } else if (err instanceof Error) {
-        toast.error(err.message || "Something went wrong.");
+        toast.error(t("signUp.errorGeneral"));
       } else {
-        toast.error("An unexpected error occurred.");
+        toast.error(t("signUp.errorUnexpected"));
       }
       // Reset Turnstile after a failed sign up attempt
       resetTurnstile();
@@ -136,7 +147,7 @@ function SignUpPage() {
       window.location.href = response.data.url;
     } catch (err) {
       if (err instanceof Error) {
-        toast.error("Failed to initiate Google sign in");
+        toast.error(t("signUp.googleFailed"));
       }
     }
   };
@@ -146,10 +157,8 @@ function SignUpPage() {
       <form onSubmit={handleSubmit}>
         <Card className="w-full sm:w-96">
           <CardHeader>
-            <CardTitle>Create your account</CardTitle>
-            <CardDescription>
-              Welcome! Please fill in the details to get started.
-            </CardDescription>
+            <CardTitle>{t("signUp.title")}</CardTitle>
+            <CardDescription>{t("signUp.description")}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-y-4">
             <div className="w-full">
@@ -161,16 +170,16 @@ function SignUpPage() {
                 onClick={handleGoogleSignIn}
               >
                 <FontAwesomeIcon icon={faGoogle} />
-                Google
+                {t("signUp.google")}
               </Button>
             </div>
 
             <p className="flex items-center gap-x-3 text-sm text-muted-foreground before:h-px before:flex-1 before:bg-border after:h-px after:flex-1 after:bg-border">
-              or
+              {t("signUp.or")}
             </p>
 
             <div className="space-y-2">
-              <Label>Email address</Label>
+              <Label>{t("signUp.emailLabel")}</Label>
               <Input
                 type="email"
                 name="email"
@@ -216,10 +225,10 @@ function SignUpPage() {
           <CardFooter>
             <div className="grid w-full gap-y-4">
               <Button type="submit" disabled={loading}>
-                {loading ? "Signing up..." : "Sign up"}
+                {loading ? t("signUp.signingUp") : t("signUp.signUp")}
               </Button>
               <Button variant="link" size="sm" asChild>
-                <Link to="/sign-in">Already have an account? Sign in</Link>
+                <Link to="/sign-in">{t("signUp.alreadyHaveAccount")}</Link>
               </Button>
             </div>
           </CardFooter>

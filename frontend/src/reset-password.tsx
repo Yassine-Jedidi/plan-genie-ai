@@ -16,6 +16,7 @@ import { Eye, EyeOff } from "lucide-react";
 import api from "./components/api/api";
 import { AxiosError } from "axios";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
 
 // Define Zod schema for validation
 const resetPasswordSchema = z.object({
@@ -28,6 +29,7 @@ const resetPasswordSchema = z.object({
 });
 
 function ResetPasswordPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -52,7 +54,7 @@ function ResetPasswordPage() {
     const type = params.get("type");
 
     if (!accessToken || type !== "recovery") {
-      toast.error("Invalid reset link");
+      toast.error(t("resetPassword.invalidLink"));
       navigate("/sign-in");
       return;
     }
@@ -62,7 +64,7 @@ function ResetPasswordPage() {
       refreshToken,
       type,
     });
-  }, [navigate]);
+  }, [navigate, t]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,7 +72,7 @@ function ResetPasswordPage() {
     setValidationError(null);
 
     if (!tokens.accessToken) {
-      toast.error("Invalid reset link");
+      toast.error(t("resetPassword.invalidLink"));
       navigate("/sign-in");
       return;
     }
@@ -92,17 +94,16 @@ function ResetPasswordPage() {
 
       navigate("/sign-in", {
         state: {
-          message:
-            "Password has been reset. Please sign in with your new password.",
+          message: t("resetPassword.successMessage"),
         },
       });
     } catch (err) {
       if (err instanceof AxiosError && err.response) {
         const errorMessage =
-          err.response.data?.error || "An unknown error occurred.";
+          err.response.data?.error || t("resetPassword.unknownError");
         toast.error(errorMessage);
       } else {
-        toast.error("An unexpected error occurred.");
+        toast.error(t("resetPassword.unexpectedError"));
       }
     } finally {
       setLoading(false);
@@ -114,14 +115,16 @@ function ResetPasswordPage() {
       <form onSubmit={handleSubmit}>
         <Card className="w-full sm:w-96">
           <CardHeader className="space-y-3">
-            <CardTitle className="text-xl">Reset your password</CardTitle>
+            <CardTitle className="text-xl">
+              {t("resetPassword.title")}
+            </CardTitle>
             <CardDescription className="text-sm">
-              Please enter your new password below.
+              {t("resetPassword.description")}
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-y-4">
             <div className="space-y-2">
-              <Label htmlFor="password">New Password</Label>
+              <Label htmlFor="password">{t("resetPassword.newPassword")}</Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -149,11 +152,13 @@ function ResetPasswordPage() {
 
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" disabled={loading} className="w-full">
-              {loading ? "Updating password..." : "Update password"}
+              {loading
+                ? t("resetPassword.updating")
+                : t("resetPassword.update")}
             </Button>
             <div className="text-center">
               <Button variant="link" size="sm" asChild>
-                <Link to="/sign-in">← Back to sign in</Link>
+                <Link to="/sign-in">{t("resetPassword.backToSignIn")}</Link>
               </Button>
             </div>
           </CardFooter>

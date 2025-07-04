@@ -9,6 +9,7 @@ import { ArrowUp, Paperclip, Square, X, Mic, MicOff } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import { toast } from "sonner";
 import { audioService } from "@/services/audioService";
+import { useTranslation } from "react-i18next";
 
 interface PromptInputWithActionsProps {
   onSubmit?: (
@@ -32,6 +33,7 @@ export function PromptInputWithActions({
   resetFile = false,
   onFileReset,
 }: PromptInputWithActionsProps) {
+  const { t } = useTranslation();
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
@@ -264,6 +266,7 @@ export function PromptInputWithActions({
               onClick={handleRemoveFile}
               className="hover:bg-secondary/50 rounded-full p-1"
               type="button"
+              aria-label={t("input.removeFile") || undefined}
             >
               <X className="size-4" />
             </button>
@@ -272,14 +275,12 @@ export function PromptInputWithActions({
       )}
 
       <PromptInputTextarea
-        placeholder={
-          placeholder || "Ask me anything, upload a file, or use voice input..."
-        }
+        placeholder={placeholder || t("input.textareaPlaceholder")}
       />
 
       <PromptInputActions className="flex items-center justify-between gap-2 pt-2">
         <div className="flex items-center gap-2">
-          <PromptInputAction tooltip="Attach a text file (.txt, .md, .csv)">
+          <PromptInputAction tooltip={t("input.attachFileTooltip")}>
             <label
               htmlFor="file-upload"
               className="hover:bg-secondary-foreground/10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-2xl"
@@ -297,7 +298,11 @@ export function PromptInputWithActions({
           </PromptInputAction>
 
           <PromptInputAction
-            tooltip={isRecording ? "Stop recording" : "Start recording"}
+            tooltip={
+              isRecording
+                ? t("input.stopRecordingTooltip")
+                : t("input.startRecordingTooltip")
+            }
           >
             <Button
               variant="ghost"
@@ -305,6 +310,11 @@ export function PromptInputWithActions({
               className="h-8 w-8 rounded-full"
               onClick={isRecording ? handleStopRecording : handleStartRecording}
               type="button"
+              aria-label={
+                (isRecording
+                  ? t("input.stopRecordingTooltip")
+                  : t("input.startRecordingTooltip")) || undefined
+              }
             >
               {isRecording ? (
                 <MicOff className="text-red-500 size-6" />
@@ -316,7 +326,11 @@ export function PromptInputWithActions({
         </div>
 
         <PromptInputAction
-          tooltip={currentLoading ? "Stop generation" : "Send message"}
+          tooltip={
+            currentLoading
+              ? t("input.stopGenerationTooltip")
+              : t("input.sendMessageTooltip")
+          }
         >
           <Button
             variant="default"
@@ -325,6 +339,11 @@ export function PromptInputWithActions({
             onClick={handleSubmit}
             disabled={currentLoading && !(currentValue.trim() || file)}
             type="button"
+            aria-label={
+              (currentLoading
+                ? t("input.stopGenerationTooltip")
+                : t("input.sendMessageTooltip")) || undefined
+            }
           >
             {currentLoading ? (
               <Square className="size-5 fill-current" />

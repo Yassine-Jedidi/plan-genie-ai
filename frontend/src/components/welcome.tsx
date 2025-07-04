@@ -1,15 +1,17 @@
 import { TextLoop } from "./ui/text-loop";
+import { useTranslation } from "react-i18next";
 
 export function WelcomeTextLoop() {
+  const { t } = useTranslation();
   return (
     <div className="flex justify-center">
       <div className="w-[400px] text-center">
         <TextLoop interval={3}>
           {[
-            "What would you like to do today?",
-            "Let's create a task...",
-            "Start planning a project...",
-            "Add something to your calendar...",
+            t("welcome.whatDoYouWant"),
+            t("welcome.createTask"),
+            t("welcome.planProject"),
+            t("welcome.addToCalendar"),
           ].map((text) => (
             <span
               key={text}

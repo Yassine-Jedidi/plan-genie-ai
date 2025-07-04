@@ -1,6 +1,7 @@
 import { Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/hooks/use-theme";
+import { useTranslation } from "react-i18next";
 
 interface ThemeToggleProps {
   className?: string;
@@ -8,6 +9,7 @@ interface ThemeToggleProps {
 
 export function ModeToggle({ className }: ThemeToggleProps) {
   const { theme, setTheme } = useTheme();
+  const { t } = useTranslation();
   const isDark =
     theme === "dark" ||
     (theme === "system" &&
@@ -29,6 +31,9 @@ export function ModeToggle({ className }: ThemeToggleProps) {
       onClick={toggleTheme}
       role="button"
       tabIndex={0}
+      aria-label={
+        isDark ? t("modeToggle.switchToLight") : t("modeToggle.switchToDark")
+      }
     >
       <div className="flex justify-between items-center w-full">
         <div

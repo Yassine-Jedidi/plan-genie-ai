@@ -3,6 +3,7 @@
 import * as React from "react";
 import { format, isFuture, startOfDay } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ interface DatePickerProps {
 }
 
 export function DatePicker({ date, onSelect, className }: DatePickerProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = React.useState(false);
 
   // Function to disable future dates
@@ -40,7 +42,11 @@ export function DatePicker({ date, onSelect, className }: DatePickerProps) {
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP") : <span>Pick a date</span>}
+          {date ? (
+            format(date, "PPP")
+          ) : (
+            <span>{t("datePicker.pickADate")}</span>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
@@ -61,6 +67,7 @@ export function DatePicker({ date, onSelect, className }: DatePickerProps) {
 
 // Demo version for examples
 export function DatePickerDemo() {
+  const { t } = useTranslation();
   const [date, setDate] = React.useState<Date>();
 
   // Function to disable future dates
@@ -80,7 +87,11 @@ export function DatePickerDemo() {
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP") : <span>Pick a date</span>}
+          {date ? (
+            format(date, "PPP")
+          ) : (
+            <span>{t("datePicker.pickADate")}</span>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">

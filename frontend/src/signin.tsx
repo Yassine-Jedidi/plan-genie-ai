@@ -19,6 +19,7 @@ import { useAuth } from "@/hooks/use-auth";
 import Turnstile from "react-turnstile";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 // Add window.turnstile type definition
 declare global {
@@ -43,6 +44,8 @@ function SignInPage() {
   const { checkAuth } = useAuth();
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const { t } = useTranslation();
+
   // Check for success message from signup
   useEffect(() => {
     const state = location.state as { message?: string } | null;
@@ -67,7 +70,7 @@ function SignInPage() {
     setError(null);
 
     if (!turnstileToken) {
-      toast.error("Please complete the Turnstile verification");
+      toast.error(t("signIn.completeTurnstile"));
       setLoading(false);
       return;
     }
@@ -75,21 +78,21 @@ function SignInPage() {
     try {
       await api.post("/auth/signin", { ...formData, turnstileToken });
       await checkAuth();
-      toast.success("Signed in successfully!");
+      toast.success(t("signIn.success"));
       navigate("/home");
     } catch (err) {
       if (err instanceof AxiosError && err.response) {
-        const errorMessage =
+        toast.error(
           err.response.data?.message ||
-          err.response.data?.error ||
-          "An unknown error occurred.";
-        toast.error(errorMessage);
+            err.response.data?.error ||
+            t("signIn.errorUnknown")
+        );
       } else if (err instanceof AxiosError && err.request) {
-        toast.error("No response from the server. Please try again later.");
+        toast.error(t("signIn.errorNoResponse"));
       } else if (err instanceof Error) {
-        toast.error(err.message || "Something went wrong.");
+        toast.error(t("signIn.errorGeneral"));
       } else {
-        toast.error("An unexpected error occurred.");
+        toast.error(t("signIn.errorUnexpected"));
       }
       // Reset Turnstile after a failed login attempt
       resetTurnstile();
@@ -119,10 +122,8 @@ function SignInPage() {
       <form onSubmit={handleSubmit}>
         <Card className="w-full sm:w-96">
           <CardHeader>
-            <CardTitle>Sign in to Plan Genie AI</CardTitle>
-            <CardDescription>
-              Welcome back! Please sign in to continue
-            </CardDescription>
+            <CardTitle>{t("signIn.title")}</CardTitle>
+            <CardDescription>{t("signIn.description")}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-y-4">
             <div className="w-full">
@@ -134,16 +135,16 @@ function SignInPage() {
                 onClick={handleGoogleSignIn}
               >
                 <FontAwesomeIcon icon={faGoogle} />
-                Google
+                {t("signIn.google")}
               </Button>
             </div>
 
             <p className="flex items-center gap-x-3 text-sm text-muted-foreground before:h-px before:flex-1 before:bg-border after:h-px after:flex-1 after:bg-border">
-              or
+              {t("signIn.or")}
             </p>
 
             <div className="space-y-2">
-              <Label>Email address</Label>
+              <Label>{t("signIn.emailLabel")}</Label>
               <Input
                 type="email"
                 name="email"
@@ -154,7 +155,7 @@ function SignInPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Password</Label>
+              <Label>{t("signIn.passwordLabel")}</Label>
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
@@ -175,7 +176,9 @@ function SignInPage() {
               </div>
               <div className="flex">
                 <Button variant="link" size="sm" className="px-0" asChild>
-                  <Link to="/forgot-password">Forgot your password?</Link>
+                  <Link to="/forgot-password">
+                    {t("signIn.forgotPassword")}
+                  </Link>
                 </Button>
               </div>
             </div>
@@ -185,7 +188,7 @@ function SignInPage() {
                 sitekey="0x4AAAAAAA9BEEKWwme8C69l"
                 onVerify={(token) => setTurnstileToken(token)}
                 onError={() => {
-                  toast.error("Turnstile verification failed");
+                  toast.error(t("signIn.turnstileFailed"));
                   setTurnstileToken(null);
                 }}
                 onExpire={() => setTurnstileToken(null)}
@@ -201,10 +204,10 @@ function SignInPage() {
           <CardFooter>
             <div className="grid w-full gap-y-4">
               <Button type="submit" disabled={loading}>
-                {loading ? "Signing in..." : "Sign in"}
+                {loading ? t("signIn.signingIn") : t("signIn.signIn")}
               </Button>
               <Button variant="link" size="sm" asChild>
-                <Link to="/sign-up">Don&apos;t have an account? Sign up</Link>
+                <Link to="/sign-up">{t("signIn.noAccount")}</Link>
               </Button>
             </div>
           </CardFooter>

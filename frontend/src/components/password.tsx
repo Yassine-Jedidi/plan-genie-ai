@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Check, Eye, EyeOff, X } from "lucide-react";
 import { useId, useMemo, useState, forwardRef } from "react";
+import { useTranslation } from "react-i18next";
 
 interface PasswordProps {
   onChange?: (value: string) => void;
@@ -9,6 +10,7 @@ interface PasswordProps {
 
 const Password = forwardRef<HTMLInputElement, PasswordProps>(
   ({ onChange }, ref) => {
+    const { t } = useTranslation();
     const id = useId();
     const [password, setPassword] = useState("");
     const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -23,10 +25,10 @@ const Password = forwardRef<HTMLInputElement, PasswordProps>(
 
     const checkStrength = (pass: string) => {
       const requirements = [
-        { regex: /.{6,}/, text: "At least 6 characters" },
-        { regex: /[0-9]/, text: "At least 1 number" },
-        { regex: /[a-z]/, text: "At least 1 lowercase letter" },
-        { regex: /[A-Z]/, text: "At least 1 uppercase letter" },
+        { regex: /.{6,}/, text: t("password.atLeast6") },
+        { regex: /[0-9]/, text: t("password.atLeast1Number") },
+        { regex: /[a-z]/, text: t("password.atLeast1Lowercase") },
+        { regex: /[A-Z]/, text: t("password.atLeast1Uppercase") },
       ];
 
       return requirements.map((req) => ({
@@ -50,16 +52,16 @@ const Password = forwardRef<HTMLInputElement, PasswordProps>(
     };
 
     const getStrengthText = (score: number) => {
-      if (score === 0) return "Enter a password";
-      if (score <= 2) return "Weak password";
-      if (score === 3) return "Medium password";
-      return "Strong password";
+      if (score === 0) return t("password.enterPassword");
+      if (score <= 2) return t("password.weak");
+      if (score === 3) return t("password.medium");
+      return t("password.strong");
     };
 
     return (
       <div className="min-w-[300px]">
         <div className="space-y-2">
-          <Label htmlFor={id}>Password</Label>
+          <Label htmlFor={id}>{t("password.label")}</Label>
           <div className="relative">
             <Input
               id={id}
@@ -75,7 +77,7 @@ const Password = forwardRef<HTMLInputElement, PasswordProps>(
               className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
               type="button"
               onClick={toggleVisibility}
-              aria-label={isVisible ? "Hide password" : "Show password"}
+              aria-label={isVisible ? t("password.hide") : t("password.show")}
               aria-pressed={isVisible}
               aria-controls="password"
             >
@@ -94,7 +96,7 @@ const Password = forwardRef<HTMLInputElement, PasswordProps>(
           aria-valuenow={strengthScore}
           aria-valuemin={0}
           aria-valuemax={4}
-          aria-label="Password strength"
+          aria-label={t("password.strength")}
         >
           <div
             className={`h-full ${getStrengthColor(
@@ -108,10 +110,10 @@ const Password = forwardRef<HTMLInputElement, PasswordProps>(
           id={`${id}-description`}
           className="mb-2 text-sm font-medium text-foreground"
         >
-          {getStrengthText(strengthScore)}. Must contain:
+          {getStrengthText(strengthScore)}. {t("password.mustContain")}
         </p>
 
-        <ul className="space-y-1.5" aria-label="Password requirements">
+        <ul className="space-y-1.5" aria-label={t("password.requirements")}>
           {strength.map((req, index) => (
             <li key={index} className="flex items-center gap-2">
               {req.met ? (
@@ -134,7 +136,9 @@ const Password = forwardRef<HTMLInputElement, PasswordProps>(
               >
                 {req.text}
                 <span className="sr-only">
-                  {req.met ? " - Requirement met" : " - Requirement not met"}
+                  {req.met
+                    ? t("password.requirementMet")
+                    : t("password.requirementNotMet")}
                 </span>
               </span>
             </li>

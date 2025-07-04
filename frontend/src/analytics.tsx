@@ -20,6 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SidebarTrigger } from "./components/ui/sidebar";
+import { useTranslation } from "react-i18next";
 
 const initialAnalyticsState: AnalyticsData = {
   all: {
@@ -85,6 +86,7 @@ const initialAnalyticsState: AnalyticsData = {
 };
 
 const Analytics = () => {
+  const { t } = useTranslation();
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData>(
     initialAnalyticsState
   );
@@ -126,7 +128,7 @@ const Analytics = () => {
     <Card className="mt-6">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">
-          Tasks by Priority
+          {t("analytics.tasksByPriority")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -134,7 +136,7 @@ const Analytics = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Low Priority
+                {t("analytics.lowPriority")}
               </CardTitle>
               <ArrowDown className="h-4 w-4 text-green-600" />
             </CardHeader>
@@ -143,18 +145,19 @@ const Analytics = () => {
                 {data.priorityCounts.low}
               </div>
               <p className="text-xs text-muted-foreground">
-                Done: {data.donePriorityCounts.low}, Undone:{" "}
-                {data.undonePriorityCounts.low}
+                {t("analytics.done")}: {data.donePriorityCounts.low},{" "}
+                {t("analytics.undone")}: {data.undonePriorityCounts.low}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                Time Spent: {formatTime(data.minutesSpentByPriority.low)}
+                {t("analytics.timeSpent")}:{" "}
+                {formatTime(data.minutesSpentByPriority.low)}
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Medium Priority
+                {t("analytics.mediumPriority")}
               </CardTitle>
               <Minus className="h-4 w-4 text-yellow-600" />
             </CardHeader>
@@ -163,18 +166,19 @@ const Analytics = () => {
                 {data.priorityCounts.medium}
               </div>
               <p className="text-xs text-muted-foreground">
-                Done: {data.donePriorityCounts.medium}, Undone:{" "}
-                {data.undonePriorityCounts.medium}
+                {t("analytics.done")}: {data.donePriorityCounts.medium},{" "}
+                {t("analytics.undone")}: {data.undonePriorityCounts.medium}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                Time Spent: {formatTime(data.minutesSpentByPriority.medium)}
+                {t("analytics.timeSpent")}:{" "}
+                {formatTime(data.minutesSpentByPriority.medium)}
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                High Priority
+                {t("analytics.highPriority")}
               </CardTitle>
               <ArrowUp className="h-4 w-4 text-red-600" />
             </CardHeader>
@@ -183,11 +187,12 @@ const Analytics = () => {
                 {data.priorityCounts.high}
               </div>
               <p className="text-xs text-muted-foreground">
-                Done: {data.donePriorityCounts.high}, Undone:{" "}
-                {data.undonePriorityCounts.high}
+                {t("analytics.done")}: {data.donePriorityCounts.high},{" "}
+                {t("analytics.undone")}: {data.undonePriorityCounts.high}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                Time Spent: {formatTime(data.minutesSpentByPriority.high)}
+                {t("analytics.timeSpent")}:{" "}
+                {formatTime(data.minutesSpentByPriority.high)}
               </p>
             </CardContent>
           </Card>
@@ -200,14 +205,14 @@ const Analytics = () => {
     <Card className="mt-6">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">
-          Tasks by Priority
+          {t("analytics.tasksByPriority")}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardHeader>
-              <CardTitle>Low Priority</CardTitle>
+              <CardTitle>{t("analytics.lowPriority")}</CardTitle>
             </CardHeader>
             <CardContent>
               <Skeleton className="h-10 w-20 mb-2" />
@@ -216,7 +221,7 @@ const Analytics = () => {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Medium Priority</CardTitle>
+              <CardTitle>{t("analytics.mediumPriority")}</CardTitle>
             </CardHeader>
             <CardContent>
               <Skeleton className="h-10 w-20 mb-2" />
@@ -225,7 +230,7 @@ const Analytics = () => {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>High Priority</CardTitle>
+              <CardTitle>{t("analytics.highPriority")}</CardTitle>
             </CardHeader>
             <CardContent>
               <Skeleton className="h-10 w-20 mb-2" />
@@ -241,7 +246,7 @@ const Analytics = () => {
     <Card className="mt-6">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">
-          Overdue Tasks Breakdown
+          {t("analytics.overdueTasksBreakdown")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -249,35 +254,35 @@ const Analytics = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                1-3 Days Overdue
+                {t("analytics.oneToThreeDaysOverdue")}
               </CardTitle>
               <AlertTriangle className="h-4 w-4 text-yellow-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{data.overdue1_3Days}</div>
               <p className="text-xs text-muted-foreground">
-                Tasks overdue by 1 to 3 days.
+                {t("analytics.tasksOverdueBy", { days: "1 to 3" })}
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                4-7 Days Overdue
+                {t("analytics.fourToSevenDaysOverdue")}
               </CardTitle>
               <AlertTriangle className="h-4 w-4 text-orange-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{data.overdue4_7Days}</div>
               <p className="text-xs text-muted-foreground">
-                Tasks overdue by 4 to 7 days.
+                {t("analytics.tasksOverdueBy", { days: "4 to 7" })}
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                More Than 7 Days Overdue
+                {t("analytics.moreThanSevenDaysOverdue")}
               </CardTitle>
               <AlertTriangle className="h-4 w-4 text-red-500" />
             </CardHeader>
@@ -286,7 +291,7 @@ const Analytics = () => {
                 {data.overdueMoreThan7Days}
               </div>
               <p className="text-xs text-muted-foreground">
-                Tasks overdue by more than 7 days.
+                {t("analytics.tasksOverdueBy", { days: "more than 7" })}
               </p>
             </CardContent>
           </Card>
@@ -299,14 +304,14 @@ const Analytics = () => {
     <Card className="mt-6">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">
-          Overdue Tasks Breakdown
+          {t("analytics.overdueTasksBreakdown")}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardHeader>
-              <CardTitle>1-3 Days Overdue</CardTitle>
+              <CardTitle>{t("analytics.oneToThreeDaysOverdue")}</CardTitle>
             </CardHeader>
             <CardContent>
               <Skeleton className="h-10 w-20" />
@@ -314,7 +319,7 @@ const Analytics = () => {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>4-7 Days Overdue</CardTitle>
+              <CardTitle>{t("analytics.fourToSevenDaysOverdue")}</CardTitle>
             </CardHeader>
             <CardContent>
               <Skeleton className="h-10 w-20" />
@@ -322,7 +327,7 @@ const Analytics = () => {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>More Than 7 Days Overdue</CardTitle>
+              <CardTitle>{t("analytics.moreThanSevenDaysOverdue")}</CardTitle>
             </CardHeader>
             <CardContent>
               <Skeleton className="h-10 w-20" />
@@ -337,7 +342,7 @@ const Analytics = () => {
     <Card className="mt-6">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">
-          Total Time Spent
+          {t("analytics.totalTimeSpent")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -348,7 +353,7 @@ const Analytics = () => {
           <Clock className="h-6 w-6 text-teal-500" />
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          Total time recorded for tasks.
+          {t("analytics.totalTimeRecorded")}
         </p>
       </CardContent>
     </Card>
@@ -358,7 +363,7 @@ const Analytics = () => {
     <Card className="mt-6">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">
-          Total Time Spent
+          {t("analytics.totalTimeSpent")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -370,47 +375,51 @@ const Analytics = () => {
   const renderEventCards = (data: EventAnalytics) => (
     <Card className="mt-6">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold">Event Overview</CardTitle>
+        <CardTitle className="text-xl font-semibold">
+          {t("analytics.eventOverview")}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Total Events
+                {t("analytics.totalEvents")}
               </CardTitle>
               <BarChart className="h-4 w-4 text-blue-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{data.totalEvents}</div>
               <p className="text-xs text-muted-foreground">
-                Total number of events created.
+                {t("analytics.totalNumberEventsCreated")}
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Upcoming Events
+                {t("analytics.upcomingEvents")}
               </CardTitle>
               <Clock className="h-4 w-4 text-purple-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{data.upcomingEvents}</div>
               <p className="text-xs text-muted-foreground">
-                Events scheduled for the future.
+                {t("analytics.eventsScheduledForFuture")}
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Past Events</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {t("analytics.pastEvents")}
+              </CardTitle>
               <CheckCircle className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{data.pastEvents}</div>
               <p className="text-xs text-muted-foreground">
-                Events that have already occurred.
+                {t("analytics.eventsThatOccurred")}
               </p>
             </CardContent>
           </Card>
@@ -422,13 +431,15 @@ const Analytics = () => {
   const renderEventCardSkeletons = () => (
     <Card className="mt-6">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold">Event Overview</CardTitle>
+        <CardTitle className="text-xl font-semibold">
+          {t("analytics.eventOverview")}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardHeader>
-              <CardTitle>Total Events</CardTitle>
+              <CardTitle>{t("analytics.totalEvents")}</CardTitle>
             </CardHeader>
             <CardContent>
               <Skeleton className="h-10 w-20" />
@@ -436,7 +447,7 @@ const Analytics = () => {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Upcoming Events</CardTitle>
+              <CardTitle>{t("analytics.upcomingEvents")}</CardTitle>
             </CardHeader>
             <CardContent>
               <Skeleton className="h-10 w-20" />
@@ -444,7 +455,7 @@ const Analytics = () => {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Past Events</CardTitle>
+              <CardTitle>{t("analytics.pastEvents")}</CardTitle>
             </CardHeader>
             <CardContent>
               <Skeleton className="h-10 w-20" />
@@ -463,20 +474,24 @@ const Analytics = () => {
         </div>
         <div className="p-4 max-w-[1200px] mx-auto text-primary">
           <div className="text-3xl font-bold mb-6 flex items-center">
-            <BarChart className="mr-2" /> Analytics
+            <BarChart className="mr-2" /> {t("analytics.analytics")}
           </div>
           <Tabs defaultValue="all" className="w-full">
             <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="today">Today</TabsTrigger>
-              <TabsTrigger value="this-week">This Week</TabsTrigger>
-              <TabsTrigger value="this-month">This Month</TabsTrigger>
+              <TabsTrigger value="all">{t("analytics.all")}</TabsTrigger>
+              <TabsTrigger value="today">{t("analytics.today")}</TabsTrigger>
+              <TabsTrigger value="this-week">
+                {t("analytics.thisWeek")}
+              </TabsTrigger>
+              <TabsTrigger value="this-month">
+                {t("analytics.thisMonth")}
+              </TabsTrigger>
             </TabsList>
             <TabsContent value="all">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Done Tasks</CardTitle>
+                    <CardTitle>{t("analytics.doneTasks")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Skeleton className="h-10 w-20" />
@@ -484,7 +499,7 @@ const Analytics = () => {
                 </Card>
                 <Card>
                   <CardHeader>
-                    <CardTitle>Undone Tasks</CardTitle>
+                    <CardTitle>{t("analytics.undoneTasks")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Skeleton className="h-10 w-20" />
@@ -493,7 +508,7 @@ const Analytics = () => {
               </div>
               <Card className="mt-4 mb-4">
                 <CardHeader>
-                  <CardTitle>Completion Progress</CardTitle>
+                  <CardTitle>{t("analytics.completionProgress")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Skeleton className="h-6 w-full" />
@@ -508,7 +523,7 @@ const Analytics = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Done Today</CardTitle>
+                    <CardTitle>{t("analytics.doneToday")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Skeleton className="h-10 w-20" />
@@ -516,7 +531,7 @@ const Analytics = () => {
                 </Card>
                 <Card>
                   <CardHeader>
-                    <CardTitle>Undone Today</CardTitle>
+                    <CardTitle>{t("analytics.undoneToday")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Skeleton className="h-10 w-20" />
@@ -525,7 +540,7 @@ const Analytics = () => {
               </div>
               <Card className="mt-4">
                 <CardHeader>
-                  <CardTitle>Completion Progress</CardTitle>
+                  <CardTitle>{t("analytics.completionProgress")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Skeleton className="h-6 w-full" />
@@ -540,7 +555,7 @@ const Analytics = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Done This Week</CardTitle>
+                    <CardTitle>{t("analytics.doneThisWeek")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Skeleton className="h-10 w-20" />
@@ -548,7 +563,7 @@ const Analytics = () => {
                 </Card>
                 <Card>
                   <CardHeader>
-                    <CardTitle>Undone This Week</CardTitle>
+                    <CardTitle>{t("analytics.undoneThisWeek")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Skeleton className="h-10 w-20" />
@@ -557,7 +572,7 @@ const Analytics = () => {
               </div>
               <Card className="mt-4">
                 <CardHeader>
-                  <CardTitle>Completion Progress</CardTitle>
+                  <CardTitle>{t("analytics.completionProgress")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Skeleton className="h-6 w-full" />
@@ -572,7 +587,7 @@ const Analytics = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Done This Month</CardTitle>
+                    <CardTitle>{t("analytics.doneThisMonth")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Skeleton className="h-10 w-20" />
@@ -580,7 +595,7 @@ const Analytics = () => {
                 </Card>
                 <Card>
                   <CardHeader>
-                    <CardTitle>Undone This Month</CardTitle>
+                    <CardTitle>{t("analytics.undoneThisMonth")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Skeleton className="h-10 w-20" />
@@ -589,7 +604,7 @@ const Analytics = () => {
               </div>
               <Card className="mt-4">
                 <CardHeader>
-                  <CardTitle>Completion Progress</CardTitle>
+                  <CardTitle>{t("analytics.completionProgress")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Skeleton className="h-6 w-full" />
@@ -607,7 +622,9 @@ const Analytics = () => {
   }
 
   if (error) {
-    return <div className="p-4 text-red-500">Error: {error}</div>;
+    return (
+      <div className="p-4 text-red-500">{t("analytics.failedToFetch")}</div>
+    );
   }
 
   return (
@@ -617,21 +634,25 @@ const Analytics = () => {
       </div>
       <div className="p-4 max-w-[1200px] mx-auto text-primary">
         <div className="text-3xl font-bold mb-6 flex items-center">
-          <BarChart className="mr-2" /> Analytics
+          <BarChart className="mr-2" /> {t("analytics.analytics")}
         </div>
         <Tabs defaultValue="all" className="w-full mt-4">
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="today">Today</TabsTrigger>
-            <TabsTrigger value="this-week">This Week</TabsTrigger>
-            <TabsTrigger value="this-month">This Month</TabsTrigger>
+            <TabsTrigger value="all">{t("analytics.all")}</TabsTrigger>
+            <TabsTrigger value="today">{t("analytics.today")}</TabsTrigger>
+            <TabsTrigger value="this-week">
+              {t("analytics.thisWeek")}
+            </TabsTrigger>
+            <TabsTrigger value="this-month">
+              {t("analytics.thisMonth")}
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="all">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Done Tasks
+                    {t("analytics.doneTasks")}
                   </CardTitle>
                   <CheckCircle className="h-4 w-4 text-green-500" />
                 </CardHeader>
@@ -640,14 +661,14 @@ const Analytics = () => {
                     {analyticsData.all.done}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Number of tasks marked as complete.
+                    {t("analytics.numberTasksMarkedComplete")}
                   </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Undone Tasks
+                    {t("analytics.undoneTasks")}
                   </CardTitle>
                   <XCircle className="h-4 w-4 text-red-500" />
                 </CardHeader>
@@ -656,14 +677,14 @@ const Analytics = () => {
                     {analyticsData.all.undone}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Number of tasks that are still pending.
+                    {t("analytics.numberTasksPending")}
                   </p>
                 </CardContent>
               </Card>
             </div>
             <Card className="mt-4 mb-4 col-span-full">
               <CardHeader>
-                <CardTitle>Completion Progress</CardTitle>
+                <CardTitle>{t("analytics.completionProgress")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center space-x-2">
@@ -676,7 +697,7 @@ const Analytics = () => {
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  Overall progress of your tasks.
+                  {t("analytics.overallProgress")}
                 </p>
               </CardContent>
             </Card>
@@ -690,7 +711,7 @@ const Analytics = () => {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Done Today
+                    {t("analytics.doneToday")}
                   </CardTitle>
                   <CheckCircle className="h-4 w-4 text-green-500" />
                 </CardHeader>
@@ -699,14 +720,14 @@ const Analytics = () => {
                     {analyticsData.today.done}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Tasks completed today.
+                    {t("analytics.tasksCompletedToday")}
                   </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Undone Today
+                    {t("analytics.undoneToday")}
                   </CardTitle>
                   <XCircle className="h-4 w-4 text-red-500" />
                 </CardHeader>
@@ -715,14 +736,14 @@ const Analytics = () => {
                     {analyticsData.today.undone}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Tasks with a deadline today that are not yet complete.
+                    {t("analytics.tasksDeadlineTodayNotComplete")}
                   </p>
                 </CardContent>
               </Card>
             </div>
             <Card className="mt-4">
               <CardHeader>
-                <CardTitle>Completion Progress</CardTitle>
+                <CardTitle>{t("analytics.completionProgress")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center space-x-2">
@@ -735,7 +756,7 @@ const Analytics = () => {
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  Overall progress of your tasks due today.
+                  {t("analytics.overallProgressTasksToday")}
                 </p>
               </CardContent>
             </Card>
@@ -749,7 +770,7 @@ const Analytics = () => {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Done This Week
+                    {t("analytics.doneThisWeek")}
                   </CardTitle>
                   <CheckCircle className="h-4 w-4 text-green-500" />
                 </CardHeader>
@@ -758,14 +779,14 @@ const Analytics = () => {
                     {analyticsData.thisWeek.done}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Tasks completed this week.
+                    {t("analytics.tasksCompletedThisWeek")}
                   </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Undone This Week
+                    {t("analytics.undoneThisWeek")}
                   </CardTitle>
                   <XCircle className="h-4 w-4 text-red-500" />
                 </CardHeader>
@@ -774,14 +795,14 @@ const Analytics = () => {
                     {analyticsData.thisWeek.undone}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Tasks with a deadline this week that are not yet complete.
+                    {t("analytics.tasksDeadlineThisWeekNotComplete")}
                   </p>
                 </CardContent>
               </Card>
             </div>
             <Card className="mt-4">
               <CardHeader>
-                <CardTitle>Completion Progress</CardTitle>
+                <CardTitle>{t("analytics.completionProgress")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center space-x-2">
@@ -794,7 +815,7 @@ const Analytics = () => {
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  Overall progress of your tasks due this week.
+                  {t("analytics.overallProgressTasksThisWeek")}
                 </p>
               </CardContent>
             </Card>
@@ -808,7 +829,7 @@ const Analytics = () => {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Done This Month
+                    {t("analytics.doneThisMonth")}
                   </CardTitle>
                   <CheckCircle className="h-4 w-4 text-green-500" />
                 </CardHeader>
@@ -817,14 +838,14 @@ const Analytics = () => {
                     {analyticsData.thisMonth.done}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Tasks completed this month.
+                    {t("analytics.tasksCompletedThisMonth")}
                   </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Undone This Month
+                    {t("analytics.undoneThisMonth")}
                   </CardTitle>
                   <XCircle className="h-4 w-4 text-red-500" />
                 </CardHeader>
@@ -833,14 +854,14 @@ const Analytics = () => {
                     {analyticsData.thisMonth.undone}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Tasks with a deadline this month that are not yet complete.
+                    {t("analytics.tasksDeadlineThisMonthNotComplete")}
                   </p>
                 </CardContent>
               </Card>
             </div>
             <Card className="mt-4">
               <CardHeader>
-                <CardTitle>Completion Progress</CardTitle>
+                <CardTitle>{t("analytics.completionProgress")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center space-x-2">
@@ -853,7 +874,7 @@ const Analytics = () => {
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  Overall progress of your tasks due this month.
+                  {t("analytics.overallProgressTasksThisMonth")}
                 </p>
               </CardContent>
             </Card>

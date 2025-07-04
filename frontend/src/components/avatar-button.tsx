@@ -23,19 +23,21 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 function AvatarButton() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleSignOut = async () => {
     try {
       await signOut();
-      toast.success("Signed out successfully!");
+      toast.success(t("avatar.signedOutSuccessfully"));
       navigate("/");
     } catch (error) {
       console.error("Sign-out failed:", error);
-      toast.error("Failed to sign out. Please try again.");
+      toast.error(t("avatar.failedToSignOut"));
     }
   };
 
@@ -43,7 +45,11 @@ function AvatarButton() {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button size="icon" variant="outline" aria-label="Open account menu">
+          <Button
+            size="icon"
+            variant="outline"
+            aria-label={t("avatar.openAccountMenu")}
+          >
             <User className="w-8 h-8 shrink-0 text-muted-foreground" />
           </Button>
         </DropdownMenuTrigger>
@@ -62,7 +68,7 @@ function AvatarButton() {
             )}
             <div className="flex min-w-0 flex-col">
               <span className="truncate text-sm font-medium text-foreground">
-                {user?.user_metadata?.full_name || "Anonymous User"}
+                {user?.user_metadata?.full_name || t("avatar.anonymousUser")}
               </span>
               <span className="truncate text-xs font-normal text-muted-foreground">
                 {user?.user_metadata?.email}
@@ -78,7 +84,7 @@ function AvatarButton() {
                 className="opacity-60"
                 aria-hidden="true"
               />
-              <span>Home</span>
+              <span>{t("avatar.home")}</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate("/settings")}>
               <Settings
@@ -87,7 +93,7 @@ function AvatarButton() {
                 className="opacity-60"
                 aria-hidden="true"
               />
-              <span>Settings</span>
+              <span>{t("avatar.settings")}</span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
@@ -99,7 +105,7 @@ function AvatarButton() {
                 className="opacity-60"
                 aria-hidden="true"
               />
-              <span>Tasks</span>
+              <span>{t("avatar.tasks")}</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate("/events")}>
               <Calendar
@@ -108,7 +114,7 @@ function AvatarButton() {
                 className="opacity-60"
                 aria-hidden="true"
               />
-              <span>Events</span>
+              <span>{t("avatar.events")}</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate("/daily")}>
               <ClipboardCheck
@@ -117,7 +123,7 @@ function AvatarButton() {
                 className="opacity-60"
                 aria-hidden="true"
               />
-              <span>Daily</span>
+              <span>{t("avatar.daily")}</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate("/dashboard")}>
               <LayoutDashboard
@@ -126,7 +132,7 @@ function AvatarButton() {
                 className="opacity-60"
                 aria-hidden="true"
               />
-              <span>Dashboard</span>
+              <span>{t("avatar.dashboard")}</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate("/analytics")}>
               <BarChart
@@ -135,7 +141,7 @@ function AvatarButton() {
                 className="opacity-60"
                 aria-hidden="true"
               />
-              <span>Analytics</span>
+              <span>{t("avatar.analytics")}</span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
@@ -146,7 +152,7 @@ function AvatarButton() {
               className="opacity-60"
               aria-hidden="true"
             />
-            <span>Logout</span>
+            <span>{t("avatar.logout")}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -22,6 +22,7 @@ import {
   Clock,
   Loader2,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { cn, formatTime } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -65,6 +66,7 @@ export function FullScreenCalendar({
   data,
   onEventChange,
 }: FullScreenCalendarProps) {
+  const { t } = useTranslation();
   const today = startOfToday();
   const [selectedDay, setSelectedDay] = React.useState(today);
   const [currentMonth, setCurrentMonth] = React.useState(
@@ -183,7 +185,7 @@ export function FullScreenCalendar({
         </div>
 
         <div className="relative flex flex-col items-center gap-4 md:flex-row md:gap-6">
-          <div className="relative w-full lg:w-48">
+          <div className="relative w-full lg:w-60">
             <SearchIcon
               size={16}
               strokeWidth={2}
@@ -192,7 +194,7 @@ export function FullScreenCalendar({
             />
             <Input
               type="text"
-              placeholder="Search events..."
+              placeholder={t("calendar.searchEvents")}
               className="w-full ps-9"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -207,19 +209,19 @@ export function FullScreenCalendar({
               className="rounded-none shadow-none first:rounded-s-lg last:rounded-e-lg focus-visible:z-10"
               variant="outline"
               size="icon"
-              aria-label="Navigate to previous month"
+              aria-label={t("calendar.prevMonth")}
             >
               <ChevronLeftIcon size={16} strokeWidth={2} aria-hidden="true" />
             </Button>
             <Button onClick={goToToday} variant="outline">
-              Today
+              {t("calendar.today")}
             </Button>
             <Button
               onClick={nextMonth}
               className="rounded-none shadow-none first:rounded-s-lg last:rounded-e-lg focus-visible:z-10"
               variant="outline"
               size="icon"
-              aria-label="Navigate to next month"
+              aria-label={t("calendar.nextMonth")}
             >
               <ChevronRightIcon size={16} strokeWidth={2} aria-hidden="true" />
             </Button>
@@ -236,7 +238,7 @@ export function FullScreenCalendar({
             onClick={() => setIsNewEventDialogOpen(true)}
           >
             <PlusCircleIcon size={16} strokeWidth={2} aria-hidden="true" />
-            <span>New Event</span>
+            <span>{t("calendar.newEvent")}</span>
           </Button>
         </div>
       </div>
@@ -245,13 +247,13 @@ export function FullScreenCalendar({
       <div className="lg:flex lg:flex-auto lg:flex-col">
         {/* Week Days Header */}
         <div className="grid grid-cols-7 border text-center text-xs font-semibold leading-6 lg:flex-none">
-          <div className="border-r py-2.5">Sun</div>
-          <div className="border-r py-2.5">Mon</div>
-          <div className="border-r py-2.5">Tue</div>
-          <div className="border-r py-2.5">Wed</div>
-          <div className="border-r py-2.5">Thu</div>
-          <div className="border-r py-2.5">Fri</div>
-          <div className="py-2.5">Sat</div>
+          <div className="border-r py-2.5">{t("calendar.sun")}</div>
+          <div className="border-r py-2.5">{t("calendar.mon")}</div>
+          <div className="border-r py-2.5">{t("calendar.tue")}</div>
+          <div className="border-r py-2.5">{t("calendar.wed")}</div>
+          <div className="border-r py-2.5">{t("calendar.thu")}</div>
+          <div className="border-r py-2.5">{t("calendar.fri")}</div>
+          <div className="py-2.5">{t("calendar.sat")}</div>
         </div>
 
         {/* Calendar Days */}
@@ -474,12 +476,13 @@ export function FullScreenCalendar({
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={handleNewEventSubmit}>
             <DialogHeader>
-              <DialogTitle>Create New Event</DialogTitle>
+              <DialogTitle>{t("calendar.createNewEvent")}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="title" className="text-right">
-                  Title<span className="text-destructive">*</span>
+                  {t("calendar.title")}
+                  <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="title"
@@ -493,7 +496,8 @@ export function FullScreenCalendar({
               </div>
               <div className="grid grid-cols-4 items-start gap-5">
                 <Label className="text-right pt-2">
-                  Date&Time<span className="text-destructive">*</span>
+                  {t("calendar.dateTime")}
+                  <span className="text-destructive">*</span>
                 </Label>
                 <div className="col-span-3">
                   <div className="rounded-lg border border-border">
@@ -518,7 +522,7 @@ export function FullScreenCalendar({
                     <div className="border-t border-border p-3">
                       <div className="flex items-center gap-3">
                         <Label htmlFor="event-time" className="text-xs">
-                          Enter time
+                          {t("calendar.enterTime")}
                         </Label>
                         <div className="relative grow">
                           <Input
@@ -562,16 +566,16 @@ export function FullScreenCalendar({
                 variant="outline"
                 onClick={() => setIsNewEventDialogOpen(false)}
               >
-                Cancel
+                {t("calendar.cancel")}
               </Button>
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <Loader2 className="animate-spin" />
-                    Creating...
+                    {t("calendar.creating")}
                   </>
                 ) : (
-                  "Create Event"
+                  t("calendar.createEvent")
                 )}
               </Button>
             </DialogFooter>

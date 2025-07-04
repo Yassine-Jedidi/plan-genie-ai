@@ -17,6 +17,7 @@ import { User, Upload } from "lucide-react";
 import { AxiosError } from "axios";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "react-i18next";
 
 interface ProfileDialogProps {
   open: boolean;
@@ -33,6 +34,7 @@ export function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { t } = useTranslation();
 
   // Check if user is authenticated with Google
   const isGoogleAuth = user?.app_metadata?.providers?.includes("google");
@@ -144,9 +146,9 @@ export function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Edit Profile</DialogTitle>
+            <DialogTitle>{t("profileDialog.editProfile")}</DialogTitle>
             <DialogDescription>
-              Update your profile information here. Click save when you're done.
+              {t("profileDialog.updateProfileInfo")}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -183,7 +185,7 @@ export function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
                 htmlFor="avatarUpload"
                 className="text-sm text-muted-foreground cursor-pointer"
               >
-                Click to change avatar
+                {t("profileDialog.clickToChangeAvatar")}
               </Label>
             </div>
 
@@ -214,14 +216,14 @@ export function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
                         d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                       />
                     </svg>
-                    Google Account
+                    {t("profileDialog.googleAccount")}
                   </Badge>
                 </div>
 
                 {googlePicture && (
                   <div className="flex flex-col items-center gap-2">
                     <Label className="text-sm text-muted-foreground">
-                      Original Google Profile Photo
+                      {t("profileDialog.originalGooglePhoto")}
                     </Label>
                     <div className="h-16 w-16 rounded-full overflow-hidden border border-border">
                       <img
@@ -236,7 +238,7 @@ export function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
             )}
 
             <div className="grid gap-2">
-              <Label htmlFor="fullName">Full Name</Label>
+              <Label htmlFor="fullName">{t("profileDialog.fullName")}</Label>
               <Input
                 id="fullName"
                 name="fullName"
@@ -246,7 +248,7 @@ export function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("profileDialog.email")}</Label>
               <Input
                 id="email"
                 name="email"
@@ -255,7 +257,7 @@ export function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
                 disabled
               />
               <p className="text-xs text-muted-foreground">
-                Email cannot be changed
+                {t("profileDialog.emailCannotBeChanged")}
               </p>
             </div>
           </div>
@@ -266,10 +268,12 @@ export function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
             >
-              Cancel
+              {t("profileDialog.cancel")}
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save changes"}
+              {isLoading
+                ? t("profileDialog.saving")
+                : t("profileDialog.saveChanges")}
             </Button>
           </DialogFooter>
         </form>

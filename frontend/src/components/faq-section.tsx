@@ -9,6 +9,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "react-i18next";
 
 const Tabs = TabsPrimitive.Root;
 
@@ -171,37 +172,44 @@ const FAQ_SECTIONS: Record<ViewType, FAQSection> = {
   },
 };
 
-const FAQAccordion: React.FC<FAQAccordionProps> = ({ category, items }) => (
-  <div className="">
-    <Badge variant={"outline"} className="py-2 px-6 rounded-md">
-      {category}
-    </Badge>
-    <Accordion type="single" collapsible className="w-full">
-      {items.map((faq) => (
-        <AccordionItem key={faq.id} value={faq.id}>
-          <AccordionTrigger className="text-left hover:no-underline">
-            {faq.question}
-          </AccordionTrigger>
-          <AccordionContent>{faq.answer}</AccordionContent>
-        </AccordionItem>
-      ))}
-    </Accordion>
-  </div>
-);
+const FAQAccordion: React.FC<FAQAccordionProps> = ({ category, items }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="">
+      <Badge variant={"outline"} className="py-2 px-6 rounded-md">
+        {t(`faqSection.category.${category}`)}
+      </Badge>
+      <Accordion type="single" collapsible className="w-full">
+        {items.map((faq) => (
+          <AccordionItem key={faq.id} value={faq.id}>
+            <AccordionTrigger className="text-left hover:no-underline">
+              {t(`faqSection.questions.${faq.id}.question`)}
+            </AccordionTrigger>
+            <AccordionContent>
+              {t(`faqSection.questions.${faq.id}.answer`)}
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </div>
+  );
+};
 
 export const Component = () => {
+  const { t } = useTranslation();
   const [activeView, setActiveView] = useState<ViewType>("general");
 
   return (
     <div className="container mx-auto px-4 py-16 max-w-4xl">
       <header className="text-center mb-12">
-        <p className="text-sm font-medium text-primary mb-2">FAQs</p>
+        <p className="text-sm font-medium text-primary mb-2">
+          {t("faqSection.faqs")}
+        </p>
         <h1 className="text-4xl font-bold tracking-tight mb-4">
-          Frequently asked questions
+          {t("faqSection.frequentlyAskedQuestions")}
         </h1>
         <p className="text-xl text-muted-foreground">
-          Need help with something? Here are our most frequently asked
-          questions.
+          {t("faqSection.needHelp")}
         </p>
       </header>
 
@@ -212,9 +220,15 @@ export const Component = () => {
           className="mb-8 max-w-xl border rounded-xl bg-background"
         >
           <TabsList className="w-full justify-start h-12 p-1">
-            <TabsTrigger value="general">General FAQs</TabsTrigger>
-            <TabsTrigger value="icons">Integrations</TabsTrigger>
-            <TabsTrigger value="library">Features</TabsTrigger>
+            <TabsTrigger value="general">
+              {t("faqSection.generalFaqs")}
+            </TabsTrigger>
+            <TabsTrigger value="icons">
+              {t("faqSection.integrations")}
+            </TabsTrigger>
+            <TabsTrigger value="library">
+              {t("faqSection.features")}
+            </TabsTrigger>
           </TabsList>
         </Tabs>
       </div>

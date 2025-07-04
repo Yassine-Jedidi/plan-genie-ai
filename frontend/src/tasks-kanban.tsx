@@ -16,22 +16,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 // Make sure you have this import for DndContext if needed
 // import { DndContext } from '@dnd-kit/core';
-
-// Define statuses
-const statuses = [
-  { id: "1", name: "Planned", color: "#6B7280" },
-  { id: "2", name: "In Progress", color: "#F59E0B" },
-  { id: "3", name: "Done", color: "#10B981" },
-];
-
-// Define priority colors
-const priorityColors: Record<string, string> = {
-  Low: "bg-green-100 text-green-800 border-green-300",
-  Medium: "bg-yellow-100 text-yellow-800 border-yellow-300",
-  High: "bg-red-100 text-red-800 border-red-300",
-};
 
 // Tasks per page for pagination
 const TASKS_PER_PAGE = 4;
@@ -41,6 +28,7 @@ interface TasksKanbanProps {
 }
 
 const TasksKanban: FC<TasksKanbanProps> = ({ tasks = [] }) => {
+  const { t } = useTranslation();
   const [localTasks, setLocalTasks] = useState<Task[]>([]);
   const [loadingTasks, setLoadingTasks] = useState(false);
   const [currentPage, setCurrentPage] = useState<Record<string, number>>({
@@ -48,6 +36,29 @@ const TasksKanban: FC<TasksKanbanProps> = ({ tasks = [] }) => {
     "In Progress": 1,
     Done: 1,
   });
+
+  // Define statuses and priorityColors after t is available
+  const statuses = [
+    {
+      id: "1",
+      value: "Planned",
+      label: t("tasksKanban.planned"),
+      color: "#6B7280",
+    },
+    {
+      id: "2",
+      value: "In Progress",
+      label: t("tasksKanban.inProgress"),
+      color: "#F59E0B",
+    },
+    { id: "3", value: "Done", label: t("tasksKanban.done"), color: "#10B981" },
+  ];
+
+  const priorityColors: Record<string, string> = {
+    Low: "bg-green-100 text-green-800 border-green-300",
+    Medium: "bg-yellow-100 text-yellow-800 border-yellow-300",
+    High: "bg-red-100 text-red-800 border-red-300",
+  };
 
   // Use passed tasks or fetch them if not provided
   useEffect(() => {
@@ -62,7 +73,7 @@ const TasksKanban: FC<TasksKanbanProps> = ({ tasks = [] }) => {
           setLocalTasks(fetchedTasks);
         } catch (error) {
           console.error("Error fetching tasks:", error);
-          toast.error("Failed to load tasks. Please try again.");
+          toast.error(t("tasksKanban.failedToLoad"));
         } finally {
           setLoadingTasks(false);
         }
@@ -79,7 +90,7 @@ const TasksKanban: FC<TasksKanbanProps> = ({ tasks = [] }) => {
       return;
     }
 
-    const status = statuses.find((status) => status.name === over.id);
+    const status = statuses.find((status) => status.value === over.id);
 
     if (!status) {
       return;
@@ -93,18 +104,18 @@ const TasksKanban: FC<TasksKanbanProps> = ({ tasks = [] }) => {
     }
 
     // If the task is already in this status, do nothing to prevent spam
-    if (draggedTask.status === status.name) {
+    if (draggedTask.status === status.value) {
       console.log("Task already in this status, ignoring drop");
       return;
     }
 
-    console.log("Updating task:", draggedTask.id, "to status:", status.name);
+    console.log("Updating task:", draggedTask.id, "to status:", status.value);
 
     // Update local state first (optimistic update)
     setLocalTasks(
       localTasks.map((task) => {
         if (task.id === draggedTask.id) {
-          return { ...task, status: status.name };
+          return { ...task, status: status.value };
         }
         return task;
       })
@@ -112,12 +123,14 @@ const TasksKanban: FC<TasksKanbanProps> = ({ tasks = [] }) => {
 
     try {
       // The taskId must be a string from the actual task
-      await taskService.updateTask({ ...draggedTask, status: status.name });
+      await taskService.updateTask({ ...draggedTask, status: status.value });
       console.log("Backend update successful for task ID:", draggedTask.id);
-      toast.success(`Task moved to ${status.name}`, { duration: 1000 });
+      toast.success(t("tasksKanban.moveSuccess", { status: status.label }), {
+        duration: 1000,
+      });
     } catch (error) {
       console.error("Error updating task status:", error);
-      toast.error("Failed to update task status");
+      toast.error(t("tasksKanban.moveError"));
 
       // Revert the UI change if the API call fails
       setLocalTasks(localTasks);
@@ -125,14 +138,14 @@ const TasksKanban: FC<TasksKanbanProps> = ({ tasks = [] }) => {
   };
 
   // Map tasks to statuses with pagination
-  const getTasksByStatus = (statusName: string) => {
+  const getTasksByStatus = (statusValue: string) => {
     // Get tasks with matching status
     const tasksWithStatus = localTasks.filter(
-      (task) => task.status === statusName
+      (task) => task.status === statusValue
     );
 
     // Get current page for this status
-    const page = currentPage[statusName] || 1;
+    const page = currentPage[statusValue] || 1;
 
     // Calculate pagination
     const startIndex = (page - 1) * TASKS_PER_PAGE;
@@ -145,10 +158,10 @@ const TasksKanban: FC<TasksKanbanProps> = ({ tasks = [] }) => {
     };
   };
 
-  const handlePageChange = (statusName: string, newPage: number) => {
+  const handlePageChange = (statusValue: string, newPage: number) => {
     setCurrentPage((prev) => ({
       ...prev,
-      [statusName]: newPage,
+      [statusValue]: newPage,
     }));
   };
 
@@ -182,21 +195,24 @@ const TasksKanban: FC<TasksKanbanProps> = ({ tasks = [] }) => {
               tasks: statusTasks,
               totalTasks,
               totalPages,
-            } = getTasksByStatus(status.name);
-            const currentStatusPage = currentPage[status.name] || 1;
+            } = getTasksByStatus(status.value);
+            const currentStatusPage = currentPage[status.value] || 1;
 
             return (
               <KanbanBoard
-                key={status.name}
-                id={status.name}
+                key={status.value}
+                id={status.value}
                 className="flex-1 min-w-[280px] flex flex-col h-full bg-primary/10 dark:bg-primary/20"
               >
                 {/* Header section */}
                 <div className="mb-2">
-                  <KanbanHeader name={status.name} color={status.color} />
+                  <KanbanHeader name={status.label} color={status.color} />
                   <div className="flex items-center justify-between mt-1 px-2">
                     <span className="text-xs text-muted-foreground">
-                      {totalTasks} {totalTasks === 1 ? "task" : "tasks"}
+                      {totalTasks}{" "}
+                      {totalTasks === 1
+                        ? t("tasksKanban.task")
+                        : t("tasksKanban.tasks")}
                     </span>
                   </div>
                 </div>
@@ -205,7 +221,7 @@ const TasksKanban: FC<TasksKanbanProps> = ({ tasks = [] }) => {
                 <KanbanCards className="space-y-3 flex-1 p-2">
                   {statusTasks.length === 0 ? (
                     <div className="text-center py-4 text-sm text-muted-foreground">
-                      No tasks found
+                      {t("tasksKanban.noTasks")}
                     </div>
                   ) : (
                     statusTasks.map((task, index) => (
@@ -213,7 +229,7 @@ const TasksKanban: FC<TasksKanbanProps> = ({ tasks = [] }) => {
                         key={task.id}
                         id={task.id}
                         name={task.title}
-                        parent={status.name}
+                        parent={status.value}
                         index={index}
                         // Important: Make sure the card is not position:relative
                         className="p-3 shadow-sm hover:shadow mb-2"
@@ -224,20 +240,25 @@ const TasksKanban: FC<TasksKanbanProps> = ({ tasks = [] }) => {
                               {task.title}
                             </p>
                             <p className="m-0 text-xs text-muted-foreground">
-                              Priority:{" "}
+                              {t("tasksKanban.priority")}:{" "}
                               {task.priority ? (
                                 <Badge
                                   variant="outline"
                                   className={cn(
-                                    "px-2 py-0.5 text-xs h-5", // small size styles
+                                    "px-2 py-0.5 text-xs h-5",
                                     priorityColors[task.priority] ||
                                       "bg-muted-foreground/60 text-primary-foreground"
                                   )}
                                 >
-                                  {task.priority}
+                                  {task.priority === "Low" &&
+                                    t("tasksKanban.low")}
+                                  {task.priority === "Medium" &&
+                                    t("tasksKanban.medium")}
+                                  {task.priority === "High" &&
+                                    t("tasksKanban.high")}
                                 </Badge>
                               ) : (
-                                "Priority: None"
+                                t("tasksKanban.priorityNone")
                               )}
                             </p>
                           </div>
@@ -268,21 +289,24 @@ const TasksKanban: FC<TasksKanbanProps> = ({ tasks = [] }) => {
                       size="sm"
                       disabled={currentStatusPage === 1}
                       onClick={() =>
-                        handlePageChange(status.name, currentStatusPage - 1)
+                        handlePageChange(status.value, currentStatusPage - 1)
                       }
                       className="h-8 w-8 p-0"
                     >
                       &lt;
                     </Button>
                     <span className="text-xs">
-                      Page {currentStatusPage} of {totalPages}
+                      {t("tasksKanban.page", {
+                        current: currentStatusPage,
+                        total: totalPages,
+                      })}
                     </span>
                     <Button
                       variant="outline"
                       size="sm"
                       disabled={currentStatusPage === totalPages}
                       onClick={() =>
-                        handlePageChange(status.name, currentStatusPage + 1)
+                        handlePageChange(status.value, currentStatusPage + 1)
                       }
                       className="h-8 w-8 p-0"
                     >

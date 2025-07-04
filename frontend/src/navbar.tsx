@@ -8,12 +8,15 @@ import { useEffect, useState } from "react";
 import { motion, useScroll } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitch } from "@/components/language-switch";
 
 function Navbar() {
   const { user, loading } = useAuth();
   const [menuState, setMenuState] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { scrollYProgress } = useScroll();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const unsubscribe = scrollYProgress.on("change", (latest) => {
@@ -46,12 +49,14 @@ function Navbar() {
                 to="/"
                 className="flex items-center space-x-2 text-2xl font-bold"
               >
-                Plan Genie AI
+                {t("navbar.logo")}
               </Link>
 
               <button
                 onClick={() => setMenuState(!menuState)}
-                aria-label={menuState ? "Close Menu" : "Open Menu"}
+                aria-label={
+                  menuState ? t("navbar.closeMenu") : t("navbar.openMenu")
+                }
                 className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden"
               >
                 <Menu className="group-data-[state=active]:rotate-180 group-data-[state=active]:scale-0 group-data-[state=active]:opacity-0 m-auto size-6 duration-200" />
@@ -64,6 +69,7 @@ function Navbar() {
               {/* Controls (Mode Toggle, Auth) */}
               <div className="flex items-center gap-3">
                 <ModeToggle />
+                <LanguageSwitch />
                 {loading ? (
                   <div className="flex gap-3">
                     <Skeleton className="h-9 w-20" />
@@ -80,12 +86,12 @@ function Navbar() {
                             size="sm"
                             className="bg-secondary text-primary hover:bg-secondary/80"
                           >
-                            <span>Sign In</span>
+                            <span>{t("navbar.signIn")}</span>
                           </Button>
                         </Link>
                         <Link to="/sign-up">
                           <Button size="sm">
-                            <span>Sign Up</span>
+                            <span>{t("navbar.signUp")}</span>
                           </Button>
                         </Link>
                       </div>

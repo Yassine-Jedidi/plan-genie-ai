@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { Event } from "@/services/eventService";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 import {
   Dialog,
@@ -70,6 +71,8 @@ export function EventDialog({
   onEditEvent,
   onDeleteEvent,
 }: EventDialogProps) {
+  const { t } = useTranslation();
+
   // Group events by morning, afternoon, evening and night
   const groupedEvents: Record<string, Event[]> = {
     earlyMorning: events.filter((event) => {
@@ -126,11 +129,11 @@ export function EventDialog({
   const getFormattedTimePeriod = (period: string) => {
     switch (period) {
       case "earlyMorning":
-        return "Early Morning";
+        return t("eventDialog.earlyMorning");
       case "lateNight":
-        return "Late Night";
+        return t("eventDialog.lateNight");
       default:
-        return period.charAt(0).toUpperCase() + period.slice(1);
+        return t(`eventDialog.${period}`);
     }
   };
 
@@ -155,8 +158,10 @@ export function EventDialog({
                       <Calendar className="h-4 w-4 text-muted-foreground" />
                       <span>
                         {events.length === 1
-                          ? "1 event scheduled"
-                          : `${events.length} events scheduled`}
+                          ? t("eventDialog.oneEventScheduled")
+                          : t("eventDialog.nEventsScheduled", {
+                              count: events.length,
+                            })}
                       </span>
                     </DialogDescription>
                   </div>
@@ -340,10 +345,13 @@ export function EventDialog({
                     <Calendar className="h-8 w-8 text-muted-foreground" />
                   </motion.div>
                   <div className="text-center space-y-2">
-                    <h3 className="font-medium text-lg">No events scheduled</h3>
+                    <h3 className="font-medium text-lg">
+                      {t("eventDialog.noEventsScheduled")}
+                    </h3>
                     <p className="text-muted-foreground text-sm max-w-xs">
-                      There are no events scheduled for{" "}
-                      {format(selectedDate, "MMMM d, yyyy")}.
+                      {t("eventDialog.noEventsForDate", {
+                        date: format(selectedDate, "MMMM d, yyyy"),
+                      })}
                     </p>
                   </div>
                 </motion.div>

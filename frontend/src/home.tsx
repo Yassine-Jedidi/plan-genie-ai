@@ -6,6 +6,7 @@ import { PromptInputWithActions } from "./components/input";
 import { AnalysisResults } from "@/components/analysis-results";
 import { ShiningText } from "./components/ui/shining-text";
 import { WelcomeTextLoop } from "./components/welcome";
+import { useTranslation } from "react-i18next";
 
 function HomePage() {
   const [inputText, setInputText] = useState("");
@@ -16,6 +17,7 @@ function HomePage() {
   const [savedResults, setSavedResults] = useState<Set<number>>(new Set());
   const [isFromFileUpload, setIsFromFileUpload] = useState(false);
   const [shouldResetFile, setShouldResetFile] = useState(false);
+  const { t } = useTranslation();
 
   // Handle file reset callback
   const handleFileReset = useCallback(() => {
@@ -51,7 +53,7 @@ function HomePage() {
       .filter((line) => line.length > 0);
 
     if (sentences.length === 0) {
-      toast.error("No valid text found to analyze", {
+      toast.error(t("home.noValidText"), {
         position: "top-right",
       });
       return [];
@@ -71,7 +73,7 @@ function HomePage() {
 
     // Show a progress toast that we'll update
     const toastId = toast.loading(
-      `Analyzing sentences (0/${sentences.length})...`,
+      t("home.analyzingSentences", { completed: 0, total: sentences.length }),
       {
         position: "top-right",
       }
@@ -87,7 +89,10 @@ function HomePage() {
 
       completedCount++;
       toast.loading(
-        `Analyzing sentences (${completedCount}/${sentences.length})...`,
+        t("home.analyzingSentences", {
+          completed: completedCount,
+          total: sentences.length,
+        }),
         {
           id: toastId,
           position: "top-right",
@@ -97,12 +102,12 @@ function HomePage() {
 
     // Update final toast status
     if (results.length > 0) {
-      toast.success(`Analyzed ${results.length} sentences successfully`, {
+      toast.success(t("home.analyzedSuccessfully", { count: results.length }), {
         id: toastId,
         position: "top-right",
       });
     } else {
-      toast.error("Failed to analyze any sentences", {
+      toast.error(t("home.failedToAnalyze"), {
         id: toastId,
         position: "top-right",
       });
@@ -139,7 +144,7 @@ function HomePage() {
     }
 
     if (!contentToAnalyze) {
-      toast.error("Please enter some text or upload a file to analyze", {
+      toast.error(t("home.enterTextOrUpload"), {
         position: "top-right",
       });
       return;
@@ -164,16 +169,14 @@ function HomePage() {
           setShouldResetFile(true);
         }
       } else {
-        toast.error("No results were generated from the analysis", {
+        toast.error(t("home.noResultsGenerated"), {
           position: "top-right",
         });
       }
     } catch (error) {
       console.error("Text analysis failed:", error);
       toast.error(
-        error instanceof Error
-          ? error.message
-          : "Failed to analyze text. Please try again.",
+        error instanceof Error ? error.message : t("home.failedToAnalyzeText"),
         {
           position: "top-right",
         }
@@ -288,18 +291,23 @@ function HomePage() {
                       disabled={currentResultIndex === 0}
                       className="px-4 py-2 bg-primary/90 rounded disabled:opacity-50"
                     >
-                      Previous
+                      {t("home.previous")}
                     </button>
                     <span className="text-foreground">
-                      Result {currentResultIndex + 1} of {allResults.length}
-                      {savedResults.has(currentResultIndex) ? " (Saved)" : ""}
+                      {t("home.resultOf", {
+                        current: currentResultIndex + 1,
+                        total: allResults.length,
+                      })}
+                      {savedResults.has(currentResultIndex)
+                        ? ` (${t("home.saved")})`
+                        : ""}
                     </span>
                     <button
                       onClick={showNextResult}
                       disabled={currentResultIndex === allResults.length - 1}
                       className="px-4 py-2 bg-primary/90 rounded disabled:opacity-50"
                     >
-                      Next
+                      {t("home.next")}
                     </button>
                   </div>
                 )}
@@ -313,7 +321,7 @@ function HomePage() {
             )}
             {analyzing && (
               <div className="flex justify-center items-center h-full">
-                <ShiningText text={"Plan Genie AI is thinking..."} />
+                <ShiningText text={t("home.thinking") + "..."} />
               </div>
             )}
             {!analyzing && !results && (
@@ -332,7 +340,7 @@ function HomePage() {
             isLoading={analyzing}
             resetFile={shouldResetFile}
             onFileReset={handleFileReset}
-            placeholder="Enter your task text here... e.g., 'I need to prepare a presentation for the marketing team by next Friday. It's urgent!'"
+            placeholder={t("home.inputPlaceholder")}
           />
         </div>
       </div>

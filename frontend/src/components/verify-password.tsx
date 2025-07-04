@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useId, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface VerifyPasswordProps {
   password: string;
@@ -11,6 +12,7 @@ function VerifyPassword({
   password,
   onVerifiedPasswordChange,
 }: VerifyPasswordProps) {
+  const { t } = useTranslation();
   const id = useId();
   const [verifyPassword, setVerifyPassword] = useState("");
   const [isVisible, setIsVisible] = useState(false);
@@ -33,7 +35,7 @@ function VerifyPassword({
 
   return (
     <div className="space-y-2">
-      <Label htmlFor={id}>Verify Password</Label>
+      <Label htmlFor={id}>{t("verifyPassword.label")}</Label>
       <div className="relative">
         {/* Overlay for colored characters */}
         <div className="absolute inset-y-0 left-3 flex items-center font-mono text-sm pointer-events-none">
@@ -70,7 +72,9 @@ function VerifyPassword({
           className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
           type="button"
           onClick={() => setIsVisible((prev) => !prev)}
-          aria-label={isVisible ? "Hide password" : "Show password"}
+          aria-label={
+            isVisible ? t("verifyPassword.hide") : t("verifyPassword.show")
+          }
           aria-pressed={isVisible}
         ></button>
       </div>
@@ -82,7 +86,7 @@ function VerifyPassword({
             allMatch ? "text-emerald-600" : "text-red-500"
           }`}
         >
-          {allMatch ? "Passwords match!" : "Passwords do not match"}
+          {allMatch ? t("verifyPassword.match") : t("verifyPassword.noMatch")}
         </p>
       )}
     </div>

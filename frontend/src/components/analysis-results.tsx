@@ -23,6 +23,7 @@ import {
 import { ChevronsUpDown } from "lucide-react";
 import { formatDate as formatDateUtil } from "@/lib/utils";
 import * as chrono from "chrono-node";
+import { useTranslation } from "react-i18next";
 
 // Create custom select components
 interface SelectProps {
@@ -31,19 +32,27 @@ interface SelectProps {
 }
 
 const Select = ({ value, onValueChange }: SelectProps) => {
+  const { t } = useTranslation();
+
+  const getDisplayValue = (val: string) => {
+    if (val === "Task") return t("analysis.task");
+    if (val === "Event") return t("analysis.event");
+    return val;
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="w-[200px] justify-between">
-          {value} <ChevronsUpDown className="ml-2 h-4 w-4" />
+          {getDisplayValue(value)} <ChevronsUpDown className="ml-2 h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem onSelect={() => onValueChange("Task")}>
-          Task
+          {t("analysis.task")}
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={() => onValueChange("Event")}>
-          Event
+          {t("analysis.event")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -112,6 +121,7 @@ export function AnalysisResults({
   onSave,
   isSaved = false,
 }: AnalysisResultsProps) {
+  const { t } = useTranslation();
   const [editingEntity, setEditingEntity] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [saving, setSaving] = useState(false);
@@ -490,10 +500,10 @@ export function AnalysisResults({
   // Helper function to get a display-friendly name for entity types
   const getEntityDisplayName = (entityType: string) => {
     const displayNames: Record<string, string> = {
-      TITRE: "Title",
-      DELAI: "Deadline",
-      PRIORITE: "Priority",
-      DATE_HEURE: "Date",
+      TITRE: t("analysis.title"),
+      DELAI: t("analysis.deadline"),
+      PRIORITE: t("analysis.priority"),
+      DATE_HEURE: t("analysis.date"),
     };
     return displayNames[entityType] || entityType;
   };
@@ -832,12 +842,12 @@ export function AnalysisResults({
     <Card className="shadow-md border border-primary/30 overflow-hidden bg-gradient-to-br from-background to-muted/30">
       <CardHeader className="p-3 pb-0">
         <CardTitle className="text-lg flex justify-between items-center">
-          <span>Analysis Results</span>
+          <span>{t("analysis.resultsTitle")}</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="p-3 space-y-4">
         <div className="flex items-center gap-3">
-          <h3 className="text-sm font-medium">Type:</h3>
+          <h3 className="text-sm font-medium">{t("analysis.type")}</h3>
           <Select value={results.type} onValueChange={handleTypeChange} />
         </div>
 
@@ -865,7 +875,7 @@ export function AnalysisResults({
             onClick={() => setResults(null)}
             className="text-xs h-8"
           >
-            Clear
+            {t("analysis.clear")}
           </Button>
           <Button
             size="sm"
@@ -879,12 +889,13 @@ export function AnalysisResults({
           >
             {saving ? (
               <div className="flex items-center gap-2">
-                <Loader2 className="h-3 w-3 animate-spin" /> Saving...
+                <Loader2 className="h-3 w-3 animate-spin" />{" "}
+                {t("analysis.saving")}
               </div>
             ) : isSaved ? (
-              "Saved"
+              t("analysis.saved")
             ) : (
-              "Save"
+              t("analysis.save")
             )}
           </Button>
         </CardFooter>

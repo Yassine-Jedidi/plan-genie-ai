@@ -53,8 +53,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useTranslation } from "react-i18next";
 
 const BilanPage = () => {
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [bilan, setBilan] = useState<Bilan | null>(null);
   const [recentBilans, setRecentBilans] = useState<Bilan[]>([]);
@@ -489,9 +491,11 @@ const BilanPage = () => {
   const renderTimeEntryForm = (taskId: string) => {
     return (
       <div className="flex flex-col space-y-3 p-4 bg-muted/30 rounded-md">
-        <div className="text-sm font-medium mb-1">Add time for this task:</div>
+        <div className="text-sm font-medium mb-1">
+          {t("bilan.addTimeForTask")}
+        </div>
         <div className="flex items-center">
-          <span className="w-24 text-sm">Time spent:</span>
+          <span className="w-24 text-sm">{t("bilan.timeSpent")}</span>
           <Input
             value={timeInput}
             onChange={(e) => setTimeInput(e.target.value)}
@@ -500,18 +504,18 @@ const BilanPage = () => {
           />
         </div>
         <div className="flex items-start">
-          <span className="w-24 text-sm mt-2">Notes:</span>
+          <span className="w-24 text-sm mt-2">{t("bilan.notes")}:</span>
           <Textarea
             value={notesInput}
             onChange={(e) => setNotesInput(e.target.value)}
-            placeholder="Optional notes about your work"
+            placeholder={t("bilan.optionalNotes")}
             className="min-h-[80px] flex-1"
           />
         </div>
         <div className="flex justify-end space-x-2 mt-2">
           <Button variant="outline" size="sm" onClick={cancelEditing}>
             <X className="h-4 w-4 mr-1" />
-            Cancel
+            {t("bilan.cancel")}
           </Button>
           <Button
             variant="default"
@@ -522,12 +526,12 @@ const BilanPage = () => {
             {isSaving ? (
               <>
                 <span className="mr-1 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent"></span>
-                Saving...
+                {t("bilan.saving")}
               </>
             ) : (
               <>
                 <Save className="h-4 w-4 mr-1" />
-                Save
+                {t("bilan.save")}
               </>
             )}
           </Button>
@@ -552,7 +556,7 @@ const BilanPage = () => {
       <div className="flex flex-col space-y-1 max-h-80 overflow-y-auto p-1">
         {recentBilans.length === 0 ? (
           <div className="text-center py-4 text-muted-foreground">
-            No history available
+            {t("bilan.noHistory")}
           </div>
         ) : (
           recentBilans.map((bilan) => {
@@ -609,21 +613,23 @@ const BilanPage = () => {
         <CardHeader className="bg-amber-50 dark:bg-amber-950/40 rounded-t-lg">
           <CardTitle className="text-xl flex items-center">
             <Calendar className="h-5 w-5 mr-2 text-amber-600" />
-            <span>Upcoming Deadlines</span>
+            <span>{t("bilan.upcomingDeadlines")}</span>
           </CardTitle>
           <CardDescription>
-            Tasks with deadlines approaching that need your attention
+            {t("bilan.tasksWithUpcomingDeadlines")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Task</TableHead>
-                <TableHead>Deadline</TableHead>
-                <TableHead>Priority</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t("bilan.task")}</TableHead>
+                <TableHead>{t("bilan.deadline")}</TableHead>
+                <TableHead>{t("bilan.priority")}</TableHead>
+                <TableHead>{t("bilan.status")}</TableHead>
+                <TableHead className="text-right">
+                  {t("bilan.actions")}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -652,10 +658,15 @@ const BilanPage = () => {
                               "bg-green-100 text-green-800 border-green-300"
                           )}
                         >
-                          {task.priority}
+                          {task.priority === "High" && t("bilan.priorityHigh")}
+                          {task.priority === "Medium" &&
+                            t("bilan.priorityMedium")}
+                          {task.priority === "Low" && t("bilan.priorityLow")}
                         </Badge>
                       ) : (
-                        <span className="text-muted-foreground">None</span>
+                        <span className="text-muted-foreground">
+                          {t("bilan.none")}
+                        </span>
                       )}
                     </TableCell>
                     <TableCell>
@@ -670,7 +681,7 @@ const BilanPage = () => {
                             "bg-amber-100 text-amber-800 border-amber-300"
                         )}
                       >
-                        {task.status || "Planned"}
+                        {t(`bilan.${task.status || "planned"}`)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -681,7 +692,7 @@ const BilanPage = () => {
                           onClick={cancelEditing}
                         >
                           <X className="h-4 w-4 mr-1" />
-                          Cancel
+                          {t("bilan.cancel")}
                         </Button>
                       ) : (
                         <>
@@ -691,7 +702,7 @@ const BilanPage = () => {
                             onClick={() => startEditing(task.id)}
                           >
                             <Clock className="h-4 w-4 mr-1" />
-                            Add Time
+                            {t("bilan.addTime")}
                           </Button>
                           <Button
                             variant="ghost"
@@ -700,7 +711,7 @@ const BilanPage = () => {
                             disabled={!isDateToday(selectedDate)}
                           >
                             <CheckCircle className="h-4 w-4 mr-1" />
-                            Mark as Done
+                            {t("bilan.markAsDone")}
                           </Button>
                         </>
                       )}
@@ -745,21 +756,21 @@ const BilanPage = () => {
         <CardHeader className="bg-red-50 dark:bg-red-950/40 rounded-t-lg">
           <CardTitle className="text-xl flex items-center">
             <AlertTriangle className="h-5 w-5 mr-2 text-red-600" />
-            <span>Overdue Tasks</span>
+            <span>{t("bilan.overdueTasks")}</span>
           </CardTitle>
-          <CardDescription>
-            Tasks that have passed their deadline
-          </CardDescription>
+          <CardDescription>{t("bilan.tasksPassedDeadline")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Task</TableHead>
-                <TableHead>Deadline</TableHead>
-                <TableHead>Priority</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t("bilan.task")}</TableHead>
+                <TableHead>{t("bilan.deadline")}</TableHead>
+                <TableHead>{t("bilan.priority")}</TableHead>
+                <TableHead>{t("bilan.status")}</TableHead>
+                <TableHead className="text-right">
+                  {t("bilan.actions")}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -788,10 +799,15 @@ const BilanPage = () => {
                               "bg-green-100 text-green-800 border-green-300"
                           )}
                         >
-                          {task.priority}
+                          {task.priority === "High" && t("bilan.priorityHigh")}
+                          {task.priority === "Medium" &&
+                            t("bilan.priorityMedium")}
+                          {task.priority === "Low" && t("bilan.priorityLow")}
                         </Badge>
                       ) : (
-                        <span className="text-muted-foreground">None</span>
+                        <span className="text-muted-foreground">
+                          {t("bilan.none")}
+                        </span>
                       )}
                     </TableCell>
                     <TableCell>
@@ -806,7 +822,7 @@ const BilanPage = () => {
                             "bg-amber-100 text-amber-800 border-amber-300"
                         )}
                       >
-                        {task.status || "Planned"}
+                        {t(`bilan.${task.status || "planned"}`)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -817,7 +833,7 @@ const BilanPage = () => {
                           onClick={cancelEditing}
                         >
                           <X className="h-4 w-4 mr-1" />
-                          Cancel
+                          {t("bilan.cancel")}
                         </Button>
                       ) : (
                         <>
@@ -827,7 +843,7 @@ const BilanPage = () => {
                             onClick={() => startEditing(task.id)}
                           >
                             <Clock className="h-4 w-4 mr-1" />
-                            Add Time
+                            {t("bilan.addTime")}
                           </Button>
                           <Button
                             variant="ghost"
@@ -836,7 +852,7 @@ const BilanPage = () => {
                             disabled={!isDateToday(selectedDate)}
                           >
                             <CheckCircle className="h-4 w-4 mr-1" />
-                            Mark as Done
+                            {t("bilan.markAsDone")}
                           </Button>
                         </>
                       )}
@@ -882,21 +898,23 @@ const BilanPage = () => {
         <CardHeader className="bg-slate-50 dark:bg-slate-950/40 rounded-t-lg">
           <CardTitle className="text-xl flex items-center">
             <Calendar className="h-5 w-5 mr-2 text-slate-600" />
-            <span>Tasks Beyond 7 Days</span>
+            <span>{t("bilan.tasksBeyond7Days")}</span>
           </CardTitle>
           <CardDescription>
-            Tasks with deadlines further in the future
+            {t("bilan.tasksWithFutureDeadlines")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Task</TableHead>
-                <TableHead>Deadline</TableHead>
-                <TableHead>Priority</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t("bilan.task")}</TableHead>
+                <TableHead>{t("bilan.deadline")}</TableHead>
+                <TableHead>{t("bilan.priority")}</TableHead>
+                <TableHead>{t("bilan.status")}</TableHead>
+                <TableHead className="text-right">
+                  {t("bilan.actions")}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -925,10 +943,15 @@ const BilanPage = () => {
                               "bg-green-100 text-green-800 border-green-300"
                           )}
                         >
-                          {task.priority}
+                          {task.priority === "High" && t("bilan.priorityHigh")}
+                          {task.priority === "Medium" &&
+                            t("bilan.priorityMedium")}
+                          {task.priority === "Low" && t("bilan.priorityLow")}
                         </Badge>
                       ) : (
-                        <span className="text-muted-foreground">None</span>
+                        <span className="text-muted-foreground">
+                          {t("bilan.none")}
+                        </span>
                       )}
                     </TableCell>
                     <TableCell>
@@ -943,7 +966,7 @@ const BilanPage = () => {
                             "bg-amber-100 text-amber-800 border-amber-300"
                         )}
                       >
-                        {task.status || "Planned"}
+                        {t(`bilan.${task.status || "planned"}`)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -954,7 +977,7 @@ const BilanPage = () => {
                           onClick={cancelEditing}
                         >
                           <X className="h-4 w-4 mr-1" />
-                          Cancel
+                          {t("bilan.cancel")}
                         </Button>
                       ) : (
                         <>
@@ -964,7 +987,7 @@ const BilanPage = () => {
                             onClick={() => startEditing(task.id)}
                           >
                             <Clock className="h-4 w-4 mr-1" />
-                            Add Time
+                            {t("bilan.addTime")}
                           </Button>
                           <Button
                             variant="ghost"
@@ -973,7 +996,7 @@ const BilanPage = () => {
                             disabled={!isDateToday(selectedDate)}
                           >
                             <CheckCircle className="h-4 w-4 mr-1" />
-                            Mark as Done
+                            {t("bilan.markAsDone")}
                           </Button>
                         </>
                       )}
@@ -1004,7 +1027,7 @@ const BilanPage = () => {
       <div className="p-4 flex flex-col h-[calc(100vh-60px)] overflow-auto">
         <div className="flex justify-between items-center mb-4">
           <div className="flex flex-col">
-            <h1 className="text-2xl font-bold">Daily</h1>
+            <h1 className="text-2xl font-bold">{t("bilan.daily")}</h1>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -1014,7 +1037,7 @@ const BilanPage = () => {
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Summaries are generated on UTC midnight</p>
+                  <p>{t("bilan.summariesGenerated")}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -1034,7 +1057,7 @@ const BilanPage = () => {
                 <ChevronLeft size={16} strokeWidth={2} aria-hidden="true" />
               </Button>
               <Button onClick={goToToday} variant="outline">
-                Today
+                {t("bilan.today")}
               </Button>
               <Button
                 onClick={goToNextDay}
@@ -1062,9 +1085,11 @@ const BilanPage = () => {
         {showHistory && (
           <Card className="mb-4">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Recent Summaries</CardTitle>
+              <CardTitle className="text-lg">
+                {t("bilan.recentSummaries")}
+              </CardTitle>
               <CardDescription>
-                View your daily summaries from the last 7 days
+                {t("bilan.viewRecentSummaries")}
               </CardDescription>
             </CardHeader>
             <CardContent>{renderBilanHistory()}</CardContent>
@@ -1088,33 +1113,35 @@ const BilanPage = () => {
                 <CardTitle className="text-xl flex items-center">
                   <Clock className="h-5 w-5 mr-2 text-green-600" />
                   <div className="flex justify-between items-center w-full">
-                    <span>Daily Tasks</span>
+                    <span>{t("bilan.dailyTasks")}</span>
                     <Badge variant="secondary">
-                      Total: {formatTime(totalMinutes)}
+                      {t("bilan.total")}: {formatTime(totalMinutes)}
                     </Badge>
                   </div>
                 </CardTitle>
-                <CardDescription>
-                  Track the time you've spent on each task
-                </CardDescription>
+                <CardDescription>{t("bilan.trackTime")}</CardDescription>
               </CardHeader>
               <CardContent>
                 {bilan.entries.length === 0 ? (
                   <div className="text-center py-6 text-muted-foreground">
                     <AlertCircle className="mx-auto h-12 w-12 mb-2 opacity-20" />
-                    <p>You didn't do any task today.</p>
+                    <p>{t("bilan.noTasks")}</p>
                     {isDateToday(selectedDate) && (
-                      <p className="text-sm">Add time to your tasks below.</p>
+                      <p className="text-sm">
+                        {t("bilan.addTimeToTasksBelow")}
+                      </p>
                     )}
                   </div>
                 ) : (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Task</TableHead>
-                        <TableHead>Time Spent</TableHead>
-                        <TableHead>Notes</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
+                        <TableHead>{t("bilan.task")}</TableHead>
+                        <TableHead>{t("bilan.timeSpent")}</TableHead>
+                        <TableHead>{t("bilan.notes")}</TableHead>
+                        <TableHead className="text-right">
+                          {t("bilan.actions")}
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -1146,7 +1173,7 @@ const BilanPage = () => {
                             ) : (
                               entry.notes || (
                                 <span className="text-muted-foreground italic">
-                                  No notes
+                                  {t("bilan.noNotes")}
                                 </span>
                               )
                             )}
@@ -1160,7 +1187,7 @@ const BilanPage = () => {
                                   onClick={cancelEditing}
                                 >
                                   <X className="h-4 w-4 mr-1" />
-                                  Cancel
+                                  {t("bilan.cancel")}
                                 </Button>
                                 <Button
                                   variant="default"
@@ -1171,12 +1198,12 @@ const BilanPage = () => {
                                   {isSaving ? (
                                     <>
                                       <span className="mr-1 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent"></span>
-                                      Saving...
+                                      {t("bilan.saving")}
                                     </>
                                   ) : (
                                     <>
                                       <Save className="h-4 w-4 mr-1" />
-                                      Save
+                                      {t("bilan.save")}
                                     </>
                                   )}
                                 </Button>
@@ -1190,7 +1217,7 @@ const BilanPage = () => {
                                   disabled={!isDateToday(selectedDate)}
                                 >
                                   <Pencil className="h-4 w-4 mr-1" />
-                                  Edit
+                                  {t("bilan.edit")}
                                 </Button>
                                 <Button
                                   variant="ghost"
@@ -1202,7 +1229,7 @@ const BilanPage = () => {
                                   }
                                 >
                                   <CheckCircle className="h-4 w-4 mr-1" />
-                                  Mark as Done
+                                  {t("bilan.markAsDone")}
                                 </Button>
                                 <TooltipProvider>
                                   <Tooltip>
@@ -1220,7 +1247,7 @@ const BilanPage = () => {
                                       </Button>
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                      <p>Delete this time entry</p>
+                                      <p>{t("bilan.deleteTimeEntry")}</p>
                                     </TooltipContent>
                                   </Tooltip>
                                 </TooltipProvider>
@@ -1245,13 +1272,13 @@ const BilanPage = () => {
           </>
         ) : (
           <div className="text-center py-8">
-            <p>Failed to load daily summary. Please try again.</p>
+            <p>{t("bilan.failedToLoadSummary")}</p>
             <Button
               variant="outline"
               className="mt-2"
               onClick={() => fetchBilanForDate(selectedDate)}
             >
-              Retry
+              {t("bilan.retry")}
             </Button>
           </div>
         )}

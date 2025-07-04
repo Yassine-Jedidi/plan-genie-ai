@@ -8,6 +8,7 @@ import {
   Notification as ApiNotification,
 } from "@/services/notificationService";
 import { AxiosError } from "axios";
+import { useTranslation } from "react-i18next";
 
 export type Notification = {
   id: string;
@@ -19,7 +20,12 @@ export type Notification = {
 };
 
 // Function to get a human-readable message based on notification type and time
-const getNotificationMessage = (type: string, time: Date, title: string) => {
+const getNotificationMessage = (
+  type: string,
+  time: Date,
+  title: string,
+  t: (key: string, options?: Record<string, string>) => string
+) => {
   const timeString = time.toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
@@ -28,25 +34,57 @@ const getNotificationMessage = (type: string, time: Date, title: string) => {
 
   switch (type) {
     case "task_due_in_1day":
-      return `Your task "${title}" is due tomorrow at ${timeString}.`;
+      return t("notificationPopover.messages.taskDueTomorrow", {
+        title,
+        time: timeString,
+      });
     case "event_in_1day":
-      return `Your event "${title}" is scheduled for tomorrow at ${timeString}.`;
+      return t("notificationPopover.messages.eventTomorrow", {
+        title,
+        time: timeString,
+      });
     case "task_due_in_6h":
-      return `Your task "${title}" is due in 6 hours at ${timeString}.`;
+      return t("notificationPopover.messages.taskDueIn6h", {
+        title,
+        time: timeString,
+      });
     case "event_in_6h":
-      return `Your event "${title}" is in 6 hours at ${timeString}.`;
+      return t("notificationPopover.messages.eventIn6h", {
+        title,
+        time: timeString,
+      });
     case "task_due_in_1h":
-      return `Your task "${title}" is due in 1 hour at ${timeString}.`;
+      return t("notificationPopover.messages.taskDueIn1h", {
+        title,
+        time: timeString,
+      });
     case "event_in_1h":
-      return `Your event "${title}" is in 1 hour at ${timeString}.`;
+      return t("notificationPopover.messages.eventIn1h", {
+        title,
+        time: timeString,
+      });
     case "task_due_in_15m":
-      return `Your task "${title}" is due in 15 minutes at ${timeString}.`;
+      return t("notificationPopover.messages.taskDueIn15m", {
+        title,
+        time: timeString,
+      });
     case "event_in_15m":
-      return `Your event "${title}" is in 15 minutes at ${timeString}.`;
+      return t("notificationPopover.messages.eventIn15m", {
+        title,
+        time: timeString,
+      });
     default:
-      return `Your ${
-        type.includes("task") ? "task" : "event"
-      } "${title}" is due at ${timeString} on ${dateString}.`;
+      return type.includes("task")
+        ? t("notificationPopover.messages.defaultTask", {
+            title,
+            time: timeString,
+            date: dateString,
+          })
+        : t("notificationPopover.messages.defaultEvent", {
+            title,
+            time: timeString,
+            date: dateString,
+          });
   }
 };
 
@@ -85,6 +123,7 @@ const NotificationItem = ({
   textColor = "text-foreground",
   hoverBgColor = "hover:bg-[#ffffff37]",
 }: NotificationItemProps) => {
+  const { t } = useTranslation();
   const dotColorClass = getNotificationDotColor(notification.type);
 
   return (
@@ -103,9 +142,13 @@ const NotificationItem = ({
           )}
           <h4 className={`text-sm font-medium ${textColor}`}>
             {notification.type.includes("task")
-              ? `Task Reminder: ${notification.title}`
+              ? t("notificationPopover.taskReminder", {
+                  title: notification.title,
+                })
               : notification.type.includes("event")
-              ? `Event Reminder: ${notification.title}`
+              ? t("notificationPopover.eventReminder", {
+                  title: notification.title,
+                })
               : notification.title}
           </h4>
         </div>
@@ -124,7 +167,8 @@ const NotificationItem = ({
         {getNotificationMessage(
           notification.type,
           notification.time,
-          notification.title
+          notification.title,
+          t
         )}
       </p>
     </motion.div>
@@ -179,6 +223,7 @@ export const NotificationPopover = ({
   dividerColor = "divide-primary/40",
   headerBorderColor = "border-primary/50",
 }: NotificationPopoverProps) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
@@ -229,7 +274,7 @@ export const NotificationPopover = ({
         } else if (err instanceof Error) {
           setError(err.message);
         } else {
-          setError("An unknown error occurred");
+          setError(t("notificationPopover.unknownError"));
         }
         console.error("Failed to fetch notifications:", err);
       } finally {
@@ -242,7 +287,7 @@ export const NotificationPopover = ({
     const intervalId = setInterval(fetchNotifications, 60000); // Poll every 1 minute
 
     return () => clearInterval(intervalId); // Cleanup on unmount
-  }, [onNotificationsChange]);
+  }, [onNotificationsChange, t]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -293,6 +338,7 @@ export const NotificationPopover = ({
         onClick={toggleOpen}
         size="icon"
         className={cn("relative", buttonClassName)}
+        aria-label={t("notificationPopover.openNotifications")}
       >
         <Bell size={16} />
         {unreadCount > 0 && (
@@ -313,29 +359,39 @@ export const NotificationPopover = ({
               "absolute right-0 mt-2 w-80 max-h-[400px] overflow-y-auto rounded-xl shadow-lg",
               popoverClassName
             )}
+            aria-label={t("notificationPopover.notificationsList")}
           >
             <div
               className={`p-4 border-b ${headerBorderColor} flex justify-between items-center`}
             >
-              <h3 className="text-sm font-medium">Notifications</h3>
+              <h3 className="text-sm font-medium">
+                {t("notificationPopover.notifications")}
+              </h3>
               <Button
                 onClick={markAllAsRead}
                 variant="ghost"
                 size="sm"
                 className={`text-xs ${hoverBgColor} hover:text-foreground border`}
+                aria-label={t("notificationPopover.markAllAsRead")}
               >
-                Mark all as read
+                {t("notificationPopover.markAllAsRead")}
               </Button>
             </div>
 
             {loading && (
-              <p className="p-4 text-center">Loading notifications...</p>
+              <p className="p-4 text-center">
+                {t("notificationPopover.loading")}
+              </p>
             )}
             {error && (
-              <p className="p-4 text-center text-red-500">Error: {error}</p>
+              <p className="p-4 text-center text-red-500">
+                {t("notificationPopover.error", { error })}
+              </p>
             )}
             {!loading && !error && notifications.length === 0 && (
-              <p className="p-4 text-center opacity-70">No notifications</p>
+              <p className="p-4 text-center opacity-70">
+                {t("notificationPopover.noNotifications")}
+              </p>
             )}
             {!loading && !error && notifications.length > 0 && (
               <NotificationList

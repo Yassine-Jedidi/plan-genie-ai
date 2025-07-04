@@ -17,16 +17,18 @@ import { toast } from "sonner";
 import themeService from "@/services/themeService";
 import { Switch } from "@/components/ui/switch";
 import { notificationService } from "@/services/notificationService";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitch } from "@/components/language-switch";
 
 const colorThemes = [
-  { name: "Default", primary: "hsl(222.2, 47.4%, 11.2%)", color: "#1e293b" },
-  { name: "Red", primary: "hsl(0, 72%, 51%)", color: "#ef4444" },
-  { name: "Blue", primary: "hsl(217, 91%, 60%)", color: "#3b82f6" },
-  { name: "Green", primary: "hsl(142, 71%, 45%)", color: "#10b981" },
-  { name: "Purple", primary: "hsl(280, 67%, 55%)", color: "#a855f7" },
-  { name: "Orange", primary: "hsl(24, 95%, 58%)", color: "#f97316" },
-  { name: "Pink", primary: "hsl(330, 81%, 60%)", color: "#ec4899" },
-  { name: "Teal", primary: "hsl(180, 70%, 48%)", color: "#14b8a6" },
+  { name: "default", primary: "hsl(222.2, 47.4%, 11.2%)", color: "#1e293b" },
+  { name: "red", primary: "hsl(0, 72%, 51%)", color: "#ef4444" },
+  { name: "blue", primary: "hsl(217, 91%, 60%)", color: "#3b82f6" },
+  { name: "green", primary: "hsl(142, 71%, 45%)", color: "#10b981" },
+  { name: "purple", primary: "hsl(280, 67%, 55%)", color: "#a855f7" },
+  { name: "orange", primary: "hsl(24, 95%, 58%)", color: "#f97316" },
+  { name: "pink", primary: "hsl(330, 81%, 60%)", color: "#ec4899" },
+  { name: "teal", primary: "hsl(180, 70%, 48%)", color: "#14b8a6" },
 ];
 
 export default function SettingsPage() {
@@ -41,6 +43,7 @@ export default function SettingsPage() {
     user?.receive_event_notifications ?? true
   );
   const [loadingPreferences, setLoadingPreferences] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     let isMounted = true;
@@ -74,11 +77,11 @@ export default function SettingsPage() {
       themeService
         .updateTheme({ colorTheme: newTheme })
         .then(() => {
-          toast.success("Color theme updated successfully!");
+          toast.success(t("settings.colorThemeUpdated"));
         })
         .catch((error) => {
           console.error("Failed to save color theme:", error);
-          toast.error("Failed to save color theme settings");
+          toast.error(t("settings.colorThemeFailed"));
         })
         .finally(() => {
           setSaving(false);
@@ -99,11 +102,11 @@ export default function SettingsPage() {
       themeService
         .updateTheme({ theme: newMode })
         .then(() => {
-          toast.success("Theme mode updated successfully!");
+          toast.success(t("settings.themeModeUpdated"));
         })
         .catch((error) => {
           console.error("Failed to save theme mode:", error);
-          toast.error("Failed to save theme mode settings");
+          toast.error(t("settings.themeModeFailed"));
         })
         .finally(() => {
           setSaving(false);
@@ -131,13 +134,14 @@ export default function SettingsPage() {
         });
       }
       toast.success(
-        `You will ${checked ? "receive" : "not receive"} ${
-          type === "task" ? "task" : "event"
-        } notifications`
+        t("settings.notificationToast", {
+          receive: checked ? t("settings.receive") : t("settings.notReceive"),
+          type: type === "task" ? t("settings.task") : t("settings.event"),
+        })
       );
     } catch (error) {
       console.error("Failed to save notification preferences:", error);
-      toast.error("Failed to save notification preferences");
+      toast.error(t("settings.failedToSavePreferences"));
     } finally {
       setSaving(false);
     }
@@ -147,25 +151,32 @@ export default function SettingsPage() {
     <div className="flex flex-col items-center py-6 w-full">
       <div className="space-y-6 w-full max-w-2xl">
         <div className="flex items-center justify-between">
-          <span className="text-primary text-3xl font-bold">Settings</span>
+          <span className="text-primary text-3xl font-bold">
+            {t("settings.title")}
+          </span>
           {isMobile && <SidebarTrigger className="h-9 w-9 border rounded-md" />}
         </div>
-        <p className="text-muted-foreground">
-          Manage your account settings and preferences.
-        </p>
+        <p className="text-muted-foreground">{t("settings.description")}</p>
 
         <Tabs defaultValue="appearance">
           <TabsList className="mb-4">
-            <TabsTrigger value="appearance">Appearance</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
+            <TabsTrigger value="appearance">
+              {t("settings.appearance")}
+            </TabsTrigger>
+            <TabsTrigger value="notifications">
+              {t("settings.notifications")}
+            </TabsTrigger>
+            <TabsTrigger value="language">{t("settings.language")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="appearance" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="text-primary">Theme Mode</CardTitle>
+                <CardTitle className="text-primary">
+                  {t("settings.themeMode")}
+                </CardTitle>
                 <CardDescription>
-                  Choose between light and dark mode
+                  {t("settings.themeModeDescription")}
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col gap-4">
@@ -178,11 +189,10 @@ export default function SettingsPage() {
                     )}
                     <span className="font-medium">
                       {theme === "system"
-                        ? "System"
+                        ? t("settings.mode.system")
                         : theme === "dark"
-                        ? "Dark"
-                        : "Light"}{" "}
-                      Mode
+                        ? t("settings.mode.dark")
+                        : t("settings.mode.light")}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -194,7 +204,7 @@ export default function SettingsPage() {
                       disabled={saving}
                     >
                       <Sun className="h-4 w-4 mr-1" />
-                      Light
+                      {t("settings.light")}
                     </Button>
                     <Button
                       variant="outline"
@@ -204,7 +214,7 @@ export default function SettingsPage() {
                       disabled={saving}
                     >
                       <Moon className="h-4 w-4 mr-1" />
-                      Dark
+                      {t("settings.dark")}
                     </Button>
                     <Button
                       variant="outline"
@@ -213,7 +223,7 @@ export default function SettingsPage() {
                       className={theme === "system" ? "border-primary" : ""}
                       disabled={saving}
                     >
-                      System
+                      {t("settings.system")}
                     </Button>
                   </div>
                 </div>
@@ -222,9 +232,9 @@ export default function SettingsPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Color Theme</CardTitle>
+                <CardTitle>{t("settings.colorTheme")}</CardTitle>
                 <CardDescription>
-                  Choose your preferred color theme
+                  {t("settings.colorThemeDescription")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -251,13 +261,14 @@ export default function SettingsPage() {
                           </div>
                         )}
                       </div>
-                      <span className="text-xs">{colorScheme.name}</span>
+                      <span className="text-xs">
+                        {t(`settings.colorThemes.${colorScheme.name}`)}
+                      </span>
                     </Button>
                   ))}
                 </div>
                 <p className="mt-4 text-xs text-muted-foreground">
-                  Your theme preferences are saved to your account and
-                  synchronized across devices.
+                  {t("settings.themePreferencesSaved")}
                 </p>
               </CardContent>
             </Card>
@@ -267,16 +278,15 @@ export default function SettingsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-primary">
-                  Notification Settings
+                  {t("settings.notificationSettings")}
                 </CardTitle>
                 <CardDescription>
-                  Manage your notification preferences. Enable or disable
-                  notifications for tasks and events below.
+                  {t("settings.notificationSettingsDescription")}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span>Task Notifications</span>
+                  <span>{t("settings.taskNotifications")}</span>
                   <Switch
                     checked={
                       loadingPreferences ? true : receiveTaskNotifications
@@ -288,7 +298,7 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <span>Event Notifications</span>
+                  <span>{t("settings.eventNotifications")}</span>
                   <Switch
                     checked={
                       loadingPreferences ? true : receiveEventNotifications
@@ -299,6 +309,20 @@ export default function SettingsPage() {
                     disabled={saving || loadingPreferences}
                   />
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="language" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("settings.language")}</CardTitle>
+                <CardDescription>
+                  {t("settings.languageDescription")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <LanguageSwitch />
               </CardContent>
             </Card>
           </TabsContent>

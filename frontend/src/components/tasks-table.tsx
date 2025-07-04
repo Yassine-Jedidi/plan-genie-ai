@@ -108,6 +108,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Calendar } from "./date-time-picker";
+import { useTranslation } from "react-i18next";
 
 // Custom filter function for multi-column searching
 const multiColumnFilterFn: FilterFn<Task> = (row, _columnId, filterValue) => {
@@ -203,399 +204,12 @@ const dueInFilterFn: FilterFn<Task> = (row, columnId, filterValue) => {
   }
 };
 
-const columns: ColumnDef<Task>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    size: 40,
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    header: "Title",
-    accessorKey: "title",
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("title")}</div>
-    ),
-    size: 300,
-    filterFn: multiColumnFilterFn,
-    enableHiding: false,
-  },
-  {
-    header: "Deadline",
-    accessorKey: "deadline",
-    cell: ({ row }) => {
-      const deadline = row.getValue("deadline") as string | null;
-      const deadlineText = row.original.deadline_text;
-
-      if (!deadline) return <span className="text-muted-foreground">None</span>;
-
-      try {
-        // Format the date using our utility function that handles timezones
-        const formattedDate = formatDate(deadline, {
-          weekday: "long",
-          month: "long",
-          day: "2-digit",
-          year: "numeric",
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: false,
-        });
-
-        // Extract the date and time parts more reliably
-        const lastSpaceIndex = formattedDate.lastIndexOf(" ");
-        const datePart = formattedDate.substring(0, lastSpaceIndex);
-        const timePart = formattedDate.substring(lastSpaceIndex + 1);
-
-        const formattedWithEmoji = (
-          <span>
-            <CalendarDays
-              className="inline-block me-1"
-              size={14}
-              strokeWidth={2}
-              aria-hidden="true"
-            />{" "}
-            {datePart} ·{" "}
-            <Badge
-              variant="outline"
-              className="px-1.5 py-0.5 bg-slate-100 text-slate-800 text-xs font-medium"
-            >
-              {timePart}
-            </Badge>
-          </span>
-        );
-
-        // If we have the original text, display it with the formatted date
-        if (deadlineText) {
-          return (
-            <div className="flex flex-col">
-              <span>{formattedWithEmoji}</span>
-              <span className="text-xs text-muted-foreground">
-                {deadlineText}
-              </span>
-            </div>
-          );
-        }
-
-        return formattedWithEmoji;
-        // eslint-disable-next-line no-empty
-      } catch {
-        // If parsing fails, just return the raw deadline
-        return deadline;
-      }
-    },
-    size: 240,
-  },
-  {
-    header: "Due In",
-    accessorKey: "deadline",
-    cell: ({ row }) => {
-      const deadline = row.getValue("deadline") as string | null;
-      const completedAt = row.original.completed_at; // Access completed_at directly from original task object
-
-      if (completedAt) {
-        // Task is completed, determine if it was on time or late
-        try {
-          const completedDate = new Date(completedAt);
-          const deadlineDate = deadline ? new Date(deadline) : null;
-
-          if (deadlineDate && completedDate <= deadlineDate) {
-            return (
-              <Badge
-                variant="outline"
-                className="bg-green-100 text-green-800 border-green-300"
-              >
-                <CheckCircle
-                  className="inline-block me-1"
-                  size={14}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                />{" "}
-                Completed On Time
-              </Badge>
-            );
-          } else {
-            return (
-              <Badge
-                variant="outline"
-                className="bg-red-100 text-red-800 border-red-300"
-              >
-                <XCircle
-                  className="inline-block me-1"
-                  size={14}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                />{" "}
-                Completed Late
-              </Badge>
-            );
-          }
-        } catch {
-          return (
-            <span className="text-muted-foreground">
-              Completed (Invalid Date)
-            </span>
-          );
-        }
-      }
-
-      // If not completed, use existing "Due In" logic
-      if (!deadline) return <span className="text-muted-foreground">—</span>;
-
-      try {
-        const date = new Date(deadline);
-
-        // Check if the deadline is in the past
-        if (isPast(date)) {
-          return (
-            <Badge
-              variant="outline"
-              className="bg-red-100 text-red-800 border-red-300"
-            >
-              <Clock
-                className="inline-block me-1"
-                size={14}
-                strokeWidth={2}
-                aria-hidden="true"
-              />{" "}
-              Overdue
-            </Badge>
-          );
-        }
-
-        // Calculate time remaining
-        const timeRemaining = formatDistanceToNowStrict(date, {
-          addSuffix: false,
-        });
-
-        return (
-          <Badge
-            variant="outline"
-            className="bg-blue-100 text-blue-800 border-blue-300"
-          >
-            <Clock
-              className="inline-block me-1"
-              size={14}
-              strokeWidth={2}
-              aria-hidden="true"
-            />{" "}
-            {timeRemaining} left
-          </Badge>
-        );
-      } catch {
-        return <span className="text-muted-foreground">Invalid date</span>;
-      }
-    },
-    size: 130,
-    filterFn: dueInFilterFn,
-  },
-  {
-    header: "Priority",
-    accessorKey: "priority",
-    cell: ({ row }) => {
-      const priority = row.getValue("priority") as string | null;
-      if (!priority) return <span className="text-muted-foreground">None</span>;
-
-      const priorityColors: Record<string, string> = {
-        High: "bg-red-100 text-red-800 border-red-300",
-        Medium: "bg-yellow-100 text-yellow-800 border-yellow-300",
-        Low: "bg-green-100 text-green-800 border-green-300",
-      };
-
-      const priorityIcons: Record<string, React.ReactElement> = {
-        High: (
-          <Circle
-            className="inline-block me-1"
-            size={14}
-            fill="#ef4444"
-            stroke="none"
-            aria-hidden="true"
-          />
-        ),
-        Medium: (
-          <Circle
-            className="inline-block me-1"
-            size={14}
-            fill="#eab308"
-            stroke="none"
-            aria-hidden="true"
-          />
-        ),
-        Low: (
-          <Circle
-            className="inline-block me-1"
-            size={14}
-            fill="#22c55e"
-            stroke="none"
-            aria-hidden="true"
-          />
-        ),
-      };
-
-      const colorClass =
-        priorityColors[priority] ||
-        "bg-muted-foreground/60 text-primary-foreground";
-
-      return (
-        <Badge className={cn(colorClass)} variant="outline">
-          {priorityIcons[priority] || ""} {priority}
-        </Badge>
-      );
-    },
-    size: 120,
-    filterFn: priorityFilterFn,
-  },
-  {
-    header: "Status",
-    accessorKey: "status",
-    cell: ({ row }) => {
-      const status = row.getValue("status") as string | null;
-      if (!status)
-        return <span className="text-muted-foreground">Planned</span>;
-
-      const statusColors: Record<string, string> = {
-        Done: "bg-green-100 text-green-800 border-green-300",
-        "In Progress": "bg-blue-100 text-blue-800 border-blue-300",
-        Planned: "bg-amber-100 text-amber-800 border-amber-300",
-      };
-
-      const statusIcons: Record<string, React.ReactElement> = {
-        Done: (
-          <CheckCircle
-            className="inline-block me-1"
-            size={14}
-            strokeWidth={2}
-            aria-hidden="true"
-          />
-        ),
-        "In Progress": (
-          <RefreshCw
-            className="inline-block me-1"
-            size={14}
-            strokeWidth={2}
-            aria-hidden="true"
-          />
-        ),
-        Planned: (
-          <FileText
-            className="inline-block me-1"
-            size={14}
-            strokeWidth={2}
-            aria-hidden="true"
-          />
-        ),
-      };
-
-      const colorClass =
-        statusColors[status] || "bg-amber-100 text-amber-800 border-amber-300"; // Default to Planned style
-
-      return (
-        <Badge className={cn(colorClass)} variant="outline">
-          {statusIcons[status] || (
-            <FileText
-              className="inline-block me-1"
-              size={14}
-              strokeWidth={2}
-              aria-hidden="true"
-            />
-          )}{" "}
-          {status || "Planned"}
-        </Badge>
-      );
-    },
-    size: 140,
-    filterFn: statusFilterFn,
-  },
-  {
-    header: "Completed At",
-    accessorKey: "completed_at",
-    cell: ({ row }) => {
-      const date = row.getValue("completed_at") as string | null;
-      if (!date) return <span className="text-muted-foreground">—</span>;
-
-      try {
-        const formattedDate = formatDate(date, {
-          weekday: "long",
-          month: "long",
-          day: "2-digit",
-          year: "numeric",
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: false,
-        });
-        return (
-          <span>
-            <CheckCircle
-              className="inline-block me-1"
-              size={14}
-              strokeWidth={2}
-              aria-hidden="true"
-            />{" "}
-            {formattedDate}
-          </span>
-        );
-      } catch {
-        return <span className="text-muted-foreground">Invalid date</span>;
-      }
-    },
-    size: 180,
-  },
-  {
-    header: "Created",
-    accessorKey: "created_at",
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("created_at"));
-      const formattedDate = new Intl.DateTimeFormat("en-US", {
-        weekday: "long",
-        month: "long",
-        day: "2-digit",
-        year: "numeric",
-      }).format(date);
-
-      return (
-        <span>
-          <CalendarPlus
-            className="inline-block me-1"
-            size={14}
-            strokeWidth={2}
-            aria-hidden="true"
-          />{" "}
-          {formattedDate}
-        </span>
-      );
-    },
-    size: 180,
-  },
-  {
-    id: "actions",
-    header: () => <span className="sr-only">Actions</span>,
-    cell: () => null,
-    size: 60,
-    enableHiding: false,
-  },
-];
-
 interface TasksTableProps {
   tasks: Task[];
 }
 
 export default function TasksTable({ tasks }: TasksTableProps) {
+  const { t } = useTranslation();
   const id = useId();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -619,6 +233,424 @@ export default function TasksTable({ tasks }: TasksTableProps) {
   useMemo(() => {
     setLocalTasks(tasks);
   }, [tasks]);
+
+  // Define columns inside component to have access to translation function
+  const columns: ColumnDef<Task>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      size: 40,
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      header: t("tasksTable.title"),
+      accessorKey: "title",
+      cell: ({ row }) => (
+        <div className="font-medium">{row.getValue("title")}</div>
+      ),
+      size: 300,
+      filterFn: multiColumnFilterFn,
+      enableHiding: false,
+    },
+    {
+      header: t("tasksTable.deadline"),
+      accessorKey: "deadline",
+      cell: ({ row }) => {
+        const deadline = row.getValue("deadline") as string | null;
+        const deadlineText = row.original.deadline_text;
+
+        if (!deadline)
+          return (
+            <span className="text-muted-foreground">
+              {t("tasksTable.none")}
+            </span>
+          );
+
+        try {
+          // Format the date using our utility function that handles timezones
+          const formattedDate = formatDate(deadline, {
+            weekday: "long",
+            month: "long",
+            day: "2-digit",
+            year: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: false,
+          });
+
+          // Extract the date and time parts more reliably
+          const lastSpaceIndex = formattedDate.lastIndexOf(" ");
+          const datePart = formattedDate.substring(0, lastSpaceIndex);
+          const timePart = formattedDate.substring(lastSpaceIndex + 1);
+
+          const formattedWithEmoji = (
+            <span>
+              <CalendarDays
+                className="inline-block me-1"
+                size={14}
+                strokeWidth={2}
+                aria-hidden="true"
+              />{" "}
+              {datePart} ·{" "}
+              <Badge
+                variant="outline"
+                className="px-1.5 py-0.5 bg-slate-100 text-slate-800 text-xs font-medium"
+              >
+                {timePart}
+              </Badge>
+            </span>
+          );
+
+          // If we have the original text, display it with the formatted date
+          if (deadlineText) {
+            return (
+              <div className="flex flex-col">
+                <span>{formattedWithEmoji}</span>
+                <span className="text-xs text-muted-foreground">
+                  {deadlineText}
+                </span>
+              </div>
+            );
+          }
+
+          return formattedWithEmoji;
+          // eslint-disable-next-line no-empty
+        } catch {
+          // If parsing fails, just return the raw deadline
+          return deadline;
+        }
+      },
+      size: 240,
+    },
+    {
+      header: t("tasksTable.dueIn"),
+      accessorKey: "deadline",
+      cell: ({ row }) => {
+        const deadline = row.getValue("deadline") as string | null;
+        const completedAt = row.original.completed_at; // Access completed_at directly from original task object
+
+        if (completedAt) {
+          // Task is completed, determine if it was on time or late
+          try {
+            const completedDate = new Date(completedAt);
+            const deadlineDate = deadline ? new Date(deadline) : null;
+
+            if (deadlineDate && completedDate <= deadlineDate) {
+              return (
+                <Badge
+                  variant="outline"
+                  className="bg-green-100 text-green-800 border-green-300"
+                >
+                  <CheckCircle
+                    className="inline-block me-1"
+                    size={14}
+                    strokeWidth={2}
+                    aria-hidden="true"
+                  />{" "}
+                  {t("tasksTable.completedOnTime")}
+                </Badge>
+              );
+            } else {
+              return (
+                <Badge
+                  variant="outline"
+                  className="bg-red-100 text-red-800 border-red-300"
+                >
+                  <XCircle
+                    className="inline-block me-1"
+                    size={14}
+                    strokeWidth={2}
+                    aria-hidden="true"
+                  />{" "}
+                  {t("tasksTable.completedLate")}
+                </Badge>
+              );
+            }
+          } catch {
+            return (
+              <span className="text-muted-foreground">
+                {t("tasksTable.invalidDate")}
+              </span>
+            );
+          }
+        }
+
+        // If not completed, use existing "Due In" logic
+        if (!deadline) return <span className="text-muted-foreground">—</span>;
+
+        try {
+          const date = new Date(deadline);
+
+          // Check if the deadline is in the past
+          if (isPast(date)) {
+            return (
+              <Badge
+                variant="outline"
+                className="bg-red-100 text-red-800 border-red-300"
+              >
+                <Clock
+                  className="inline-block me-1"
+                  size={14}
+                  strokeWidth={2}
+                  aria-hidden="true"
+                />{" "}
+                {t("tasksTable.overdue")}
+              </Badge>
+            );
+          }
+
+          // Calculate time remaining
+          const timeRemaining = formatDistanceToNowStrict(date, {
+            addSuffix: false,
+          });
+
+          return (
+            <Badge
+              variant="outline"
+              className="bg-blue-100 text-blue-800 border-blue-300"
+            >
+              <Clock
+                className="inline-block me-1"
+                size={14}
+                strokeWidth={2}
+                aria-hidden="true"
+              />{" "}
+              {timeRemaining} left
+            </Badge>
+          );
+        } catch {
+          return (
+            <span className="text-muted-foreground">
+              {t("tasksTable.invalidDate")}
+            </span>
+          );
+        }
+      },
+      size: 130,
+      filterFn: dueInFilterFn,
+    },
+    {
+      header: t("tasksTable.priority"),
+      accessorKey: "priority",
+      cell: ({ row }) => {
+        const priority = row.getValue("priority") as string | null;
+        if (!priority)
+          return (
+            <span className="text-muted-foreground">
+              {t("tasksTable.none")}
+            </span>
+          );
+
+        const priorityColors: Record<string, string> = {
+          High: "bg-red-100 text-red-800 border-red-300",
+          Medium: "bg-yellow-100 text-yellow-800 border-yellow-300",
+          Low: "bg-green-100 text-green-800 border-green-300",
+        };
+
+        const priorityIcons: Record<string, React.ReactElement> = {
+          High: (
+            <Circle
+              className="inline-block me-1"
+              size={14}
+              fill="#ef4444"
+              stroke="none"
+              aria-hidden="true"
+            />
+          ),
+          Medium: (
+            <Circle
+              className="inline-block me-1"
+              size={14}
+              fill="#eab308"
+              stroke="none"
+              aria-hidden="true"
+            />
+          ),
+          Low: (
+            <Circle
+              className="inline-block me-1"
+              size={14}
+              fill="#22c55e"
+              stroke="none"
+              aria-hidden="true"
+            />
+          ),
+        };
+
+        const colorClass =
+          priorityColors[priority] ||
+          "bg-muted-foreground/60 text-primary-foreground";
+
+        return (
+          <Badge className={cn(colorClass)} variant="outline">
+            {priorityIcons[priority] || ""}{" "}
+            {priority === "High" && t("tasksTable.priorityHigh")}
+            {priority === "Medium" && t("tasksTable.priorityMedium")}
+            {priority === "Low" && t("tasksTable.priorityLow")}
+          </Badge>
+        );
+      },
+      size: 120,
+      filterFn: priorityFilterFn,
+    },
+    {
+      header: t("tasksTable.status"),
+      accessorKey: "status",
+      cell: ({ row }) => {
+        const status = row.getValue("status") as string | null;
+        if (!status)
+          return (
+            <span className="text-muted-foreground">
+              {t("tasksTable.statusPlanned")}
+            </span>
+          );
+
+        const statusColors: Record<string, string> = {
+          Done: "bg-green-100 text-green-800 border-green-300",
+          "In Progress": "bg-blue-100 text-blue-800 border-blue-300",
+          Planned: "bg-amber-100 text-amber-800 border-amber-300",
+        };
+
+        const statusIcons: Record<string, React.ReactElement> = {
+          Done: (
+            <CheckCircle
+              className="inline-block me-1"
+              size={14}
+              strokeWidth={2}
+              aria-hidden="true"
+            />
+          ),
+          "In Progress": (
+            <RefreshCw
+              className="inline-block me-1"
+              size={14}
+              strokeWidth={2}
+              aria-hidden="true"
+            />
+          ),
+          Planned: (
+            <FileText
+              className="inline-block me-1"
+              size={14}
+              strokeWidth={2}
+              aria-hidden="true"
+            />
+          ),
+        };
+
+        const colorClass =
+          statusColors[status] ||
+          "bg-amber-100 text-amber-800 border-amber-300"; // Default to Planned style
+
+        return (
+          <Badge className={cn(colorClass)} variant="outline">
+            {statusIcons[status] || (
+              <FileText
+                className="inline-block me-1"
+                size={14}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+            )}{" "}
+            {status === "Done" && t("tasksTable.statusDone")}
+            {status === "In Progress" && t("tasksTable.statusInProgress")}
+            {status === "Planned" && t("tasksTable.statusPlanned")}
+            {!status && t("tasksTable.statusPlanned")}
+          </Badge>
+        );
+      },
+      size: 140,
+      filterFn: statusFilterFn,
+    },
+    {
+      header: t("tasksTable.completedAt"),
+      accessorKey: "completed_at",
+      cell: ({ row }) => {
+        const date = row.getValue("completed_at") as string | null;
+        if (!date) return <span className="text-muted-foreground">—</span>;
+
+        try {
+          const formattedDate = formatDate(date, {
+            weekday: "long",
+            month: "long",
+            day: "2-digit",
+            year: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: false,
+          });
+          return (
+            <span>
+              <CheckCircle
+                className="inline-block me-1"
+                size={14}
+                strokeWidth={2}
+                aria-hidden="true"
+              />{" "}
+              {formattedDate}
+            </span>
+          );
+        } catch {
+          return (
+            <span className="text-muted-foreground">
+              {t("tasksTable.invalidDate")}
+            </span>
+          );
+        }
+      },
+      size: 180,
+    },
+    {
+      header: t("tasksTable.created"),
+      accessorKey: "created_at",
+      cell: ({ row }) => {
+        const date = new Date(row.getValue("created_at"));
+        const formattedDate = new Intl.DateTimeFormat("en-US", {
+          weekday: "long",
+          month: "long",
+          day: "2-digit",
+          year: "numeric",
+        }).format(date);
+
+        return (
+          <span>
+            <CalendarPlus
+              className="inline-block me-1"
+              size={14}
+              strokeWidth={2}
+              aria-hidden="true"
+            />{" "}
+            {formattedDate}
+          </span>
+        );
+      },
+      size: 180,
+    },
+    {
+      id: "actions",
+      header: () => <span className="sr-only">{t("tasksTable.actions")}</span>,
+      cell: () => null,
+      size: 60,
+      enableHiding: false,
+    },
+  ];
 
   // Utility function to fetch tasks
   const fetchTasks = async () => {
@@ -940,7 +972,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
         try {
           setLoading(true);
           if (taskToUpdate.status === "Done")
-            toast.error("Task is already Done!");
+            toast.error(t("tasksTable.actions.taskAlreadyDone"));
           else {
             const updatedTask = await taskService.updateTask({
               ...taskToUpdate,
@@ -951,12 +983,12 @@ export default function TasksTable({ tasks }: TasksTableProps) {
               prev.map((t) => (t.id === updatedTask.id ? updatedTask : t))
             );
             fetchTasks();
-            toast.success("Task marked as Done");
+            toast.success(t("tasksTable.actions.taskMarkedDone"));
             setDropdownOpen(false);
           }
         } catch (error) {
           console.error("Error marking task as done:", error);
-          toast.error("Failed to mark task as Done");
+          toast.error(t("tasksTable.actions.failedToMarkDone"));
         } finally {
           setLoading(false);
         }
@@ -991,14 +1023,18 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                 className="me-2 h-4 w-4 text-yellow-500"
                 aria-hidden="true"
               />
-              <span className="text-yellow-500">Edit</span>
+              <span className="text-yellow-500">
+                {t("tasksTable.actions.edit")}
+              </span>
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => handleMarkAsDone(task)}>
               <Check
                 className="me-2 h-4 w-4 text-green-500"
                 aria-hidden="true"
               />
-              <span className="text-green-500">Mark as Done</span>
+              <span className="text-green-500">
+                {t("tasksTable.actions.markAsDone")}
+              </span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
@@ -1018,7 +1054,9 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                   className="me-2 h-4 w-4 text-red-500"
                   aria-hidden="true"
                 />
-                <span className="text-red-500">Delete</span>
+                <span className="text-red-500">
+                  {t("tasksTable.actions.delete")}
+                </span>
               </DropdownMenuItem>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -1034,17 +1072,20 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                   />
                 </div>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogTitle>
+                    {t("tasksTable.actions.areYouSure")}
+                  </AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    this task.
+                    {t("tasksTable.actions.deleteWarning")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
               </div>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>
+                  {t("tasksTable.actions.cancel")}
+                </AlertDialogCancel>
                 <AlertDialogAction onClick={handleDelete}>
-                  Delete
+                  {t("tasksTable.actions.delete")}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -1198,7 +1239,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
             strokeWidth={2}
             aria-hidden="true"
           />{" "}
-          Planned
+          {t("tasksTable.planned")}
           <span className="ml-1 inline-flex h-4 items-center rounded bg-background-200 px-1 text-xs font-medium text-amber-800">
             {`(${statusCounts.get("Planned") || 0})`}
           </span>
@@ -1230,7 +1271,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
             strokeWidth={2}
             aria-hidden="true"
           />{" "}
-          In Progress
+          {t("tasksTable.inProgress")}
           <span className="ml-1 inline-flex h-4 items-center rounded bg-background-200 px-1 text-xs font-medium text-blue-800">
             {`(${statusCounts.get("In Progress") || 0})`}
           </span>
@@ -1262,7 +1303,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
             strokeWidth={2}
             aria-hidden="true"
           />{" "}
-          Done
+          {t("tasksTable.done")}
           <span className="ml-1 inline-flex h-4 items-center rounded bg-background-200 px-1 text-xs font-medium text-green-800">
             {`(${statusCounts.get("Done") || 0})`}
           </span>
@@ -1287,9 +1328,9 @@ export default function TasksTable({ tasks }: TasksTableProps) {
               onChange={(e) =>
                 table.getColumn("title")?.setFilterValue(e.target.value)
               }
-              placeholder="Filter by title or priority..."
+              placeholder={t("tasksTable.filterByTitleOrPriority")}
               type="text"
-              aria-label="Filter by title or priority"
+              aria-label={t("tasksTable.filterByTitleOrPriority")}
             />
             <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
               <ListFilter size={16} strokeWidth={2} aria-hidden="true" />
@@ -1320,7 +1361,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                     strokeWidth={2}
                     aria-hidden="true"
                   />
-                  Priority
+                  {t("tasksTable.priority")}
                   {selectedPriorities.length > 0 && (
                     <span className="-me-1 ms-3 inline-flex h-5 max-h-full items-center rounded border border-border bg-background px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
                       {selectedPriorities.length}
@@ -1331,7 +1372,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
               <PopoverContent className="min-w-36 p-3" align="start">
                 <div className="space-y-3">
                   <div className="text-xs font-medium text-muted-foreground">
-                    Filters
+                    {t("tasksTable.filters")}
                   </div>
                   <div className="space-y-3">
                     {uniquePriorityValues.map((value, i) => (
@@ -1347,7 +1388,9 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                           htmlFor={`${id}-${i}`}
                           className="flex grow justify-between gap-2 font-normal"
                         >
-                          {value}{" "}
+                          {value === "High" && t("tasksTable.priorityHigh")}
+                          {value === "Medium" && t("tasksTable.priorityMedium")}
+                          {value === "Low" && t("tasksTable.priorityLow")}
                           <span className="ms-2 text-xs text-muted-foreground">
                             {priorityCounts.get(value)}
                           </span>
@@ -1368,7 +1411,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                     strokeWidth={2}
                     aria-hidden="true"
                   />
-                  Status
+                  {t("tasksTable.status")}
                   {selectedStatuses.length > 0 && (
                     <span className="-me-1 ms-3 inline-flex h-5 max-h-full items-center rounded border border-border bg-background px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
                       {selectedStatuses.length}
@@ -1379,7 +1422,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
               <PopoverContent className="min-w-36 p-3" align="start">
                 <div className="space-y-3">
                   <div className="text-xs font-medium text-muted-foreground">
-                    Filters
+                    {t("tasksTable.filters")}
                   </div>
                   <div className="space-y-3">
                     {uniqueStatusValues.map((value, i) => (
@@ -1395,7 +1438,10 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                           htmlFor={`${id}-status-${i}`}
                           className="flex grow justify-between gap-2 font-normal"
                         >
-                          {value}{" "}
+                          {value === "Done" && t("tasksTable.statusDone")}
+                          {value === "In Progress" &&
+                            t("tasksTable.statusInProgress")}
+                          {value === "Planned" && t("tasksTable.statusPlanned")}
                           <span className="ms-2 text-xs text-muted-foreground">
                             {statusCounts.get(value)}
                           </span>
@@ -1416,7 +1462,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                     strokeWidth={2}
                     aria-hidden="true"
                   />
-                  Due In
+                  {t("tasksTable.dueIn")}
                   {selectedDueIn.length > 0 && (
                     <span className="-me-1 ms-3 inline-flex h-5 max-h-full items-center rounded border border-border bg-background px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
                       {selectedDueIn.length}
@@ -1427,7 +1473,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
               <PopoverContent className="min-w-36 p-3" align="start">
                 <div className="space-y-3">
                   <div className="text-xs font-medium text-muted-foreground">
-                    Time Frames
+                    {t("tasksTable.timeFrames")}
                   </div>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
@@ -1442,7 +1488,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                         htmlFor={`${id}-due-overdue`}
                         className="flex grow justify-between gap-2 font-normal text-red-600"
                       >
-                        Overdue{" "}
+                        {t("tasksTable.timeFrameOverdue")}{" "}
                         <span className="ms-2 text-xs text-muted-foreground">
                           {dueCounts.overdue}
                         </span>
@@ -1460,7 +1506,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                         htmlFor={`${id}-due-today`}
                         className="flex grow justify-between gap-2 font-normal"
                       >
-                        Today{" "}
+                        {t("tasksTable.timeFrameToday")}{" "}
                         <span className="ms-2 text-xs text-muted-foreground">
                           {dueCounts.today}
                         </span>
@@ -1478,7 +1524,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                         htmlFor={`${id}-due-week`}
                         className="flex grow justify-between gap-2 font-normal"
                       >
-                        This Week{" "}
+                        {t("tasksTable.timeFrameThisWeek")}{" "}
                         <span className="ms-2 text-xs text-muted-foreground">
                           {dueCounts.thisWeek}
                         </span>
@@ -1496,7 +1542,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                         htmlFor={`${id}-due-month`}
                         className="flex grow justify-between gap-2 font-normal"
                       >
-                        This Month{" "}
+                        {t("tasksTable.timeFrameThisMonth")}{" "}
                         <span className="ms-2 text-xs text-muted-foreground">
                           {dueCounts.thisMonth}
                         </span>
@@ -1514,7 +1560,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                         htmlFor={`${id}-due-later`}
                         className="flex grow justify-between gap-2 font-normal"
                       >
-                        Later{" "}
+                        {t("tasksTable.timeFrameLater")}{" "}
                         <span className="ms-2 text-xs text-muted-foreground">
                           {dueCounts.later}
                         </span>
@@ -1532,7 +1578,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                         htmlFor={`${id}-due-none`}
                         className="flex grow justify-between gap-2 font-normal"
                       >
-                        No Deadline{" "}
+                        {t("tasksTable.timeFrameNoDeadline")}{" "}
                         <span className="ms-2 text-xs text-muted-foreground">
                           {dueCounts.noDeadline}
                         </span>
@@ -1552,7 +1598,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                     strokeWidth={2}
                     aria-hidden="true"
                   />
-                  View
+                  {t("tasksTable.view")}
                 </Button>
               </DropdownMenuTrigger>
               {/* Add task button */}
@@ -1568,7 +1614,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                       strokeWidth={2}
                       aria-hidden="true"
                     />
-                    New Task
+                    {t("tasksTable.newTask")}
                   </Button>
                 </DialogTrigger>
                 <DialogContent
@@ -1577,15 +1623,16 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                   onPointerDownOutside={() => setAddTaskDialogOpen(false)}
                 >
                   <DialogHeader>
-                    <DialogTitle>Add New Task</DialogTitle>
+                    <DialogTitle>{t("tasksTable.addNewTask")}</DialogTitle>
                     <DialogDescription>
-                      Create a new task by filling out the form below.
+                      {t("tasksTable.createTask")}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
                       <Label htmlFor="title">
-                        Title<span className="text-destructive">*</span>
+                        {t("tasksTable.title")}
+                        <span className="text-destructive">*</span>
                       </Label>
                       <Input
                         id="title"
@@ -1601,7 +1648,8 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="priority">
-                        Priority<span className="text-destructive">*</span>
+                        {t("tasksTable.priority")}
+                        <span className="text-destructive">*</span>
                       </Label>
                       <Select
                         value={formData.priority}
@@ -1621,7 +1669,8 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="deadline">
-                        Deadline<span className="text-destructive">*</span>
+                        {t("tasksTable.deadline")}
+                        <span className="text-destructive">*</span>
                       </Label>
                       <div className="flex flex-col sm:flex-row gap-2">
                         <Calendar
@@ -1693,10 +1742,12 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                         });
                       }}
                     >
-                      Cancel
+                      {t("tasksTable.cancel")}
                     </Button>
                     <Button onClick={handleSubmit} disabled={loading}>
-                      {!loading ? "Create Task" : "Creating ..."}
+                      {!loading
+                        ? t("tasksTable.createTask")
+                        : t("tasksTable.creating")}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -1712,14 +1763,16 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                   onPointerDownOutside={() => setEditTaskDialogOpen(false)}
                 >
                   <DialogHeader>
-                    <DialogTitle>Edit Task</DialogTitle>
+                    <DialogTitle>{t("tasksTable.editTask")}</DialogTitle>
                     <DialogDescription>
-                      Make changes to your task here.
+                      {t("tasksTable.edit")}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
-                      <Label htmlFor="edit-title">Title</Label>
+                      <Label htmlFor="edit-title">
+                        {t("tasksTable.title")}
+                      </Label>
                       <Input
                         id="edit-title"
                         placeholder="Enter task title"
@@ -1732,7 +1785,9 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="edit-priority">Priority</Label>
+                      <Label htmlFor="edit-priority">
+                        {t("tasksTable.priority")}
+                      </Label>
                       <Select
                         value={selectedTask?.priority || ""}
                         onValueChange={(value) =>
@@ -1752,7 +1807,9 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                       </Select>
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="edit-status">Status</Label>
+                      <Label htmlFor="edit-status">
+                        {t("tasksTable.status")}
+                      </Label>
                       <Select
                         value={selectedTask?.status || ""}
                         onValueChange={(value) =>
@@ -1774,7 +1831,9 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                       </Select>
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="edit-deadline">Deadline</Label>
+                      <Label htmlFor="edit-deadline">
+                        {t("tasksTable.deadline")}
+                      </Label>
                       <div className="flex flex-col sm:flex-row gap-2">
                         <Calendar
                           mode="single"
@@ -1854,10 +1913,12 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                         setSelectedTask(null);
                       }}
                     >
-                      Cancel
+                      {t("tasksTable.cancel")}
                     </Button>
                     <Button onClick={handleEditSubmit} disabled={loading}>
-                      {!loading ? "Save Changes" : "Saving ..."}
+                      {!loading
+                        ? t("tasksTable.saveChanges")
+                        : t("tasksTable.saving")}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -1898,7 +1959,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                     strokeWidth={2}
                     aria-hidden="true"
                   />
-                  Delete
+                  {t("tasksTable.delete")}
                   <span className="-me-1 ms-3 inline-flex h-5 max-h-full items-center rounded border border-border bg-background px-1 font-[inherit] text-[0.625rem] font-medium text-muted-foreground/70">
                     {table.getSelectedRowModel().rows.length}
                   </span>
@@ -1918,22 +1979,17 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                   </div>
                   <AlertDialogHeader>
                     <AlertDialogTitle>
-                      Are you absolutely sure?
+                      {t("tasksTable.areYouAbsolutelySure")}
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete{" "}
-                      {table.getSelectedRowModel().rows.length} selected{" "}
-                      {table.getSelectedRowModel().rows.length === 1
-                        ? "task"
-                        : "tasks"}
-                      .
+                      {t("tasksTable.thisActionCannotBeUndone")}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                 </div>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction onClick={handleDeleteRows}>
-                    Delete
+                    {t("tasksTable.delete")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -2035,7 +2091,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No tasks found.
+                    {t("tasksTable.noTasksFound")}
                   </TableCell>
                 </TableRow>
               )}
@@ -2049,7 +2105,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
         {/* Results per page */}
         <div className="flex items-center gap-3">
           <Label htmlFor={id} className="max-sm:sr-only">
-            Rows per page
+            {t("tasksTable.rowsPerPage")}
           </Label>
           <Select
             value={table.getState().pagination.pageSize.toString()}
@@ -2090,7 +2146,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                 table.getRowCount()
               )}
             </span>{" "}
-            of{" "}
+            {t("tasksTable.of")}
             <span className="text-foreground">
               {table.getRowCount().toString()}
             </span>
@@ -2109,7 +2165,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                   className="disabled:pointer-events-none disabled:opacity-50"
                   onClick={() => table.firstPage()}
                   disabled={!table.getCanPreviousPage()}
-                  aria-label="Go to first page"
+                  aria-label={t("tasksTable.goToFirstPage")}
                 >
                   <ChevronFirst size={16} strokeWidth={2} aria-hidden="true" />
                 </Button>
@@ -2122,7 +2178,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                   className="disabled:pointer-events-none disabled:opacity-50"
                   onClick={() => table.previousPage()}
                   disabled={!table.getCanPreviousPage()}
-                  aria-label="Go to previous page"
+                  aria-label={t("tasksTable.goToPreviousPage")}
                 >
                   <ChevronLeft size={16} strokeWidth={2} aria-hidden="true" />
                 </Button>
@@ -2135,7 +2191,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                   className="disabled:pointer-events-none disabled:opacity-50"
                   onClick={() => table.nextPage()}
                   disabled={!table.getCanNextPage()}
-                  aria-label="Go to next page"
+                  aria-label={t("tasksTable.goToNextPage")}
                 >
                   <ChevronRight size={16} strokeWidth={2} aria-hidden="true" />
                 </Button>
@@ -2148,7 +2204,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                   className="disabled:pointer-events-none disabled:opacity-50"
                   onClick={() => table.lastPage()}
                   disabled={!table.getCanNextPage()}
-                  aria-label="Go to last page"
+                  aria-label={t("tasksTable.goToLastPage")}
                 >
                   <ChevronLast size={16} strokeWidth={2} aria-hidden="true" />
                 </Button>

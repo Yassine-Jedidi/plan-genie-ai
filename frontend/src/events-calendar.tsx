@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { eventService, Event } from "@/services/eventService";
 import { CalendarSkeleton } from "@/components/calendar-skeleton";
+import { useTranslation } from "react-i18next";
 
 function groupEventsByDay(events: Event[]): { day: Date; events: Event[] }[] {
   const map = new Map<string, { day: Date; events: Event[] }>();
@@ -24,6 +25,7 @@ function EventsCalendar() {
   >([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const fetchEvents = () => {
     if (!user) return;
@@ -34,7 +36,9 @@ function EventsCalendar() {
     eventService
       .getEvents(user.id)
       .then((events) => setCalendarData(groupEventsByDay(events)))
-      .catch((err) => setError(err.message || "Failed to load events"))
+      .catch((err) =>
+        setError(err.message || t("eventsCalendar.failedToLoadEvents"))
+      )
       .finally(() => setLoading(false));
   };
 
@@ -52,7 +56,7 @@ function EventsCalendar() {
           <CalendarSkeleton />
         ) : error ? (
           <div className="flex items-center justify-center h-full text-red-500">
-            {error}
+            {t("eventsCalendar.failedToLoadEvents")}
           </div>
         ) : (
           <FullScreenCalendar data={calendarData} onEventChange={fetchEvents} />

@@ -36,40 +36,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { ProfileDialog } from "@/components/profile-dialog";
 import { Link } from "react-router-dom";
-
-// Menu items
-const items = [
-  {
-    title: "Home",
-    url: "/home",
-    icon: Home,
-  },
-  {
-    title: "Tasks",
-    url: "/tasks",
-    icon: ClipboardList,
-  },
-  {
-    title: "Events",
-    url: "/events",
-    icon: Calendar,
-  },
-  {
-    title: "Daily",
-    url: "/daily",
-    icon: ClipboardCheck,
-  },
-  {
-    title: "Analytics",
-    url: "/analytics",
-    icon: BarChart,
-  },
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: LayoutDashboard,
-  },
-];
+import { useTranslation } from "react-i18next";
 
 export function AppSidebar() {
   const { user, signOut, loading } = useAuth();
@@ -77,15 +44,50 @@ export function AppSidebar() {
   const location = useLocation();
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { t } = useTranslation();
+
+  // Menu items
+  const items = [
+    {
+      title: t("sidebar.home"),
+      url: "/home",
+      icon: Home,
+    },
+    {
+      title: t("sidebar.tasks"),
+      url: "/tasks",
+      icon: ClipboardList,
+    },
+    {
+      title: t("sidebar.events"),
+      url: "/events",
+      icon: Calendar,
+    },
+    {
+      title: t("sidebar.daily"),
+      url: "/daily",
+      icon: ClipboardCheck,
+    },
+    {
+      title: t("sidebar.analytics"),
+      url: "/analytics",
+      icon: BarChart,
+    },
+    {
+      title: t("sidebar.dashboard"),
+      url: "/dashboard",
+      icon: LayoutDashboard,
+    },
+  ];
 
   const handleSignOut = async () => {
     try {
       await signOut();
-      toast.success("Signed out successfully!");
+      toast.success(t("sidebar.signedOutSuccessfully"));
       navigate("/");
     } catch (error) {
       console.error("Sign-out failed:", error);
-      toast.error("Failed to sign out. Please try again.");
+      toast.error(t("sidebar.failedToSignOut"));
     }
   };
 
@@ -102,7 +104,7 @@ export function AppSidebar() {
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupLabel className="text-primary">
-              Application
+              {t("sidebar.application")}
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -192,14 +194,14 @@ export function AppSidebar() {
                       className="focus:bg-primary/20"
                     >
                       <User className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
+                      <span>{t("sidebar.profile")}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => navigate("/settings")}
                       className="focus:bg-primary/20"
                     >
                       <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
+                      <span>{t("sidebar.settings")}</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-primary/20" />
                     <DropdownMenuItem
@@ -207,7 +209,7 @@ export function AppSidebar() {
                       className="focus:bg-primary/20"
                     >
                       <LogOut className="mr-2 h-4 w-4" />
-                      <span>Log out</span>
+                      <span>{t("sidebar.logout")}</span>
                     </DropdownMenuItem>
                   </>
                 )}

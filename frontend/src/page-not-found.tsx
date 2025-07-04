@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 // Combined component for 404 page
 export default function NotFoundPage() {
@@ -17,6 +18,7 @@ export default function NotFoundPage() {
 function MessageDisplay() {
   const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -37,11 +39,10 @@ function MessageDisplay() {
           404
         </div>
         <h1 className="text-3xl font-bold tracking-tight text-black md:text-4xl">
-          Page Not Found
+          {t("pageNotFound.title")}
         </h1>
         <p className="max-w-md text-muted-foreground leading-relaxed">
-          The page you are looking for might have been removed, had its name
-          changed, or is temporarily unavailable.
+          {t("pageNotFound.description")}
         </p>
         <div className="flex gap-4 mt-8">
           <Button
@@ -64,7 +65,7 @@ function MessageDisplay() {
               <path d="m12 19-7-7 7-7" />
               <path d="M19 12H5" />
             </svg>
-            Go Back
+            {t("pageNotFound.goBack")}
           </Button>
           <Button
             onClick={() => navigate("/")}
@@ -85,7 +86,7 @@ function MessageDisplay() {
               <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
               <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
-            Go Home
+            {t("pageNotFound.goHome")}
           </Button>
         </div>
       </div>

@@ -6,8 +6,10 @@ import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TasksKanban } from "./tasks-kanban";
+import { useTranslation } from "react-i18next";
 
 const TasksPage = () => {
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loadingTasks, setLoadingTasks] = useState(true);
   const [activeTab, setActiveTab] = useState("table");
@@ -20,13 +22,13 @@ const TasksPage = () => {
         setTasks(tasks);
       } catch (error) {
         console.error("Error fetching tasks:", error);
-        toast.error("Failed to load tasks. Please try again.");
+        toast.error(t("tasks.failedToLoad"));
       } finally {
         setLoadingTasks(false);
       }
     };
     fetchTasks();
-  }, []);
+  }, [t]);
 
   // Loading skeleton component
   if (loadingTasks) {
@@ -61,8 +63,8 @@ const TasksPage = () => {
           className="w-full"
         >
           <TabsList className="mb-4 bg-primary/80 text-primary-foreground">
-            <TabsTrigger value="table">Table</TabsTrigger>
-            <TabsTrigger value="kanban">Kanban</TabsTrigger>
+            <TabsTrigger value="table">{t("tasks.table")}</TabsTrigger>
+            <TabsTrigger value="kanban">{t("tasks.kanban")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="table" className="w-full">
