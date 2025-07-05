@@ -166,18 +166,44 @@ class AuthController {
   async refreshToken(req, res) {
     try {
       const accessToken = req.cookies["sb-access-token"];
-      if (!accessToken) {
-        return res.status(401).json({ error: "No access token" });
+      const refreshToken = req.cookies["sb-refresh-token"];
+
+      if (!accessToken || !refreshToken) {
+        return res
+          .status(401)
+          .json({ error: "No access token or refresh token" });
       }
 
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser(accessToken);
-      if (error) throw error;
+      // Use the refreshTokenIfNeeded logic to get fresh tokens
+      const session = await authService.refreshTokenIfNeeded(
+        accessToken,
+        refreshToken
+      );
 
-      res.json({ user });
+      if (session) {
+        // Set new cookies with refreshed tokens
+        res.cookie("sb-access-token", session.access_token, {
+          ...authService.getCookieOptions(req),
+          maxAge: 60 * 60 * 1000, // 1 hour
+        });
+
+        if (session.refresh_token) {
+          res.cookie("sb-refresh-token", session.refresh_token, {
+            ...authService.getCookieOptions(req),
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+          });
+        }
+
+        // Get updated user data
+        const user = await authService.getCurrentUser(session.access_token);
+        res.json({ user, refreshed: true });
+      } else {
+        // Token is still valid, just return current user
+        const user = await authService.getCurrentUser(accessToken);
+        res.json({ user, refreshed: false });
+      }
     } catch (error) {
+      console.error("Refresh token error:", error);
       res.status(401).json({ error: "Failed to refresh token" });
     }
   }
