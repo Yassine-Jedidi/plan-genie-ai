@@ -4,7 +4,8 @@ const { supabase } = require("../config/supabase");
 class AuthController {
   async signUp(req, res) {
     try {
-      const { email, password, turnstileToken } = req.body;
+      const { email, password, turnstileToken, clientType } = req.body;
+      const userAgent = req.get("User-Agent");
 
       if (!email || !password) {
         return res
@@ -12,13 +13,29 @@ class AuthController {
           .json({ error: "Email and password are required" });
       }
 
-      if (!turnstileToken) {
+      // Check if this is a mobile request
+      const isMobile =
+        clientType === "mobile" ||
+        clientType === "expo" ||
+        (userAgent &&
+          ["expo", "react-native", "mobile-app"].some((indicator) =>
+            userAgent.toLowerCase().includes(indicator)
+          ));
+
+      // Only require turnstile token for non-mobile requests
+      if (!isMobile && !turnstileToken) {
         return res
           .status(400)
           .json({ error: "Turnstile verification is required" });
       }
 
-      const data = await authService.signUp(email, password, turnstileToken);
+      const data = await authService.signUp(
+        email,
+        password,
+        turnstileToken,
+        userAgent,
+        clientType
+      );
       res.json(data);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -27,7 +44,8 @@ class AuthController {
 
   async signIn(req, res) {
     try {
-      const { email, password, turnstileToken } = req.body;
+      const { email, password, turnstileToken, clientType } = req.body;
+      const userAgent = req.get("User-Agent");
 
       if (!email || !password) {
         return res
@@ -35,7 +53,17 @@ class AuthController {
           .json({ error: "Email and password are required" });
       }
 
-      if (!turnstileToken) {
+      // Check if this is a mobile request
+      const isMobile =
+        clientType === "mobile" ||
+        clientType === "expo" ||
+        (userAgent &&
+          ["expo", "react-native", "mobile-app"].some((indicator) =>
+            userAgent.toLowerCase().includes(indicator)
+          ));
+
+      // Only require turnstile token for non-mobile requests
+      if (!isMobile && !turnstileToken) {
         return res
           .status(400)
           .json({ error: "Turnstile verification is required" });
@@ -44,7 +72,9 @@ class AuthController {
       const { session, user } = await authService.signIn(
         email,
         password,
-        turnstileToken
+        turnstileToken,
+        userAgent,
+        clientType
       );
 
       // Set secure cookies
@@ -184,19 +214,35 @@ class AuthController {
 
   async resetPassword(req, res) {
     try {
-      const { email, turnstileToken } = req.body;
+      const { email, turnstileToken, clientType } = req.body;
+      const userAgent = req.get("User-Agent");
 
       if (!email) {
         return res.status(400).json({ error: "Email is required" });
       }
 
-      if (!turnstileToken) {
+      // Check if this is a mobile request
+      const isMobile =
+        clientType === "mobile" ||
+        clientType === "expo" ||
+        (userAgent &&
+          ["expo", "react-native", "mobile-app"].some((indicator) =>
+            userAgent.toLowerCase().includes(indicator)
+          ));
+
+      // Only require turnstile token for non-mobile requests
+      if (!isMobile && !turnstileToken) {
         return res
           .status(400)
           .json({ error: "Turnstile verification is required" });
       }
 
-      await authService.resetPassword(email, turnstileToken);
+      await authService.resetPassword(
+        email,
+        turnstileToken,
+        userAgent,
+        clientType
+      );
 
       // Always return success to prevent email enumeration
       res.json({

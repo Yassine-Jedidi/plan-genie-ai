@@ -16,8 +16,36 @@ const getCookieOptions = (req) => {
   };
 };
 
+// Helper function to check if request is from mobile app
+function isMobileRequest(userAgent, clientType) {
+  // Check for explicit mobile client type
+  if (clientType === "mobile" || clientType === "expo") {
+    return true;
+  }
+
+  // Check user agent for mobile indicators
+  if (userAgent) {
+    const mobileIndicators = ["expo", "react-native", "mobile-app"];
+    return mobileIndicators.some((indicator) =>
+      userAgent.toLowerCase().includes(indicator)
+    );
+  }
+
+  return false;
+}
+
 // Verify Turnstile token
-async function verifyTurnstileToken(token) {
+async function verifyTurnstileToken(token, skipVerification = false) {
+  // Skip verification for mobile requests
+  if (skipVerification) {
+    console.log("Skipping Turnstile verification for mobile request");
+    return true;
+  }
+
+  if (!token) {
+    return false;
+  }
+
   const formData = new URLSearchParams();
   formData.append("secret", process.env.TURNSTILE_SECRET_KEY);
   formData.append("response", token);
@@ -44,13 +72,16 @@ class AuthService {
     return getCookieOptions(req);
   }
 
-  async verifyTurnstileToken(token) {
-    return await verifyTurnstileToken(token);
+  async verifyTurnstileToken(token, skipVerification = false) {
+    return await verifyTurnstileToken(token, skipVerification);
   }
 
-  async signUp(email, password, turnstileToken) {
-    // Verify Turnstile token
-    const isValidToken = await verifyTurnstileToken(turnstileToken);
+  async signUp(email, password, turnstileToken, userAgent, clientType) {
+    // Check if this is a mobile request
+    const isMobile = isMobileRequest(userAgent, clientType);
+
+    // Verify Turnstile token (skip for mobile)
+    const isValidToken = await verifyTurnstileToken(turnstileToken, isMobile);
     if (!isValidToken) {
       throw new Error("Invalid Turnstile token");
     }
@@ -84,9 +115,12 @@ class AuthService {
     return data;
   }
 
-  async signIn(email, password, turnstileToken) {
-    // Verify Turnstile token
-    const isValidToken = await verifyTurnstileToken(turnstileToken);
+  async signIn(email, password, turnstileToken, userAgent, clientType) {
+    // Check if this is a mobile request
+    const isMobile = isMobileRequest(userAgent, clientType);
+
+    // Verify Turnstile token (skip for mobile)
+    const isValidToken = await verifyTurnstileToken(turnstileToken, isMobile);
     if (!isValidToken) {
       throw new Error("Invalid Turnstile token");
     }
@@ -402,9 +436,12 @@ class AuthService {
     return null;
   }
 
-  async resetPassword(email, turnstileToken) {
-    // Verify Turnstile token
-    const isValidToken = await verifyTurnstileToken(turnstileToken);
+  async resetPassword(email, turnstileToken, userAgent, clientType) {
+    // Check if this is a mobile request
+    const isMobile = isMobileRequest(userAgent, clientType);
+
+    // Verify Turnstile token (skip for mobile)
+    const isValidToken = await verifyTurnstileToken(turnstileToken, isMobile);
     if (!isValidToken) {
       throw new Error("Invalid Turnstile token");
     }
