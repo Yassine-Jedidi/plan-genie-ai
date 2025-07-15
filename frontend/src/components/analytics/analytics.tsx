@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import {
-  analyticsService,
   AnalyticsData,
   TaskAnalytics,
   EventAnalytics,
-} from "../../services/analyticsService";
+} from "../../../types/analytics";
+import { analyticsService } from "@/services/analyticsService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   BarChart,
