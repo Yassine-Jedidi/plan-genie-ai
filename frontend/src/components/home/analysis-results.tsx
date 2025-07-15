@@ -14,9 +14,9 @@ import { taskService } from "@/services/taskService";
 import { eventService } from "@/services/eventService";
 import { priorityService, PriorityLevel } from "@/services/priorityService";
 import { useTranslation } from "react-i18next";
-import SelectType from "@/components/home/SelectType";
+import SelectType from "@/components/home/select-type";
 import { frenchParser, englishParser } from "@/lib/analysisUtils";
-import EntityEditor from "@/components/home/EntityEditor";
+import EntityEditor from "@/components/home/entity-editor";
 
 interface AnalysisResultsProps {
   results: AnalysisResult | null;

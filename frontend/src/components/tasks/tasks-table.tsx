@@ -90,9 +90,9 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useTranslation } from "react-i18next";
-import AddTaskDialog from "@/components/tasks/AddTaskDialog";
-import EditTaskDialog from "@/components/tasks/EditTaskDialog";
-import TaskRowActions from "@/components/tasks/TaskRowActions";
+import AddTaskDialog from "@/components/tasks/add-task-dialog";
+import EditTaskDialog from "@/components/tasks/edit-task-dialog";
+import TaskRowActions from "@/components/tasks/task-row-actions";
 import {
   multiColumnFilterFn,
   priorityFilterFn,

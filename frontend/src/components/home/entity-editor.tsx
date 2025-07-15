@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Edit, Save, X } from "lucide-react";
-import PrioritySelect from "@/components/home/PrioritySelect";
+import PrioritySelect from "@/components/home/priority-select";
 import { frenchParser, englishParser } from "@/lib/analysisUtils";
 import { PriorityLevel } from "@/services/priorityService";
 import { formatDate as formatDateUtil } from "@/lib/dateUtils";
