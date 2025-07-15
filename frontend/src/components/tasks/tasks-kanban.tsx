@@ -14,8 +14,8 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { formatDate } from "@/lib/utils";
+import { cn } from "@/lib/dateUtils";
+import { formatDate } from "@/lib/dateUtils";
 import { useTranslation } from "react-i18next";
 // Make sure you have this import for DndContext if needed
 // import { DndContext } from '@dnd-kit/core';

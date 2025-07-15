@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/dateUtils";
 import { motion, Transition } from "framer-motion";
 
 export type GlowEffectProps = {

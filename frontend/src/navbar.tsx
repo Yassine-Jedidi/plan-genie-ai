@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
 import { motion, useScroll } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/dateUtils";
 import { Menu, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitch } from "@/components/language-switch";

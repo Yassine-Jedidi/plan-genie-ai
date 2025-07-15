@@ -5,7 +5,7 @@ import { format, isFuture, startOfDay } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/dateUtils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {

@@ -1,5 +1,5 @@
 import { Moon, Sun } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/dateUtils";
 import { useTheme } from "@/hooks/use-theme";
 import { useTranslation } from "react-i18next";
 

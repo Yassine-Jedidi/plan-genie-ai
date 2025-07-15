@@ -15,7 +15,7 @@ import { Calendar, Clock, Pencil, Trash2 } from "lucide-react";
 import { Card, CardHeader, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/dateUtils";
 
 interface EventDialogProps {
   isOpen: boolean;

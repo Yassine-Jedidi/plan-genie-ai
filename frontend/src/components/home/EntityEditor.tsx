@@ -4,7 +4,7 @@ import { Edit, Save, X } from "lucide-react";
 import PrioritySelect from "@/components/home/PrioritySelect";
 import { frenchParser, englishParser } from "@/lib/analysisUtils";
 import { PriorityLevel } from "@/services/priorityService";
-import { formatDate as formatDateUtil } from "@/lib/utils";
+import { formatDate as formatDateUtil } from "@/lib/dateUtils";
 import React from "react";
 
 interface EntityEditorProps {

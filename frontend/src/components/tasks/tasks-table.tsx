@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
-import { formatDate } from "@/lib/utils";
+import { cn } from "@/lib/dateUtils";
+import { formatDate } from "@/lib/dateUtils";
 import { formatDistanceToNowStrict, isPast } from "date-fns";
 import {
   AlertDialog,

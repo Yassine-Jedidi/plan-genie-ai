@@ -45,7 +45,7 @@ import {
   Info,
   CheckCircle,
 } from "lucide-react";
-import { cn, formatDate, formatTime as formatTimeUtils } from "@/lib/utils";
+import { cn, formatDate, formatTime as formatTimeUtils } from "@/lib/dateUtils";
 import { DatePicker } from "@/components/daily/date-picker";
 import {
   Tooltip,

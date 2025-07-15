@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Bell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/dateUtils";
 import {
   notificationService,
   Notification as ApiNotification,
