@@ -1,22 +1,6 @@
 import api from "@/components/api/api";
 import { AxiosError } from "axios";
-import { Task } from "./taskService";
-import { Event } from "../../types/event";
-
-export interface Notification {
-  id: string;
-  title: string;
-  time: string;
-  type: string;
-  read: boolean;
-  created_at: string;
-  scheduled_for?: string;
-  user_id: string;
-  task_id?: string;
-  task?: Task;
-  event_id?: string;
-  event?: Event;
-}
+import { Notification } from "../../types/notification";
 
 export const notificationService = {
   async getNotifications(): Promise<Notification[]> {

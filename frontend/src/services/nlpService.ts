@@ -1,6 +1,6 @@
 import api from "@/components/api/api";
 import { AxiosError } from "axios";
-import { AnalysisResult } from "../../types/nlp";
+import { AnalysisResult } from "types/nlp";
 
 export const nlpService = {
   async analyzeText(text: string): Promise<AnalysisResult> {

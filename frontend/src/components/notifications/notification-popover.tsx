@@ -3,12 +3,10 @@ import { Bell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/dateUtils";
-import {
-  notificationService,
-  Notification as ApiNotification,
-} from "@/services/notificationService";
+import { notificationService } from "@/services/notificationService";
 import { AxiosError } from "axios";
 import { useTranslation } from "react-i18next";
+import { Notification as ApiNotification } from "../../../types/notification";
 
 export type Notification = {
   id: string;
