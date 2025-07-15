@@ -82,29 +82,27 @@ const refreshTokenIfNeeded = async (req, res, next) => {
   next();
 };
 
-// Apply the middleware to all routes that require authentication
-router.use(["/me"], refreshTokenIfNeeded);
+router.use(refreshTokenIfNeeded);
 
-// Auth routes
+// Public routes (no refresh needed)
 router.post("/signup", authController.signUp);
 router.post("/signin", authController.signIn);
-router.post("/signout", authController.signOut);
 router.get("/google", authController.getGoogleOAuthURL);
 router.get("/callback/google", authController.handleOAuthCallback);
 router.post("/callback/token-exchange", authController.handleTokenExchange);
-router.get("/me", authController.getCurrentUser);
-router.post("/refresh", refreshTokenIfNeeded, authController.refreshToken);
 router.post("/reset-password", authController.resetPassword);
 router.post("/update-password", authController.updatePassword);
 
-// File upload and profile routes
+// Protected routes (will trigger refresh if needed)
+router.post("/signout", authController.signOut);
+router.get("/me", authController.getCurrentUser);
+router.post("/refresh", authController.refreshToken);
 router.post(
   "/upload-avatar",
   upload.single("avatar"),
   handleMulterError,
   authController.uploadAvatar
 );
-
 router.put("/update-profile", handleMulterError, authController.updateProfile);
 router.put("/update-theme", authController.updateTheme);
 

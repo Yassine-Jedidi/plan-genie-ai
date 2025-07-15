@@ -371,16 +371,30 @@ class AuthService {
   }
 
   async refreshTokenIfNeeded(accessToken, refreshToken) {
-    if (!refreshToken || !accessToken) {
+    if (!refreshToken) {
       return null;
     }
+    if (!accessToken) {
+      // Try to refresh with just the refresh token
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.refreshSession({
+        refresh_token: refreshToken,
+      });
+      if (error) throw error;
+      return session;
+    }
 
-    // Check if token is expired or about to expire (within 60 seconds)
+    // Check if token is expired or about to expire (within 5 minutes)
     const { exp } = JSON.parse(
       Buffer.from(accessToken.split(".")[1], "base64").toString()
     );
-    const isExpired = Date.now() >= exp * 1000;
-    const isAboutToExpire = Date.now() >= exp * 1000 - 60000; // 60 seconds before expiry
+    const now = Date.now();
+    const expiry = exp * 1000;
+    const buffer = 5 * 60 * 1000; // 5 minutes
+    const isExpired = now >= expiry;
+    const isAboutToExpire = now >= expiry - buffer;
 
     if (isExpired || isAboutToExpire) {
       const {

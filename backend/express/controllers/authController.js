@@ -162,7 +162,7 @@ class AuthController {
       // Set secure cookies
       res.cookie("sb-access-token", session.access_token, {
         ...authService.getCookieOptions(req),
-        maxAge: expires_in ? expires_in * 1000 : 60 * 60 * 1000,
+        maxAge: expires_in ? expires_in * 1000 : 60 * 60 * 1000, // 1 hour default
       });
 
       if (session.refresh_token) {
