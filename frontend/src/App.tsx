@@ -12,7 +12,7 @@ import { SignInPage } from "./signin";
 import { AuthCallback } from "./components/auth/AuthCallback";
 import { ForgotPasswordPage } from "./forgot-password";
 import { ResetPasswordPage } from "./reset-password";
-import { AuthProvider } from "./lib/auth";
+import { AuthProvider } from "./contexts/auth-provider";
 import { Toaster } from "@/components/ui/sonner";
 import HomePage from "./components/home/home";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
