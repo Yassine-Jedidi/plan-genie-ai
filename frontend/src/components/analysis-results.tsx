@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { Edit, Loader2, Save, X } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,100 +9,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { AnalysisResult } from "@/services/nlpService";
 import { taskService } from "@/services/taskService";
 import { eventService } from "@/services/eventService";
 import { priorityService, PriorityLevel } from "@/services/priorityService";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ChevronsUpDown } from "lucide-react";
-import { formatDate as formatDateUtil } from "@/lib/utils";
-import * as chrono from "chrono-node";
 import { useTranslation } from "react-i18next";
-
-// Create custom select components
-interface SelectProps {
-  value: string;
-  onValueChange: (value: string) => void;
-}
-
-const Select = ({ value, onValueChange }: SelectProps) => {
-  const { t } = useTranslation();
-
-  const getDisplayValue = (val: string) => {
-    if (val === "Task") return t("analysis.task");
-    if (val === "Event") return t("analysis.event");
-    return val;
-  };
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="w-[200px] justify-between">
-          {getDisplayValue(value)} <ChevronsUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem onSelect={() => onValueChange("Task")}>
-          {t("analysis.task")}
-        </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => onValueChange("Event")}>
-          {t("analysis.event")}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-};
-
-// Priority select component
-const PrioritySelect = ({
-  value,
-  onValueChange,
-}: {
-  value: PriorityLevel;
-  onValueChange: (value: PriorityLevel) => void;
-}) => {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          className={`w-[120px] justify-between ${priorityService.getPriorityColor(
-            value
-          )}`}
-        >
-          {priorityService.getPriorityLabel(value)}{" "}
-          <ChevronsUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem
-          onSelect={() => onValueChange("high")}
-          className="text-red-500"
-        >
-          High
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onSelect={() => onValueChange("medium")}
-          className="text-amber-500"
-        >
-          Medium
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onSelect={() => onValueChange("low")}
-          className="text-green-500"
-        >
-          Low
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-};
+import SelectType from "@/components/SelectType";
+import { frenchParser, englishParser } from "@/lib/analysisUtils";
+import EntityEditor from "@/components/EntityEditor";
 
 interface AnalysisResultsProps {
   results: AnalysisResult | null;
@@ -110,10 +24,6 @@ interface AnalysisResultsProps {
   onSave?: () => void; // Add optional onSave callback
   isSaved?: boolean; // Add optional isSaved flag
 }
-
-// Use the French parser as demonstrated by the user
-const frenchParser = chrono.fr;
-const englishParser = chrono.en;
 
 export function AnalysisResults({
   results,
@@ -209,22 +119,6 @@ export function AnalysisResults({
       console.error("Error parsing date:", error);
       return { originalText: text, parsedDate: null };
     }
-  };
-
-  // Format date to display in a readable format
-  const formatDate = (date: Date | null): string => {
-    if (!date) return "Invalid date";
-
-    // Convert the Date to ISO string and use our utility
-    return formatDateUtil(date.toISOString(), {
-      weekday: "long",
-      month: "long",
-      day: "2-digit",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: false,
-    });
   };
 
   const handleTypeChange = (newType: string) => {
@@ -498,7 +392,10 @@ export function AnalysisResults({
   };
 
   // Helper function to get a display-friendly name for entity types
-  const getEntityDisplayName = (entityType: string) => {
+  const getEntityDisplayName = (
+    entityType: string,
+    t: (key: string) => string
+  ) => {
     const displayNames: Record<string, string> = {
       TITRE: t("analysis.title"),
       DELAI: t("analysis.deadline"),
@@ -544,300 +441,6 @@ export function AnalysisResults({
     return Object.entries(result);
   };
 
-  // Render priority selector or regular field editor based on entity type
-  const renderEntityEditor = (entityType: string, values: string[]) => {
-    if (entityType === "PRIORITE" && results.type === "Task") {
-      return (
-        <div className="flex items-center gap-3 mt-2">
-          <PrioritySelect
-            value={getCurrentPriorityLevel()}
-            onValueChange={handlePriorityChange}
-          />
-          <span className="text-xs text-muted-foreground">
-            {values.length > 0
-              ? `Detected: ${values[0]}`
-              : "Not detected (default: Medium)"}
-          </span>
-        </div>
-      );
-    } else if (
-      (entityType === "DELAI" && results.type === "Task") ||
-      (entityType === "DATE_HEURE" && results.type === "Event")
-    ) {
-      return (
-        <div className="space-y-2">
-          {values.length > 0 ? (
-            values.map((value, index) => {
-              // Try to parse the value as JSON to check if it's already a structured date
-              let originalText = value;
-              let parsedDate: Date | null = null;
-
-              try {
-                const parsed = JSON.parse(value);
-                if (parsed.originalText && parsed.parsedDate) {
-                  originalText = parsed.originalText;
-                  parsedDate = new Date(parsed.parsedDate);
-                }
-              } catch {
-                // If not JSON, try to parse with French first, then English
-                console.log(`Trying to parse raw value: "${value}"`);
-                // First try with French parser
-                parsedDate = frenchParser.parseDate(value);
-
-                // If French fails, try English
-                if (!parsedDate) {
-                  parsedDate = englishParser.parseDate(value);
-                }
-
-                originalText = value;
-              }
-
-              // Log the parsing result for debugging
-              console.log(
-                `Parsed date for "${originalText}": ${
-                  parsedDate ? formatDate(parsedDate) : "No date found"
-                }`
-              );
-
-              return (
-                <div key={index} className="flex items-center gap-2">
-                  {editingEntity === `${entityType}_${index}` ? (
-                    <div className="flex items-center gap-1 w-full">
-                      <Input
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            saveEntityEdit(entityType, index);
-                          }
-                        }}
-                        autoFocus
-                        className="flex-1 h-8 text-sm focus-visible:ring-primary/30"
-                        placeholder={
-                          entityType === "DELAI"
-                            ? "ex: tomorrow, next week, 05/05/2025"
-                            : "ex: tomorrow at 3pm, next Monday at 10am"
-                        }
-                      />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => saveEntityEdit(entityType, index)}
-                        className="h-7 w-7 hover:text-primary"
-                      >
-                        <Save className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setEditingEntity(null)}
-                        className="h-7 w-7 hover:text-destructive"
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  ) : (
-                    <div
-                      className="flex flex-col w-full group hover:bg-background/50 rounded-md transition-colors"
-                      onClick={() =>
-                        startEditEntity(entityType, originalText, index)
-                      }
-                    >
-                      <div className="flex items-center justify-between w-full">
-                        <div className="flex-1 px-3 py-1.5 rounded-md text-sm cursor-pointer">
-                          {originalText}
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <Edit className="h-3 w-3" />
-                        </Button>
-                      </div>
-                      <div className="px-3 pb-1.5 text-xs text-muted-foreground">
-                        {parsedDate
-                          ? `Interpreted as: ${formatDate(parsedDate)}`
-                          : "Date not recognized"}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })
-          ) : (
-            <div className="flex items-center gap-2">
-              {editingEntity === `${entityType}_0` ? (
-                <div className="flex items-center gap-1 w-full">
-                  <Input
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        saveEntityEdit(entityType, 0);
-                      }
-                    }}
-                    autoFocus
-                    className="flex-1 h-8 text-sm focus-visible:ring-primary/30"
-                    placeholder={
-                      entityType === "DELAI"
-                        ? "ex: tomorrow, next week, 05/05/2025"
-                        : "ex: tomorrow at 3pm, next Monday at 10am"
-                    }
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => saveEntityEdit(entityType, 0)}
-                    className="h-7 w-7 hover:text-primary"
-                  >
-                    <Save className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setEditingEntity(null)}
-                    className="h-7 w-7 hover:text-destructive"
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </div>
-              ) : (
-                <div
-                  className="flex items-center justify-between w-full group bg-background/30 hover:bg-background/50 rounded-md transition-colors"
-                  onClick={() => startEditEntity(entityType, "", 0)}
-                >
-                  <div className="flex-1 px-3 py-1.5 rounded-md text-sm text-muted-foreground cursor-pointer">
-                    Click to add
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Edit className="h-3 w-3" />
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-2">
-        {values.length > 0 ? (
-          values.map((value, index) => (
-            <div key={index} className="flex items-center gap-2">
-              {editingEntity === `${entityType}_${index}` ? (
-                <div className="flex items-center gap-1 w-full">
-                  <Input
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        saveEntityEdit(entityType, index);
-                      }
-                    }}
-                    autoFocus
-                    className="flex-1 h-8 text-sm focus-visible:ring-primary/30"
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => saveEntityEdit(entityType, index)}
-                    className="h-7 w-7 hover:text-primary"
-                  >
-                    <Save className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setEditingEntity(null)}
-                    className="h-7 w-7 hover:text-destructive"
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </div>
-              ) : (
-                <div
-                  className="flex items-center justify-between w-full group hover:bg-background/50 rounded-md transition-colors"
-                  onClick={() => startEditEntity(entityType, value, index)}
-                >
-                  <div className="flex-1 px-3 py-1.5 rounded-md text-sm cursor-pointer">
-                    {value}
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Edit className="h-3 w-3" />
-                  </Button>
-                </div>
-              )}
-            </div>
-          ))
-        ) : (
-          <div className="flex items-center gap-2">
-            {editingEntity === `${entityType}_0` ? (
-              <div className="flex items-center gap-1 w-full">
-                <Input
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      saveEntityEdit(entityType, 0);
-                    }
-                  }}
-                  autoFocus
-                  className="flex-1 h-8 text-sm focus-visible:ring-primary/30"
-                />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => saveEntityEdit(entityType, 0)}
-                  className="h-7 w-7 hover:text-primary"
-                >
-                  <Save className="h-3 w-3" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setEditingEntity(null)}
-                  className="h-7 w-7 hover:text-destructive"
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </div>
-            ) : (
-              <div
-                className="flex items-center justify-between w-full group bg-background/30 hover:bg-background/50 rounded-md transition-colors"
-                onClick={() => startEditEntity(entityType, "", 0)}
-              >
-                <div className="flex-1 px-3 py-1.5 rounded-md text-sm text-muted-foreground cursor-pointer">
-                  Click to add
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <Edit className="h-3 w-3" />
-                </Button>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <Card className="shadow-md border border-primary/30 overflow-hidden bg-gradient-to-br from-background to-muted/30">
       <CardHeader className="p-3 pb-0">
@@ -848,7 +451,7 @@ export function AnalysisResults({
       <CardContent className="p-3 space-y-4">
         <div className="flex items-center gap-3">
           <h3 className="text-sm font-medium">{t("analysis.type")}</h3>
-          <Select value={results.type} onValueChange={handleTypeChange} />
+          <SelectType value={results.type} onValueChange={handleTypeChange} />
         </div>
 
         <div className="space-y-3">
@@ -859,9 +462,21 @@ export function AnalysisResults({
                 className="bg-muted/10 p-3 rounded-lg border border-primary/5 transition-all hover:shadow-sm hover:border-primary/20"
               >
                 <h4 className="text-sm font-medium text-primary/80 mb-2">
-                  {getEntityDisplayName(entityType)}
+                  {getEntityDisplayName(entityType, t)}
                 </h4>
-                {renderEntityEditor(entityType, values)}
+                <EntityEditor
+                  entityType={entityType}
+                  values={values}
+                  editingEntity={editingEntity}
+                  editValue={editValue}
+                  onStartEdit={startEditEntity}
+                  onEditChange={setEditValue}
+                  onSaveEdit={saveEntityEdit}
+                  onCancelEdit={() => setEditingEntity(null)}
+                  resultsType={results.type}
+                  getCurrentPriorityLevel={getCurrentPriorityLevel}
+                  handlePriorityChange={handlePriorityChange}
+                />
               </div>
             )
           )}
