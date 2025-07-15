@@ -1,11 +1,6 @@
 import api from "@/components/api/api";
 import { AxiosError } from "axios";
-
-export interface AnalysisResult {
-  type: string;
-  confidence: number;
-  entities: Record<string, string[]>;
-}
+import { AnalysisResult } from "../../types/nlp";
 
 export const nlpService = {
   async analyzeText(text: string): Promise<AnalysisResult> {

@@ -1,7 +1,7 @@
 import api from "@/components/api/api";
 import { AxiosError } from "axios";
 import { Task } from "./taskService";
-import { Event } from "./eventService";
+import { Event } from "../../types/event";
 
 export interface Notification {
   id: string;

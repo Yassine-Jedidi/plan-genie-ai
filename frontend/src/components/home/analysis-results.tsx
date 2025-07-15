@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AnalysisResult } from "@/services/nlpService";
+import { AnalysisResult } from "../../../types/nlp";
 import { taskService } from "@/services/taskService";
 import { eventService } from "@/services/eventService";
 import { priorityService, PriorityLevel } from "@/services/priorityService";

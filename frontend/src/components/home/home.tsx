@@ -1,7 +1,8 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
-import { nlpService, AnalysisResult } from "@/services/nlpService";
+import { nlpService } from "@/services/nlpService";
+import { AnalysisResult } from "../../../types/nlp";
 import { PromptInputWithActions } from "./input";
 import { AnalysisResults } from "@/components/home/analysis-results";
 import { ShiningText } from "../ui/shining-text";

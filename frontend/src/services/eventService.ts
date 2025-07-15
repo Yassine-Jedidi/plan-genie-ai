@@ -1,6 +1,6 @@
 import api from "@/components/api/api";
 import { AxiosError } from "axios";
-import { AnalysisResult } from "./nlpService";
+import { AnalysisResult } from "../../types/nlp";
 import { Event, CalendarEventForApi, UpdateEventData } from "../../types/event";
 
 export const eventService = {
