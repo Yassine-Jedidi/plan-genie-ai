@@ -20,7 +20,8 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { Task, taskService } from "@/services/taskService";
+import { taskService } from "@/services/taskService";
+import { Task } from "types/task";
 import { toast } from "sonner";
 import { Row, Table } from "@tanstack/react-table";
 

@@ -73,7 +73,8 @@ import {
 } from "lucide-react";
 import { useId, useMemo, useRef, useState, useEffect } from "react";
 import React from "react";
-import { ManualTask, Task, taskService } from "@/services/taskService";
+import { taskService } from "@/services/taskService";
+import { Task, ManualTask } from "types/task";
 import { toast } from "sonner";
 import {
   ColumnDef,

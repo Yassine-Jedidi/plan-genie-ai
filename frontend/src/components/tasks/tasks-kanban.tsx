@@ -8,7 +8,7 @@ import {
 import type { DragEndEvent } from "@dnd-kit/core";
 import { useState, useEffect } from "react";
 import type { FC } from "react";
-import { Task, taskService } from "../../services/taskService";
+import { taskService } from "../../services/taskService";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/dateUtils";
 import { formatDate } from "@/lib/dateUtils";
 import { useTranslation } from "react-i18next";
+import { Task } from "types/task";
 // Make sure you have this import for DndContext if needed
 // import { DndContext } from '@dnd-kit/core';
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Task, taskService } from "../../services/taskService";
+import { taskService } from "../../services/taskService";
 import TasksTable from "./tasks-table";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { toast } from "sonner";
@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TasksKanban } from "./tasks-kanban";
 import { useTranslation } from "react-i18next";
+import { Task } from "types/task";
 
 const TasksPage = () => {
   const { t } = useTranslation();

@@ -3,26 +3,7 @@ import { AxiosError } from "axios";
 import { priorityService } from "./priorityService";
 import * as chrono from 'chrono-node';
 import { AnalysisResult } from "types/nlp";
-
-export interface Task {
-  id: string;
-  title: string;
-  deadline: Date | null;
-  deadline_text?: string | null;
-  priority: string | null;
-  status: string | null;
-  completed_at?: string | null;
-  created_at: string;
-  updated_at: string;
-  user_id: string;
-}
-
-export interface ManualTask {
-  title: string;
-  deadline: Date;
-  priority: string;
-  status: string;
-}
+import { Task, ManualTask } from "../../types/task";
 
 // Use the built-in French parser as demonstrated by the user
 const frenchParser = chrono.fr;

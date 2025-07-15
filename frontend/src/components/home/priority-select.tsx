@@ -6,7 +6,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronsUpDown } from "lucide-react";
-import { priorityService, PriorityLevel } from "@/services/priorityService";
+import { priorityService } from "@/services/priorityService";
+import { PriorityLevel } from "../../../types/priority";
 
 interface PrioritySelectProps {
   value: PriorityLevel;

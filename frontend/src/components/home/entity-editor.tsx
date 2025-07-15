@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Edit, Save, X } from "lucide-react";
 import PrioritySelect from "@/components/home/priority-select";
 import { frenchParser, englishParser } from "@/lib/analysisUtils";
-import { PriorityLevel } from "@/services/priorityService";
+import { PriorityLevel } from "../../../types/priority";
 import { formatDate as formatDateUtil } from "@/lib/dateUtils";
 import React from "react";
 

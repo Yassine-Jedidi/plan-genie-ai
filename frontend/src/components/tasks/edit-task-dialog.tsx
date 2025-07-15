@@ -19,7 +19,7 @@ import {
 import { Calendar } from "./date-time-picker";
 import { Clock } from "lucide-react";
 import React from "react";
-import { Task } from "@/services/taskService";
+import { Task } from "types/task";
 
 interface EditTaskDialogProps {
   open: boolean;
