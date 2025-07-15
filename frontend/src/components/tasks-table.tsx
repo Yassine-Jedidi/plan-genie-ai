@@ -17,13 +17,10 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -62,14 +59,10 @@ import {
   CircleAlert,
   CircleX,
   Columns3,
-  Ellipsis,
   Filter,
   ListFilter,
-  Plus,
   Trash,
   Clock,
-  Pencil,
-  Check,
   CheckCircle,
   XCircle,
   RefreshCw,
@@ -85,9 +78,7 @@ import { toast } from "sonner";
 import {
   ColumnDef,
   ColumnFiltersState,
-  FilterFn,
   PaginationState,
-  Row,
   SortingState,
   VisibilityState,
   flexRender,
@@ -98,111 +89,16 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Calendar } from "./date-time-picker";
 import { useTranslation } from "react-i18next";
-
-// Custom filter function for multi-column searching
-const multiColumnFilterFn: FilterFn<Task> = (row, _columnId, filterValue) => {
-  const searchableRowContent = `${row.original.title} ${
-    row.original.priority || ""
-  }`.toLowerCase();
-  const searchTerm = (filterValue ?? "").toLowerCase();
-  return searchableRowContent.includes(searchTerm);
-};
-
-const priorityFilterFn: FilterFn<Task> = (
-  row,
-  columnId,
-  filterValue: string[]
-) => {
-  if (!filterValue?.length) return true;
-  const priority = row.getValue(columnId) as string;
-  return filterValue.includes(priority);
-};
-
-const statusFilterFn: FilterFn<Task> = (
-  row,
-  columnId,
-  filterValue: string[]
-) => {
-  if (!filterValue?.length) return true;
-  const status = row.getValue(columnId) as string;
-  return filterValue.includes(status);
-};
-
-// Due In filter function
-const dueInFilterFn: FilterFn<Task> = (row, columnId, filterValue) => {
-  const deadline = row.getValue(columnId) as string | null;
-  const completedAt = row.original.completed_at; // Get completed_at from the original row object
-
-  // If the task is completed, it should generally not be filtered by due date categories.
-  // The only exception is if it was completed without a deadline and the 'noDeadline' filter is active.
-  if (completedAt) {
-    if (!deadline && filterValue.includes("noDeadline")) {
-      return true;
-    }
-    return false; // Exclude completed tasks from other time-based filters
-  }
-
-  // If no deadline and "noDeadline" filter is active, show this task
-  if (!deadline && filterValue.includes("noDeadline")) {
-    return true;
-  }
-
-  // If there's no deadline and "noDeadline" filter is not active, don't show this task
-  if (!deadline) {
-    return false;
-  }
-
-  try {
-    const deadlineDate = new Date(deadline);
-    const now = new Date();
-    const todayStart = new Date(now);
-    todayStart.setHours(0, 0, 0, 0);
-
-    const tomorrow = new Date(todayStart);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    const nextWeek = new Date(todayStart);
-    nextWeek.setDate(nextWeek.getDate() + 7);
-
-    const nextMonth = new Date(todayStart);
-    nextMonth.setMonth(nextMonth.getMonth() + 1);
-
-    // Pre-calculate conditions to avoid lexical declarations in case blocks
-    const isOverdue = deadlineDate < todayStart;
-    const isToday = deadlineDate >= todayStart && deadlineDate < tomorrow;
-    const isThisWeek = deadlineDate >= tomorrow && deadlineDate < nextWeek;
-    const isThisMonth = deadlineDate >= nextWeek && deadlineDate < nextMonth;
-    const isLater = deadlineDate >= nextMonth;
-
-    // If filter value is empty, show all tasks
-    if (filterValue.length === 0) {
-      return true;
-    }
-
-    // Check if the task matches any of the active filters
-    return (
-      (isOverdue && filterValue.includes("overdue")) ||
-      (isToday && filterValue.includes("today")) ||
-      (isThisWeek && filterValue.includes("thisWeek")) ||
-      (isThisMonth && filterValue.includes("thisMonth")) ||
-      (isLater && filterValue.includes("later"))
-    );
-  } catch {
-    // For invalid dates, don't show the task
-    return false;
-  }
-};
+import AddTaskDialog from "@/components/AddTaskDialog";
+import EditTaskDialog from "@/components/EditTaskDialog";
+import TaskRowActions from "@/components/TaskRowActions";
+import {
+  multiColumnFilterFn,
+  priorityFilterFn,
+  statusFilterFn,
+  dueInFilterFn,
+} from "@/components/taskTableUtils";
 
 interface TasksTableProps {
   tasks: Task[];
@@ -734,7 +630,17 @@ export default function TasksTable({ tasks }: TasksTableProps) {
         ...columns.slice(0, -1),
         {
           ...columns[columns.length - 1],
-          cell: ({ row }) => <RowActions row={row} />,
+          cell: ({ row }) => (
+            <TaskRowActions
+              row={row}
+              setSelectedTask={setSelectedTask}
+              setEditTaskDialogOpen={setEditTaskDialogOpen}
+              setLocalTasks={setLocalTasks}
+              fetchTasks={fetchTasks}
+              t={t}
+              table={table}
+            />
+          ),
         },
       ],
       []
@@ -943,157 +849,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
   };
 
   // Define the RowActions component inside TasksTable to access table state
-  function RowActions({ row }: { row: Row<Task> }) {
-    const task = row.original;
-    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-
-    const handleDelete = async () => {
-      try {
-        await taskService.deleteTask(task.id);
-        // Update the local tasks directly using the TasksTable component's state setter
-        window.dispatchEvent(
-          new CustomEvent("taskDeleted", { detail: task.id })
-        );
-        // Reset row selection after deleting the task
-        table.resetRowSelection();
-        // Close the delete confirmation dialog and dropdown menu
-        setDeleteConfirmOpen(false);
-        setDropdownOpen(false);
-        toast.success("Task deleted successfully");
-      } catch (error) {
-        toast.error("Failed to delete task");
-        console.error("Error deleting task:", error);
-      }
-    };
-
-    const handleMarkAsDone = async (taskToUpdate: Task) => {
-      if (taskToUpdate) {
-        try {
-          setLoading(true);
-          if (taskToUpdate.status === "Done")
-            toast.error(t("tasksTable.actions.taskAlreadyDone"));
-          else {
-            const updatedTask = await taskService.updateTask({
-              ...taskToUpdate,
-              status: "Done",
-              completed_at: new Date().toISOString(),
-            });
-            setLocalTasks((prev) =>
-              prev.map((t) => (t.id === updatedTask.id ? updatedTask : t))
-            );
-            fetchTasks();
-            toast.success(t("tasksTable.actions.taskMarkedDone"));
-            setDropdownOpen(false);
-          }
-        } catch (error) {
-          console.error("Error marking task as done:", error);
-          toast.error(t("tasksTable.actions.failedToMarkDone"));
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-
-    return (
-      <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
-        <DropdownMenuTrigger asChild>
-          <div className="flex justify-end">
-            <Button
-              size="icon"
-              variant="ghost"
-              className="shadow-none"
-              aria-label="Edit task"
-            >
-              <Ellipsis size={16} strokeWidth={2} aria-hidden="true" />
-            </Button>
-          </div>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuGroup>
-            <DropdownMenuItem
-              onSelect={(e) => {
-                e.preventDefault();
-                setSelectedTask(task);
-                setEditTaskDialogOpen(true);
-                setDropdownOpen(false);
-              }}
-            >
-              <Pencil
-                className="me-2 h-4 w-4 text-yellow-500"
-                aria-hidden="true"
-              />
-              <span className="text-yellow-500">
-                {t("tasksTable.actions.edit")}
-              </span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleMarkAsDone(task)}>
-              <Check
-                className="me-2 h-4 w-4 text-green-500"
-                aria-hidden="true"
-              />
-              <span className="text-green-500">
-                {t("tasksTable.actions.markAsDone")}
-              </span>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <AlertDialog
-            open={deleteConfirmOpen}
-            onOpenChange={setDeleteConfirmOpen}
-          >
-            <AlertDialogTrigger asChild>
-              <DropdownMenuItem
-                className="text-destructive focus:text-destructive"
-                onSelect={(e) => {
-                  e.preventDefault();
-                  setDeleteConfirmOpen(true);
-                }}
-              >
-                <Trash
-                  className="me-2 h-4 w-4 text-red-500"
-                  aria-hidden="true"
-                />
-                <span className="text-red-500">
-                  {t("tasksTable.actions.delete")}
-                </span>
-              </DropdownMenuItem>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
-                <div
-                  className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border"
-                  aria-hidden="true"
-                >
-                  <CircleAlert
-                    className="opacity-80"
-                    size={16}
-                    strokeWidth={2}
-                  />
-                </div>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>
-                    {t("tasksTable.actions.areYouSure")}
-                  </AlertDialogTitle>
-                  <AlertDialogDescription>
-                    {t("tasksTable.actions.deleteWarning")}
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-              </div>
-              <AlertDialogFooter>
-                <AlertDialogCancel>
-                  {t("tasksTable.actions.cancel")}
-                </AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete}>
-                  {t("tasksTable.actions.delete")}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    );
-  }
+  // Remove the RowActions function definition from this file
 
   const handleSubmit = async () => {
     try {
@@ -1602,327 +1358,25 @@ export default function TasksTable({ tasks }: TasksTableProps) {
                 </Button>
               </DropdownMenuTrigger>
               {/* Add task button */}
-              <Dialog
+              <AddTaskDialog
                 open={addTaskDialogOpen}
                 onOpenChange={setAddTaskDialogOpen}
-              >
-                <DialogTrigger asChild>
-                  <Button className="w-full sm:w-auto bg-primary/80">
-                    <Plus
-                      className="-ms-1 me-2"
-                      size={16}
-                      strokeWidth={2}
-                      aria-hidden="true"
-                    />
-                    {t("tasksTable.newTask")}
-                  </Button>
-                </DialogTrigger>
-                <DialogContent
-                  className="sm:max-w-[425px]"
-                  onEscapeKeyDown={() => setAddTaskDialogOpen(false)}
-                  onPointerDownOutside={() => setAddTaskDialogOpen(false)}
-                >
-                  <DialogHeader>
-                    <DialogTitle>{t("tasksTable.addNewTask")}</DialogTitle>
-                    <DialogDescription>
-                      {t("tasksTable.createTask")}
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="title">
-                        {t("tasksTable.title")}
-                        <span className="text-destructive">*</span>
-                      </Label>
-                      <Input
-                        id="title"
-                        placeholder="Enter task title"
-                        value={formData.title}
-                        onChange={(e) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            title: e.target.value,
-                          }))
-                        }
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="priority">
-                        {t("tasksTable.priority")}
-                        <span className="text-destructive">*</span>
-                      </Label>
-                      <Select
-                        value={formData.priority}
-                        onValueChange={(value) =>
-                          setFormData((prev) => ({ ...prev, priority: value }))
-                        }
-                      >
-                        <SelectTrigger id="priority">
-                          <SelectValue placeholder="Select priority" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Low">Low</SelectItem>
-                          <SelectItem value="Medium">Medium</SelectItem>
-                          <SelectItem value="High">High</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="deadline">
-                        {t("tasksTable.deadline")}
-                        <span className="text-destructive">*</span>
-                      </Label>
-                      <div className="flex flex-col sm:flex-row gap-2">
-                        <Calendar
-                          mode="single"
-                          selected={formData.deadline}
-                          onSelect={(date: Date | undefined) => {
-                            const newDateTime = date || new Date();
-                            // Preserve the time from the existing deadline
-                            if (formData.deadline) {
-                              newDateTime.setHours(
-                                formData.deadline.getHours(),
-                                formData.deadline.getMinutes(),
-                                formData.deadline.getSeconds(),
-                                formData.deadline.getMilliseconds()
-                              );
-                            }
-                            setFormData((prev) => ({
-                              ...prev,
-                              deadline: newDateTime,
-                            }));
-                          }}
-                          initialFocus
-                        />
-                        <div className="flex items-center gap-3">
-                          <div className="relative grow">
-                            <Input
-                              id="task-time"
-                              type="time"
-                              value={`${String(
-                                formData.deadline.getHours()
-                              ).padStart(2, "0")}:${String(
-                                formData.deadline.getMinutes()
-                              ).padStart(2, "0")}`}
-                              className="peer ps-9 [&::-webkit-calendar-picker-indicator]:hidden"
-                              onChange={(e) => {
-                                const [hours, minutes] = e.target.value
-                                  .split(":")
-                                  .map(Number);
-                                const newDateTime = new Date(formData.deadline);
-                                newDateTime.setHours(hours, minutes, 0, 0);
-                                setFormData({
-                                  ...formData,
-                                  deadline: newDateTime,
-                                });
-                              }}
-                            />
-                            <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                              <Clock
-                                size={16}
-                                strokeWidth={2}
-                                aria-hidden="true"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setAddTaskDialogOpen(false);
-                        setFormData({
-                          title: "",
-                          priority: "",
-                          status: "",
-                          deadline: new Date(),
-                        });
-                      }}
-                    >
-                      {t("tasksTable.cancel")}
-                    </Button>
-                    <Button onClick={handleSubmit} disabled={loading}>
-                      {!loading
-                        ? t("tasksTable.createTask")
-                        : t("tasksTable.creating")}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+                formData={formData}
+                setFormData={setFormData}
+                loading={loading}
+                onSubmit={handleSubmit}
+                t={t}
+              />
               {/* Edit task dialog */}
-              <Dialog
+              <EditTaskDialog
                 open={editTaskDialogOpen}
                 onOpenChange={setEditTaskDialogOpen}
-              >
-                <DialogContent
-                  className="sm:max-w-[425px]"
-                  onEscapeKeyDown={() => setEditTaskDialogOpen(false)}
-                  onPointerDownOutside={() => setEditTaskDialogOpen(false)}
-                >
-                  <DialogHeader>
-                    <DialogTitle>{t("tasksTable.editTask")}</DialogTitle>
-                    <DialogDescription>
-                      {t("tasksTable.edit")}
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="edit-title">
-                        {t("tasksTable.title")}
-                      </Label>
-                      <Input
-                        id="edit-title"
-                        placeholder="Enter task title"
-                        value={selectedTask?.title || ""}
-                        onChange={(e) =>
-                          setSelectedTask((prev) =>
-                            prev ? { ...prev, title: e.target.value } : null
-                          )
-                        }
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="edit-priority">
-                        {t("tasksTable.priority")}
-                      </Label>
-                      <Select
-                        value={selectedTask?.priority || ""}
-                        onValueChange={(value) =>
-                          setSelectedTask((prev) =>
-                            prev ? { ...prev, priority: value } : null
-                          )
-                        }
-                      >
-                        <SelectTrigger id="edit-priority">
-                          <SelectValue placeholder="Select priority" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Low">Low</SelectItem>
-                          <SelectItem value="Medium">Medium</SelectItem>
-                          <SelectItem value="High">High</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="edit-status">
-                        {t("tasksTable.status")}
-                      </Label>
-                      <Select
-                        value={selectedTask?.status || ""}
-                        onValueChange={(value) =>
-                          setSelectedTask((prev) =>
-                            prev ? { ...prev, status: value } : null
-                          )
-                        }
-                      >
-                        <SelectTrigger id="edit-status">
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Planned">Planned</SelectItem>
-                          <SelectItem value="In Progress">
-                            In Progress
-                          </SelectItem>
-                          <SelectItem value="Done">Done</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="edit-deadline">
-                        {t("tasksTable.deadline")}
-                      </Label>
-                      <div className="flex flex-col sm:flex-row gap-2">
-                        <Calendar
-                          mode="single"
-                          selected={
-                            selectedTask?.deadline
-                              ? new Date(selectedTask.deadline)
-                              : new Date()
-                          }
-                          onSelect={(date: Date | undefined) => {
-                            const newDateTime = date || new Date();
-                            // Preserve the time from the existing deadline
-                            setSelectedTask((prev) => {
-                              if (prev && prev.deadline) {
-                                const existingDate = new Date(prev.deadline);
-                                newDateTime.setHours(
-                                  existingDate.getHours(),
-                                  existingDate.getMinutes(),
-                                  existingDate.getSeconds(),
-                                  existingDate.getMilliseconds()
-                                );
-                              }
-                              return prev
-                                ? { ...prev, deadline: newDateTime }
-                                : null;
-                            });
-                          }}
-                          initialFocus
-                        />
-                        <div className="flex items-center gap-3">
-                          <div className="relative grow">
-                            <Input
-                              id="edit-task-time"
-                              type="time"
-                              value={
-                                selectedTask?.deadline
-                                  ? `${String(
-                                      new Date(selectedTask.deadline).getHours()
-                                    ).padStart(2, "0")}:${String(
-                                      new Date(
-                                        selectedTask.deadline
-                                      ).getMinutes()
-                                    ).padStart(2, "0")}`
-                                  : "00:00"
-                              }
-                              className="peer ps-9 [&::-webkit-calendar-picker-indicator]:hidden"
-                              onChange={(e) => {
-                                const [hours, minutes] = e.target.value
-                                  .split(":")
-                                  .map(Number);
-                                setSelectedTask((prev) => {
-                                  if (!prev) return null;
-                                  const newDateTime = prev.deadline
-                                    ? new Date(prev.deadline)
-                                    : new Date();
-                                  newDateTime.setHours(hours, minutes, 0, 0);
-                                  return { ...prev, deadline: newDateTime };
-                                });
-                              }}
-                            />
-                            <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                              <Clock
-                                size={16}
-                                strokeWidth={2}
-                                aria-hidden="true"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setEditTaskDialogOpen(false);
-                        setSelectedTask(null);
-                      }}
-                    >
-                      {t("tasksTable.cancel")}
-                    </Button>
-                    <Button onClick={handleEditSubmit} disabled={loading}>
-                      {!loading
-                        ? t("tasksTable.saveChanges")
-                        : t("tasksTable.saving")}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+                selectedTask={selectedTask}
+                setSelectedTask={setSelectedTask}
+                loading={loading}
+                onSubmit={handleEditSubmit}
+                t={t}
+              />
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
                 {table
