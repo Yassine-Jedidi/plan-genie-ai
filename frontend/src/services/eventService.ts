@@ -1,30 +1,7 @@
 import api from "@/components/api/api";
 import { AxiosError } from "axios";
 import { AnalysisResult } from "./nlpService";
-
-export interface Event {
-  id: string;
-  title: string;
-  date_time: Date;
-  created_at: Date;
-  updated_at: Date;
-  user_id: string;
-}
-
-export interface CalendarEvent {
-  title: string;
-  date_time: Date;
-}
-
-export interface CalendarEventForApi {
-  title: string;
-  date_time: string;
-}
-
-export interface UpdateEventData {
-  title: string;
-  date_time: string;
-}
+import { Event, CalendarEventForApi, UpdateEventData } from "../../types/event";
 
 export const eventService = {
   async saveEvent(analysisResult: AnalysisResult): Promise<Event> {

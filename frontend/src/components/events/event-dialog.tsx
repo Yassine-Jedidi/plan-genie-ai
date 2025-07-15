@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Event } from "@/services/eventService";
+import { Event } from "../../../types/event";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 

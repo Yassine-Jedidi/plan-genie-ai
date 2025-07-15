@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Event } from "@/services/eventService";
+import { Event } from "../../../types/event";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 

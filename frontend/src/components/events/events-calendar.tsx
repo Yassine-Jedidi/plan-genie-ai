@@ -2,9 +2,10 @@ import { FullScreenCalendar } from "@/components/events/calendar";
 import { SidebarTrigger } from "../ui/sidebar";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { eventService, Event } from "@/services/eventService";
+import { eventService } from "@/services/eventService";
 import { CalendarSkeleton } from "@/components/events/calendar-skeleton";
 import { useTranslation } from "react-i18next";
+import { Event } from "../../../types/event";
 
 function groupEventsByDay(events: Event[]): { day: Date; events: Event[] }[] {
   const map = new Map<string, { day: Date; events: Event[] }>();
