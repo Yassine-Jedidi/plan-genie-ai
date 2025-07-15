@@ -1,7 +1,7 @@
 // Priority classification service
 // Standardizes priority text into consistent categories
 
-export type PriorityLevel = 'high' | 'medium' | 'low';
+import { PriorityLevel } from "../../types/priority";
 
 // Comprehensive keyword-based mapping for priority terms
 const HIGH_PRIORITY_KEYWORDS = [

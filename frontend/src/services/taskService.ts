@@ -1,8 +1,8 @@
 import api from "@/components/api/api";
 import { AxiosError } from "axios";
-import { AnalysisResult } from "./nlpService";
 import { priorityService } from "./priorityService";
 import * as chrono from 'chrono-node';
+import { AnalysisResult } from "types/nlp";
 
 export interface Task {
   id: string;

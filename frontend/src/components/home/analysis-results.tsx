@@ -12,7 +12,8 @@ import {
 import { AnalysisResult } from "../../../types/nlp";
 import { taskService } from "@/services/taskService";
 import { eventService } from "@/services/eventService";
-import { priorityService, PriorityLevel } from "@/services/priorityService";
+import { priorityService } from "@/services/priorityService";
+import { PriorityLevel } from "../../../types/priority";
 import { useTranslation } from "react-i18next";
 import SelectType from "@/components/home/select-type";
 import { frenchParser, englishParser } from "@/lib/analysisUtils";
