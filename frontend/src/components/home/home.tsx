@@ -2,10 +2,10 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { nlpService, AnalysisResult } from "@/services/nlpService";
-import { PromptInputWithActions } from "./components/input";
-import { AnalysisResults } from "@/components/analysis-results";
-import { ShiningText } from "./components/ui/shining-text";
-import { WelcomeTextLoop } from "./components/welcome";
+import { PromptInputWithActions } from "./input";
+import { AnalysisResults } from "@/components/home/analysis-results";
+import { ShiningText } from "../ui/shining-text";
+import { WelcomeTextLoop } from "../hero/welcome";
 import { useTranslation } from "react-i18next";
 
 function HomePage() {

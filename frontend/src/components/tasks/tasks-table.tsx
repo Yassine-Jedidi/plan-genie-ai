@@ -90,15 +90,15 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useTranslation } from "react-i18next";
-import AddTaskDialog from "@/components/AddTaskDialog";
-import EditTaskDialog from "@/components/EditTaskDialog";
-import TaskRowActions from "@/components/TaskRowActions";
+import AddTaskDialog from "@/components/tasks/AddTaskDialog";
+import EditTaskDialog from "@/components/tasks/EditTaskDialog";
+import TaskRowActions from "@/components/tasks/TaskRowActions";
 import {
   multiColumnFilterFn,
   priorityFilterFn,
   statusFilterFn,
   dueInFilterFn,
-} from "@/components/taskTableUtils";
+} from "@/lib/taskTableUtils";
 
 interface TasksTableProps {
   tasks: Task[];

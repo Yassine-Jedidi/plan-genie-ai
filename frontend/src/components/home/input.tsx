@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowUp, Paperclip, Square, X, Mic, MicOff } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useFileUpload } from "@/components/useFileUpload";
-import { useAudioRecorder } from "@/components/useAudioRecorder";
+import { useFileUpload } from "@/hooks/useFileUpload";
+import { useAudioRecorder } from "@/hooks/useAudioRecorder";
 
 interface PromptInputWithActionsProps {
   onSubmit?: (

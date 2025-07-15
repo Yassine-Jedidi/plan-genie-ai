@@ -1,4 +1,4 @@
-import Hero from "./components/hero";
+import Hero from "./components/hero/hero";
 import { ThemeProvider } from "@/components/theme-provider";
 import Navbar from "./navbar";
 import {
@@ -14,17 +14,17 @@ import { ForgotPasswordPage } from "./forgot-password";
 import { ResetPasswordPage } from "./reset-password";
 import { AuthProvider } from "./lib/auth";
 import { Toaster } from "@/components/ui/sonner";
-import HomePage from "./home";
+import HomePage from "./components/home/home";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
-import TasksPage from "./tasks";
+import TasksPage from "./components/tasks/tasks";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import SettingsPage from "./settings";
-import { EventsCalendar } from "./events-calendar";
-import BilanPage from "./bilan";
-import { NotificationPopover } from "./components/notification-popover";
-import Analytics from "./analytics";
-import DashboardPage from "./dashboard";
+import { EventsCalendar } from "./components/events/events-calendar";
+import BilanPage from "./components/daily/bilan";
+import { NotificationPopover } from "./components/notifications/notification-popover";
+import Analytics from "./components/analytics/analytics";
+import DashboardPage from "./components/dashboard/dashboard";
 import NotFoundPage from "./page-not-found";
 
 function AppContent() {

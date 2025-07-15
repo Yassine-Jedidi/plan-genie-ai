@@ -4,7 +4,7 @@ import {
   AnalyticsData,
   TaskAnalytics,
   EventAnalytics,
-} from "./services/analyticsService";
+} from "../../services/analyticsService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   BarChart,
@@ -19,7 +19,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SidebarTrigger } from "./components/ui/sidebar";
+import { SidebarTrigger } from "../ui/sidebar";
 import { useTranslation } from "react-i18next";
 
 const initialAnalyticsState: AnalyticsData = {

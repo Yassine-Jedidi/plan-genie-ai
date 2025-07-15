@@ -8,7 +8,7 @@ import {
 import type { DragEndEvent } from "@dnd-kit/core";
 import { useState, useEffect } from "react";
 import type { FC } from "react";
-import { Task, taskService } from "./services/taskService";
+import { Task, taskService } from "../../services/taskService";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { format } from "date-fns";

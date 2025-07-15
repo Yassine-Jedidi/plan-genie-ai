@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Task, taskService } from "./services/taskService";
-import TasksTable from "./components/tasks-table";
+import { Task, taskService } from "../../services/taskService";
+import TasksTable from "./tasks-table";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";

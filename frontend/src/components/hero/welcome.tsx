@@ -1,4 +1,4 @@
-import { TextLoop } from "./ui/text-loop";
+import { TextLoop } from "../ui/text-loop";
 import { useTranslation } from "react-i18next";
 
 export function WelcomeTextLoop() {

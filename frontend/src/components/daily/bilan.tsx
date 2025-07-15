@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Task, taskService } from "./services/taskService";
-import { Bilan, BilanEntry, bilanService } from "./services/bilanService";
+import { Task, taskService } from "../../services/taskService";
+import { Bilan, BilanEntry, bilanService } from "../../services/bilanService";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -46,7 +46,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { cn, formatDate, formatTime as formatTimeUtils } from "@/lib/utils";
-import { DatePicker } from "@/components/date-picker";
+import { DatePicker } from "@/components/daily/date-picker";
 import {
   Tooltip,
   TooltipContent,

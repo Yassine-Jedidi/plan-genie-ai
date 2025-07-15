@@ -29,9 +29,9 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CalendarEvent, Event, eventService } from "@/services/eventService";
-import { EventDialog } from "@/components/event-dialog";
-import { EditEventDialog } from "@/components/edit-event-dialog";
-import { Calendar } from "@/components/date-time-picker";
+import { EventDialog } from "@/components/events/event-dialog";
+import { EditEventDialog } from "@/components/events/edit-event-dialog";
+import { Calendar } from "@/components/tasks/date-time-picker";
 import {
   Dialog,
   DialogContent,
