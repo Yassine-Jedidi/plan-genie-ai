@@ -6,10 +6,10 @@ import {
 } from "@/components/ui/prompt-input";
 import { Button } from "@/components/ui/button";
 import { ArrowUp, Paperclip, Square, X, Mic, MicOff } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
-import { toast } from "sonner";
-import { audioService } from "@/services/audioService";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useFileUpload } from "@/components/useFileUpload";
+import { useAudioRecorder } from "@/components/useAudioRecorder";
 
 interface PromptInputWithActionsProps {
   onSubmit?: (
@@ -36,9 +36,22 @@ export function PromptInputWithActions({
   const { t } = useTranslation();
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
-  const uploadInputRef = useRef<HTMLInputElement>(null);
+  // Remove file and audio state, use hooks instead
+  const {
+    file,
+    setFile,
+    handleFileChange,
+    handleRemoveFile,
+    processFile,
+    uploadInputRef,
+    acceptedFileTypes,
+  } = useFileUpload();
+  const { isRecording, handleStartRecording, handleStopRecording } =
+    useAudioRecorder((transcription) => {
+      handleValueChange(
+        currentValue + (currentValue ? " " : "") + transcription
+      );
+    });
 
   // Use external values if provided, otherwise use internal state
   const currentValue = externalValue !== undefined ? externalValue : input;
@@ -67,54 +80,6 @@ export function PromptInputWithActions({
     } else {
       setInput(value);
     }
-  };
-
-  const extractTextFromFile = async (file: File): Promise<string> => {
-    console.log(`Extracting text from file: ${file.name}, type: ${file.type}`);
-
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        if (e.target?.result) {
-          const content = e.target.result as string;
-          console.log(
-            `Successfully extracted content from ${file.name}, length: ${content.length}`
-          );
-          resolve(content);
-        } else {
-          console.error(`Failed to extract content from ${file.name}`);
-          resolve("");
-        }
-      };
-
-      reader.onerror = (e) => {
-        console.error(`Error reading file ${file.name}:`, e);
-        resolve("");
-      };
-
-      reader.readAsText(file);
-    });
-  };
-
-  const processFile = async () => {
-    if (!file) return [];
-
-    console.log(`Processing file: ${file.name}`);
-    const contents: { name: string; content: string }[] = [];
-
-    try {
-      const content = await extractTextFromFile(file);
-      contents.push({
-        name: file.name,
-        content,
-      });
-    } catch (error) {
-      console.error(`Error processing file ${file.name}:`, error);
-    }
-
-    console.log(`Processed file successfully`);
-    return contents;
   };
 
   const handleSubmit = async () => {
@@ -164,88 +129,6 @@ export function PromptInputWithActions({
         console.error("Error during submission:", error);
         setIsLoading(false);
       }
-    }
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length > 0) {
-      const newFile = event.target.files[0];
-      console.log(`Added file: ${newFile.name}`);
-
-      // Remove previous file if exists
-      if (file) {
-        console.log(`Replacing previous file: ${file.name}`);
-      }
-
-      setFile(newFile);
-      toast.success(`File "${newFile.name}" uploaded successfully`, {
-        position: "top-right",
-      });
-    }
-  };
-
-  const handleRemoveFile = () => {
-    if (file) {
-      const removedFile = file;
-      setFile(null);
-      console.log(`Removed file: ${removedFile.name}`);
-
-      toast.info(`File "${removedFile.name}" removed`, {
-        position: "top-right",
-      });
-    }
-
-    if (uploadInputRef?.current) {
-      uploadInputRef.current.value = "";
-    }
-  };
-
-  // Only allow text-based file formats
-  const acceptedFileTypes = ".txt,.md,.csv";
-
-  const handleStartRecording = async () => {
-    try {
-      await audioService.startRecording();
-      setIsRecording(true);
-      toast.info("Recording started...", {
-        position: "top-right",
-      });
-    } catch (error) {
-      console.error("Error starting recording:", error);
-      toast.error("Failed to start recording", {
-        position: "top-right",
-      });
-    }
-  };
-
-  const handleStopRecording = async () => {
-    try {
-      const audioBlob = await audioService.stopRecording();
-      setIsRecording(false);
-
-      // Show loading toast
-      const loadingToast = toast.loading("Transcribing audio...", {
-        position: "top-right",
-      });
-
-      // Transcribe the audio
-      const transcription = await audioService.transcribeAudio(audioBlob);
-
-      // Dismiss loading toast and show success
-      toast.dismiss(loadingToast);
-      toast.success("Recording transcribed successfully", {
-        position: "top-right",
-      });
-
-      // Update the input with the transcription
-      handleValueChange(
-        currentValue + (currentValue ? " " : "") + transcription
-      );
-    } catch (error) {
-      console.error("Error stopping recording:", error);
-      toast.error("Failed to transcribe recording", {
-        position: "top-right",
-      });
     }
   };
 
