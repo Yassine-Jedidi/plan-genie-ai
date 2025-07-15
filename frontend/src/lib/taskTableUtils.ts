@@ -1,5 +1,5 @@
 import { Row } from "@tanstack/react-table";
-import { Task } from "@/services/taskService";
+import { Task } from "types/task";
 
 // Custom filter function for multi-column searching
 export const multiColumnFilterFn = (row: Row<Task>, _columnId: string, filterValue: string) => {

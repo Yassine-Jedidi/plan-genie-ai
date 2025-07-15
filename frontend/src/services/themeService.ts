@@ -1,10 +1,5 @@
 import api from "@/components/api/api";
-import { Theme, ColorTheme } from "@/contexts/theme-context";
-
-export interface ThemeSettings {
-  theme?: Theme;
-  colorTheme?: ColorTheme;
-}
+import { Theme, ColorTheme, ThemeSettings } from "../../types/theme";
 
 export const themeService = {
   /**
