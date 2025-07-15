@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Task, taskService } from "../../services/taskService";
-import { Bilan, BilanEntry, bilanService } from "../../services/bilanService";
+import { bilanService } from "../../services/bilanService";
+import { Bilan, BilanEntry } from "../../../types/bilan";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";

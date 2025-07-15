@@ -1,26 +1,6 @@
 import api from "@/components/api/api";
 import { AxiosError } from "axios";
-import { Task } from "./taskService";
-
-export interface BilanEntry {
-  id: string;
-  minutes_spent: number;
-  notes?: string;
-  created_at: string;
-  updated_at: string;
-  bilan_id: string;
-  task_id: string;
-  task?: Task;
-}
-
-export interface Bilan {
-  id: string;
-  date: string;
-  created_at: string;
-  updated_at: string;
-  user_id: string;
-  entries: BilanEntry[];
-}
+import { BilanEntry, Bilan } from "../../types/bilan";
 
 export const bilanService = {
   async getTodayBilan(): Promise<Bilan> {
