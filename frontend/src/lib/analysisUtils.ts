@@ -26,7 +26,8 @@ export function parseDate(text: string): { originalText: string; parsedDate: Dat
       ];
       const lowerCaseText = text.toLowerCase().trim();
       const isDayOfWeek = dayNames.some((day) => lowerCaseText === day);
-      if (isDayOfWeek && parsedDate < now) {
+      // Always return the next future occurrence for day names
+      if (isDayOfWeek && parsedDate <= now) {
         parsedDate.setDate(parsedDate.getDate() + 7);
       }
     }

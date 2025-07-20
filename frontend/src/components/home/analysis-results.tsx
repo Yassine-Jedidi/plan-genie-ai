@@ -103,11 +103,11 @@ export function AnalysisResults({
         const lowerCaseText = text.toLowerCase().trim();
         const isDayOfWeek = dayNames.some((day) => lowerCaseText === day);
 
-        // If it's a day of the week and it's in the past (or earlier today), move it to next week
-        if (isDayOfWeek && parsedDate < now) {
+        // Always return the next future occurrence for day names
+        if (isDayOfWeek && parsedDate <= now) {
           parsedDate.setDate(parsedDate.getDate() + 7);
           console.log(
-            `Adjusted '${text}' to next occurrence (moved by 7 days) as it was in the past.`
+            `Adjusted '${text}' to next occurrence (moved by 7 days) as it was in the past or today.`
           );
         }
       }
