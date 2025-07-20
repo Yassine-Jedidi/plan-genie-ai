@@ -1,8 +1,0 @@
-fastapi
-uvicorn[standard]
-torch==2.5.1
-transformers==4.49.0
-pydantic==2.9.2
-safetensors==0.4.5
-spacy==3.7.2
-fr-core-news-lg @ https://github.com/explosion/spacy-models/releases/download/fr_core_news_lg-3.7.0/fr_core_news_lg-3.7.0-py3-none-any.whl
