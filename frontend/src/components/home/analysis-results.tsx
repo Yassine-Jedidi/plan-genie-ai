@@ -130,12 +130,21 @@ export function AnalysisResults({
       if (newType === "Task") {
         // For Task type, ensure TITRE, DELAI, and PRIORITE exist
         newEntities["TITRE"] = results.entities["TITRE"] || [];
-        newEntities["DELAI"] = results.entities["DELAI"] || [];
+        // If DELAI is empty but DATE_HEURE exists, copy it
+        newEntities["DELAI"] =
+          results.entities["DELAI"] && results.entities["DELAI"].length
+            ? results.entities["DELAI"]
+            : results.entities["DATE_HEURE"] || [];
         newEntities["PRIORITE"] = results.entities["PRIORITE"] || [];
       } else if (newType === "Event") {
         // For Event type, ensure TITRE and DATE_HEURE exist
         newEntities["TITRE"] = results.entities["TITRE"] || [];
-        newEntities["DATE_HEURE"] = results.entities["DATE_HEURE"] || [];
+        // If DATE_HEURE is empty but DELAI exists, copy it
+        newEntities["DATE_HEURE"] =
+          results.entities["DATE_HEURE"] &&
+          results.entities["DATE_HEURE"].length
+            ? results.entities["DATE_HEURE"]
+            : results.entities["DELAI"] || [];
       }
 
       setResults({
