@@ -132,7 +132,7 @@ const Dashboard = () => {
           <SidebarTrigger className="h-4 w-4 mt-2" />
         </div>
         <div className="flex flex-col items-center justify-center min-h-screen py-2 w-full mx-4">
-          <h1 className="text-3xl font-semibold mb-8 text-primary flex items-center gap-3">
+          <h1 className="text-3xl font-bold mb-8 text-primary flex items-center gap-3">
             <LayoutDashboard className="w-8 h-8 text-primary" />
             {t("dashboard.dashboardOverview")}
           </h1>
@@ -302,7 +302,7 @@ const Dashboard = () => {
         <SidebarTrigger className="h-4 w-4 mt-2" />
       </div>
       <div className="flex flex-col items-center justify-center min-h-screen py-2 w-full mx-4">
-        <h1 className="text-3xl font-semibold mb-8 text-primary flex items-center gap-3">
+        <h1 className="text-3xl font-bold mb-8 text-primary flex items-center gap-3">
           <LayoutDashboard className="w-8 h-8 text-primary" />
           {t("dashboard.dashboardOverview")}
         </h1>
