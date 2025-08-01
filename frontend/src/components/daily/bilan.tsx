@@ -6,25 +6,7 @@ import { Bilan, BilanEntry } from "types/bilan";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  format as dateFormat,
-  isSameDay,
-  isToday,
-  addDays,
-  isBefore,
-  subDays,
-} from "date-fns";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   Card,
   CardContent,
@@ -32,32 +14,26 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Pencil,
-  Save,
-  X,
-  AlertCircle,
-  Clock,
-  AlertTriangle,
-  Calendar,
-  ChevronLeft,
-  ChevronRight,
-  History,
-  Info,
-  CheckCircle,
-  Target,
-  TrendingUp,
-} from "lucide-react";
-import { cn, formatDate, formatTime as formatTimeUtils } from "@/lib/dateUtils";
-import { DatePicker } from "@/components/daily/date-picker";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { AlertTriangle, Calendar } from "lucide-react";
+import { addDays, subDays } from "date-fns";
 import { useTranslation } from "react-i18next";
+
+// Import new components
+import BilanStats from "./bilan-stats";
+import BilanHistory from "./bilan-history";
+import BilanHeader from "./bilan-header";
+import BilanTaskTable from "./bilan-task-table";
+import TaskSection from "./task-section";
+
+// Import utilities
+import {
+  formatTime,
+  formatDeadline,
+  isDeadlineApproaching,
+  isTaskOverdue,
+  isDateToday,
+  parseTimeInput,
+} from "./bilan-utils";
 
 const BilanPage = () => {
   const { t } = useTranslation();
@@ -66,7 +42,6 @@ const BilanPage = () => {
   const [recentBilans, setRecentBilans] = useState<Bilan[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [loadingBilan, setLoadingBilan] = useState(true);
-  const [loadingTasks, setLoadingTasks] = useState(true);
   const [loadingRecentBilans, setLoadingRecentBilans] = useState(true);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [timeInput, setTimeInput] = useState<string>("");
@@ -81,91 +56,6 @@ const BilanPage = () => {
     const total = entries.reduce((sum, entry) => sum + entry.minutes_spent, 0);
     setTotalMinutes(total);
     return total;
-  };
-
-  // Format minutes as hours and minutes
-  const formatTime = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-
-    if (hours === 0) {
-      return `${mins}m`;
-    } else if (mins === 0) {
-      return `${hours}h`;
-    } else {
-      return `${hours}h ${mins}m`;
-    }
-  };
-
-  // Format deadline for display
-  const formatDeadline = (deadline: Date | null) => {
-    if (!deadline) return null;
-
-    try {
-      if (isToday(deadline)) {
-        return `Today at ${formatTimeUtils(deadline)}`;
-      }
-
-      return formatDate(deadline, {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: false,
-      });
-    } catch {
-      return deadline.toString();
-    }
-  };
-
-  // Check if a task deadline is approaching (within 7 days, excluding overdue tasks)
-  const isDeadlineApproaching = (deadline: Date | null) => {
-    if (!deadline) return false;
-
-    try {
-      const now = new Date();
-      // Ensure the deadline is in the future (not overdue)
-      if (isBefore(deadline, now)) {
-        return false; // Already overdue, or in the past
-      }
-
-      // Check if the deadline is within the next 7 days from now
-      return isBefore(deadline, addDays(now, 7));
-    } catch {
-      return false;
-    }
-  };
-
-  // Check if a task is overdue
-  const isTaskOverdue = (deadline: Date | null) => {
-    if (!deadline) return false;
-
-    try {
-      const now = new Date(); // Use current time for comparison
-      return isBefore(deadline, now);
-    } catch {
-      return false;
-    }
-  };
-
-  // Check if a date is today
-  const isDateToday = (date: Date) => {
-    const today = new Date();
-    return isSameDay(date, today);
-  };
-
-  // Format date for history selector
-  const formatDateForHistory = (date: Date) => {
-    if (isDateToday(date)) {
-      return "Today";
-    }
-    return dateFormat(date, "EEE, MMM d");
-  };
-
-  // Calculate total time for a bilan
-  const calculateBilanTotalTime = (bilan: Bilan) => {
-    return bilan.entries.reduce((sum, entry) => sum + entry.minutes_spent, 0);
   };
 
   // Calculate number of non-overdue tasks
@@ -213,45 +103,6 @@ const BilanPage = () => {
     setEditingTaskId(null);
     setTimeInput("");
     setNotesInput("");
-  };
-
-  // Parse time input to minutes
-  const parseTimeInput = (input: string): number => {
-    let minutes = 0;
-
-    // Handle empty input
-    if (!input || input.trim() === "") {
-      return 0;
-    }
-
-    // Check for negative values which are invalid
-    if (input.includes("-")) {
-      return -1; // Return negative to trigger the validation error
-    }
-
-    // Match hours pattern (e.g., "2h" or "2 h")
-    const hoursMatch = input.match(/(\d+)\s*h/i);
-    if (hoursMatch) {
-      minutes += parseInt(hoursMatch[1], 10) * 60;
-    }
-
-    // Match minutes pattern (e.g., "30m" or "30 m")
-    const minutesMatch = input.match(/(\d+)\s*m/i);
-    if (minutesMatch) {
-      minutes += parseInt(minutesMatch[1], 10);
-    }
-
-    // If no pattern matched but it's a number, assume minutes
-    if (minutes === 0) {
-      if (/^\d+$/.test(input.trim())) {
-        minutes = parseInt(input.trim(), 10);
-      } else if (!hoursMatch && !minutesMatch) {
-        // If input contains text but no valid patterns were found
-        return -1; // Return negative to trigger the validation error
-      }
-    }
-
-    return minutes;
   };
 
   // Save time entry
@@ -384,7 +235,7 @@ const BilanPage = () => {
   // Fetch tasks
   const fetchTasks = async () => {
     try {
-      setLoadingTasks(true);
+      // setLoadingTasks(true); // Removed unused loadingTasks
       const tasksData = await taskService.getTasks();
       // Convert deadline strings to Date objects for consistent comparisons
       const processedTasks = tasksData.map((task) => {
@@ -401,7 +252,7 @@ const BilanPage = () => {
       console.error("Error fetching tasks:", error);
       toast.error("Failed to load tasks. Please try again.");
     } finally {
-      setLoadingTasks(false);
+      // setLoadingTasks(false); // Removed unused loadingTasks
     }
   };
 
@@ -495,534 +346,37 @@ const BilanPage = () => {
     }
   };
 
-  // Render the time entry form for a task that doesn't have an entry yet
-  const renderTimeEntryForm = (taskId: string) => {
-    return (
-      <div className="flex flex-col space-y-3 p-4 bg-muted/30 rounded-md">
-        <div className="text-sm font-medium mb-1">
-          {t("bilan.addTimeForTask")}
-        </div>
-        <div className="flex items-center">
-          <span className="w-24 text-sm">{t("bilan.timeSpent")}</span>
-          <Input
-            value={timeInput}
-            onChange={(e) => setTimeInput(e.target.value)}
-            placeholder="e.g., 1h 30m"
-            className="w-32"
-          />
-        </div>
-        <div className="flex items-start">
-          <span className="w-24 text-sm mt-2">{t("bilan.notes")}:</span>
-          <Textarea
-            value={notesInput}
-            onChange={(e) => setNotesInput(e.target.value)}
-            placeholder={t("bilan.optionalNotes")}
-            className="min-h-[80px] flex-1"
-          />
-        </div>
-        <div className="flex justify-end space-x-2 mt-2">
-          <Button variant="outline" size="sm" onClick={cancelEditing}>
-            <X className="h-4 w-4 mr-1" />
-            {t("bilan.cancel")}
-          </Button>
-          <Button
-            variant="default"
-            size="sm"
-            onClick={() => saveTimeEntry(taskId)}
-            disabled={isSaving}
-          >
-            {isSaving ? (
-              <>
-                <span className="mr-1 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent"></span>
-                {t("bilan.saving")}
-              </>
-            ) : (
-              <>
-                <Save className="h-4 w-4 mr-1" />
-                {t("bilan.save")}
-              </>
-            )}
-          </Button>
-        </div>
-      </div>
-    );
-  };
-
-  // Render recent bilans history
-  const renderBilanHistory = () => {
-    if (loadingRecentBilans) {
-      return (
-        <div className="flex flex-col space-y-2 py-2">
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
-        </div>
-      );
-    }
-
-    return (
-      <div className="flex flex-col space-y-1 max-h-80 overflow-y-auto p-1">
-        {recentBilans.length === 0 ? (
-          <div className="text-center py-4 text-muted-foreground">
-            {t("bilan.noHistory")}
-          </div>
-        ) : (
-          recentBilans.map((bilan) => {
-            const date = new Date(bilan.date);
-            const isSelected = isSameDay(date, selectedDate);
-            const totalTime = calculateBilanTotalTime(bilan);
-
-            return (
-              <Button
-                key={bilan.id}
-                variant={isSelected ? "default" : "ghost"}
-                className={cn(
-                  "justify-between px-3 py-2 h-auto",
-                  isSelected && "font-medium"
-                )}
-                onClick={() => handleDateSelect(date)}
-              >
-                <div className="flex items-center">
-                  <Calendar className="h-4 w-4 mr-2 opacity-70" />
-                  <span>{formatDateForHistory(date)}</span>
-                </div>
-                <Badge variant="secondary" className="ml-2">
-                  {formatTime(totalTime)}
-                </Badge>
-              </Button>
-            );
-          })
-        )}
-      </div>
-    );
-  };
-
-  // Render tasks with upcoming deadlines
-  const renderUpcomingDeadlineTasks = () => {
-    if (!bilan || loadingTasks || loadingBilan) return null;
-
-    // Get tasks that have no time entries yet and are not done
-    const tasksWithoutEntries = tasks.filter(
+  // Get tasks without time entries
+  const getTasksWithoutEntries = () => {
+    if (!bilan) return [];
+    return tasks.filter(
       (task) =>
         !bilan.entries.some((entry) => entry.task_id === task.id) &&
         task.status !== "Done"
     );
+  };
 
-    // Filter tasks with approaching deadlines
-    const upcomingTasks = tasksWithoutEntries.filter(
+  // Get overdue tasks
+  const getOverdueTasks = () => {
+    const tasksWithoutEntries = getTasksWithoutEntries();
+    return tasksWithoutEntries.filter((task) => isTaskOverdue(task.deadline));
+  };
+
+  // Get upcoming deadline tasks
+  const getUpcomingDeadlineTasks = () => {
+    const tasksWithoutEntries = getTasksWithoutEntries();
+    return tasksWithoutEntries.filter(
       (task) =>
         isDeadlineApproaching(task.deadline) && !isTaskOverdue(task.deadline)
     );
-
-    if (upcomingTasks.length === 0) return null;
-
-    return (
-      <Card className="mt-8 border-amber-300">
-        <CardHeader className="bg-amber-50 dark:bg-amber-950/40 rounded-t-lg">
-          <CardTitle className="text-xl flex items-center">
-            <Calendar className="h-5 w-5 mr-2 text-amber-600" />
-            <span>{t("bilan.upcomingDeadlines")}</span>
-          </CardTitle>
-          <CardDescription>
-            {t("bilan.tasksWithUpcomingDeadlines")}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("bilan.task")}</TableHead>
-                <TableHead>{t("bilan.deadline")}</TableHead>
-                <TableHead>{t("bilan.priority")}</TableHead>
-                <TableHead>{t("bilan.status")}</TableHead>
-                <TableHead className="text-right">
-                  {t("bilan.actions")}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {upcomingTasks.map((task) => (
-                <React.Fragment key={task.id}>
-                  <TableRow>
-                    <TableCell className="font-medium">{task.title}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className="bg-gray-100 text-gray-800 border-gray-300"
-                      >
-                        {formatDeadline(task.deadline)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {task.priority ? (
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            task.priority === "High" &&
-                              "bg-red-100 text-red-800 border-red-300",
-                            task.priority === "Medium" &&
-                              "bg-yellow-100 text-yellow-800 border-yellow-300",
-                            task.priority === "Low" &&
-                              "bg-green-100 text-green-800 border-green-300"
-                          )}
-                        >
-                          {task.priority === "High" && t("bilan.priorityHigh")}
-                          {task.priority === "Medium" &&
-                            t("bilan.priorityMedium")}
-                          {task.priority === "Low" && t("bilan.priorityLow")}
-                        </Badge>
-                      ) : (
-                        <span className="text-muted-foreground">
-                          {t("bilan.none")}
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          task.status === "Done" &&
-                            "bg-green-100 text-green-800 border-green-300",
-                          task.status === "In Progress" &&
-                            "bg-orange-100 text-orange-800 border-orange-300",
-                          (!task.status || task.status === "Planned") &&
-                            "bg-gray-100 text-gray-800 border-gray-300"
-                        )}
-                      >
-                        {t(`bilan.${task.status || "planned"}`)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {editingTaskId === task.id ? (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={cancelEditing}
-                        >
-                          <X className="h-4 w-4 mr-1" />
-                          {t("bilan.cancel")}
-                        </Button>
-                      ) : (
-                        <>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => startEditing(task.id)}
-                          >
-                            <Clock className="h-4 w-4 mr-1" />
-                            {t("bilan.addTime")}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => markTaskAsDone(task)}
-                            disabled={!isDateToday(selectedDate)}
-                          >
-                            <CheckCircle className="h-4 w-4 mr-1" />
-                            {t("bilan.markAsDone")}
-                          </Button>
-                        </>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                  {editingTaskId === task.id && (
-                    <TableRow>
-                      <TableCell colSpan={5}>
-                        {renderTimeEntryForm(task.id)}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </React.Fragment>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    );
   };
 
-  // Render overdue tasks
-  const renderOverdueTasks = () => {
-    if (!bilan || loadingTasks || loadingBilan) return null;
-
-    // Get tasks that have no time entries yet and are not done
-    const tasksWithoutEntries = tasks.filter(
-      (task) =>
-        !bilan.entries.some((entry) => entry.task_id === task.id) &&
-        task.status !== "Done"
-    );
-
-    // Filter overdue tasks
-    const overdueTasks = tasksWithoutEntries.filter((task) =>
-      isTaskOverdue(task.deadline)
-    );
-
-    if (overdueTasks.length === 0) return null;
-
-    return (
-      <Card className="mt-8 border-red-300">
-        <CardHeader className="bg-red-50 dark:bg-red-950/40 rounded-t-lg">
-          <CardTitle className="text-xl flex items-center">
-            <AlertTriangle className="h-5 w-5 mr-2 text-red-600" />
-            <span>{t("bilan.overdueTasks")}</span>
-          </CardTitle>
-          <CardDescription>{t("bilan.tasksPassedDeadline")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("bilan.task")}</TableHead>
-                <TableHead>{t("bilan.deadline")}</TableHead>
-                <TableHead>{t("bilan.priority")}</TableHead>
-                <TableHead>{t("bilan.status")}</TableHead>
-                <TableHead className="text-right">
-                  {t("bilan.actions")}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {overdueTasks.map((task) => (
-                <React.Fragment key={task.id}>
-                  <TableRow>
-                    <TableCell className="font-medium">{task.title}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className="bg-red-100 text-red-800 border-red-300"
-                      >
-                        {formatDeadline(task.deadline)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {task.priority ? (
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            task.priority === "High" &&
-                              "bg-red-100 text-red-800 border-red-300",
-                            task.priority === "Medium" &&
-                              "bg-yellow-100 text-yellow-800 border-yellow-300",
-                            task.priority === "Low" &&
-                              "bg-green-100 text-green-800 border-green-300"
-                          )}
-                        >
-                          {task.priority === "High" && t("bilan.priorityHigh")}
-                          {task.priority === "Medium" &&
-                            t("bilan.priorityMedium")}
-                          {task.priority === "Low" && t("bilan.priorityLow")}
-                        </Badge>
-                      ) : (
-                        <span className="text-muted-foreground">
-                          {t("bilan.none")}
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          task.status === "Done" &&
-                            "bg-green-100 text-green-800 border-green-300",
-                          task.status === "In Progress" &&
-                            "bg-orange-100 text-orange-800 border-orange-300",
-                          (!task.status || task.status === "Planned") &&
-                            "bg-gray-100 text-gray-800 border-gray-300"
-                        )}
-                      >
-                        {t(`bilan.${task.status || "planned"}`)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {editingTaskId === task.id ? (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={cancelEditing}
-                        >
-                          <X className="h-4 w-4 mr-1" />
-                          {t("bilan.cancel")}
-                        </Button>
-                      ) : (
-                        <>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => startEditing(task.id)}
-                          >
-                            <Clock className="h-4 w-4 mr-1" />
-                            {t("bilan.addTime")}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => markTaskAsDone(task)}
-                            disabled={!isDateToday(selectedDate)}
-                          >
-                            <CheckCircle className="h-4 w-4 mr-1" />
-                            {t("bilan.markAsDone")}
-                          </Button>
-                        </>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                  {editingTaskId === task.id && (
-                    <TableRow>
-                      <TableCell colSpan={5}>
-                        {renderTimeEntryForm(task.id)}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </React.Fragment>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    );
-  };
-
-  // Render other tasks without time entries and without urgent deadlines
-  const renderOtherTasks = () => {
-    if (!bilan || loadingTasks || loadingBilan) return null;
-
-    // Get tasks that have no time entries yet and are not done
-    const tasksWithoutEntries = tasks.filter(
-      (task) =>
-        !bilan.entries.some((entry) => entry.task_id === task.id) &&
-        task.status !== "Done"
-    );
-
-    // Filter tasks with no urgent deadlines (i.e., beyond 7 days or no deadline)
-    const otherTasks = tasksWithoutEntries.filter(
+  // Get other tasks
+  const getOtherTasks = () => {
+    const tasksWithoutEntries = getTasksWithoutEntries();
+    return tasksWithoutEntries.filter(
       (task) =>
         !isDeadlineApproaching(task.deadline) && !isTaskOverdue(task.deadline)
-    );
-
-    if (otherTasks.length === 0) return null;
-
-    return (
-      <Card className="mt-8 border-slate-300">
-        <CardHeader className="bg-slate-50 dark:bg-slate-950/40 rounded-t-lg">
-          <CardTitle className="text-xl flex items-center">
-            <Calendar className="h-5 w-5 mr-2 text-slate-600" />
-            <span>{t("bilan.tasksBeyond7Days")}</span>
-          </CardTitle>
-          <CardDescription>
-            {t("bilan.tasksWithFutureDeadlines")}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("bilan.task")}</TableHead>
-                <TableHead>{t("bilan.deadline")}</TableHead>
-                <TableHead>{t("bilan.priority")}</TableHead>
-                <TableHead>{t("bilan.status")}</TableHead>
-                <TableHead className="text-right">
-                  {t("bilan.actions")}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {otherTasks.map((task) => (
-                <React.Fragment key={task.id}>
-                  <TableRow>
-                    <TableCell className="font-medium">{task.title}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className="bg-slate-100 text-slate-800 border-slate-300"
-                      >
-                        {formatDeadline(task.deadline) || "No deadline"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {task.priority ? (
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            task.priority === "High" &&
-                              "bg-red-100 text-red-800 border-red-300",
-                            task.priority === "Medium" &&
-                              "bg-yellow-100 text-yellow-800 border-yellow-300",
-                            task.priority === "Low" &&
-                              "bg-green-100 text-green-800 border-green-300"
-                          )}
-                        >
-                          {task.priority === "High" && t("bilan.priorityHigh")}
-                          {task.priority === "Medium" &&
-                            t("bilan.priorityMedium")}
-                          {task.priority === "Low" && t("bilan.priorityLow")}
-                        </Badge>
-                      ) : (
-                        <span className="text-muted-foreground">
-                          {t("bilan.none")}
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          task.status === "Done" &&
-                            "bg-green-100 text-green-800 border-green-300",
-                          task.status === "In Progress" &&
-                            "bg-orange-100 text-orange-800 border-orange-300",
-                          (!task.status || task.status === "Planned") &&
-                            "bg-gray-100 text-gray-800 border-gray-300"
-                        )}
-                      >
-                        {t(`bilan.${task.status || "planned"}`)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {editingTaskId === task.id ? (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={cancelEditing}
-                        >
-                          <X className="h-4 w-4 mr-1" />
-                          {t("bilan.cancel")}
-                        </Button>
-                      ) : (
-                        <>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => startEditing(task.id)}
-                          >
-                            <Clock className="h-4 w-4 mr-1" />
-                            {t("bilan.addTime")}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => markTaskAsDone(task)}
-                            disabled={!isDateToday(selectedDate)}
-                          >
-                            <CheckCircle className="h-4 w-4 mr-1" />
-                            {t("bilan.markAsDone")}
-                          </Button>
-                        </>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                  {editingTaskId === task.id && (
-                    <TableRow>
-                      <TableCell colSpan={5}>
-                        {renderTimeEntryForm(task.id)}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </React.Fragment>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
     );
   };
 
@@ -1033,64 +387,17 @@ const BilanPage = () => {
       </div>
 
       <div className="p-4 flex flex-col h-[calc(100vh-60px)] overflow-auto">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex flex-col">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1 px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded-full">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                      <span>Live : {currentUtcTime}</span>
-                      <Info className="h-3 w-3" />
-                    </div>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{t("bilan.summariesGenerated")}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <DatePicker date={selectedDate} onSelect={handleDateSelect} />
-
-            <div className="inline-flex w-auto -space-x-px rounded-lg shadow-sm shadow-black/5 rtl:space-x-reverse">
-              <Button
-                onClick={goToPreviousDay}
-                className="rounded-none shadow-none first:rounded-s-lg last:rounded-e-lg focus-visible:z-10"
-                variant="outline"
-                size="icon"
-                aria-label="Navigate to previous day"
-              >
-                <ChevronLeft size={16} strokeWidth={2} aria-hidden="true" />
-              </Button>
-              <Button onClick={goToToday} variant="outline">
-                {t("bilan.today")}
-              </Button>
-              <Button
-                onClick={goToNextDay}
-                className="rounded-none shadow-none first:rounded-s-lg last:rounded-e-lg focus-visible:z-10"
-                variant="outline"
-                size="icon"
-                disabled={isDateToday(selectedDate)}
-                aria-label="Navigate to next day"
-              >
-                <ChevronRight size={16} strokeWidth={2} aria-hidden="true" />
-              </Button>
-            </div>
-
-            <Button
-              variant={showHistory ? "default" : "outline"}
-              size="icon"
-              onClick={() => setShowHistory(!showHistory)}
-              className="ml-1 rounded-lg"
-            >
-              <History className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+        <BilanHeader
+          selectedDate={selectedDate}
+          currentUtcTime={currentUtcTime}
+          showHistory={showHistory}
+          isDateToday={isDateToday}
+          onDateSelect={handleDateSelect}
+          onGoToPreviousDay={goToPreviousDay}
+          onGoToToday={goToToday}
+          onGoToNextDay={goToNextDay}
+          onToggleHistory={() => setShowHistory(!showHistory)}
+        />
 
         {showHistory && (
           <Card className="mb-4">
@@ -1102,7 +409,14 @@ const BilanPage = () => {
                 {t("bilan.viewRecentSummaries")}
               </CardDescription>
             </CardHeader>
-            <CardContent>{renderBilanHistory()}</CardContent>
+            <CardContent>
+              <BilanHistory
+                recentBilans={recentBilans}
+                loadingRecentBilans={loadingRecentBilans}
+                selectedDate={selectedDate}
+                onDateSelect={handleDateSelect}
+              />
+            </CardContent>
           </Card>
         )}
 
@@ -1114,223 +428,97 @@ const BilanPage = () => {
           </div>
         ) : bilan ? (
           <>
-            {bilan && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4  mb-6">
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-4 border border-green-200/50 dark:border-green-700/50">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-500 rounded-xl">
-                      <Clock className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">
-                        Total Time
-                      </p>
-                      <p className="text-2xl font-bold text-green-700 dark:text-green-400">
-                        {formatTime(totalMinutes)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+            <BilanStats
+              bilan={bilan}
+              totalMinutes={totalMinutes}
+              getNonOverdueTasksCount={getNonOverdueTasksCount}
+            />
 
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-4 border border-blue-200/50 dark:border-blue-700/50">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-500 rounded-xl">
-                      <Target className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">
-                        Tasks Tracked
-                      </p>
-                      <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">
-                        {bilan.entries.length}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-4 border border-purple-200/50 dark:border-purple-700/50">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-purple-500 rounded-xl">
-                      <TrendingUp className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">
-                        Productivity
-                      </p>
-                      <p className="text-2xl font-bold text-purple-700 dark:text-purple-400">
-                        {totalMinutes > 0
-                          ? Math.round(
-                              (bilan.entries.length /
-                                getNonOverdueTasksCount()) *
-                                100
-                            )
-                          : 0}
-                        %
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-            <Card className="border-green-300">
-              <CardHeader className="bg-green-50 dark:bg-green-950/40 rounded-t-lg">
-                <CardTitle className="text-xl flex items-center">
-                  <Clock className="h-5 w-5 mr-2 text-green-600" />
-                  <div className="flex justify-between items-center w-full">
-                    <span>{t("bilan.dailyTasks")}</span>
-                    <Badge variant="secondary">
-                      {t("bilan.total")}: {formatTime(totalMinutes)}
-                    </Badge>
-                  </div>
-                </CardTitle>
-                <CardDescription>{t("bilan.trackTime")}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {bilan.entries.length === 0 ? (
-                  <div className="text-center py-6 text-muted-foreground">
-                    <AlertCircle className="mx-auto h-12 w-12 mb-2 opacity-20" />
-                    <p>{t("bilan.noTasks")}</p>
-                    {isDateToday(selectedDate) && (
-                      <p className="text-sm">
-                        {t("bilan.addTimeToTasksBelow")}
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t("bilan.task")}</TableHead>
-                        <TableHead>{t("bilan.timeSpent")}</TableHead>
-                        <TableHead>{t("bilan.notes")}</TableHead>
-                        <TableHead className="text-right">
-                          {t("bilan.actions")}
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {bilan.entries.map((entry) => (
-                        <TableRow key={entry.id}>
-                          <TableCell className="font-medium">
-                            {entry.task?.title || "Unknown Task"}
-                          </TableCell>
-                          <TableCell>
-                            {editingTaskId === entry.task_id ? (
-                              <Input
-                                value={timeInput}
-                                onChange={(e) => setTimeInput(e.target.value)}
-                                placeholder="e.g., 1h 30m"
-                                className="w-24"
-                              />
-                            ) : (
-                              formatTime(entry.minutes_spent)
-                            )}
-                          </TableCell>
-                          <TableCell className="max-w-md">
-                            {editingTaskId === entry.task_id ? (
-                              <Textarea
-                                value={notesInput}
-                                onChange={(e) => setNotesInput(e.target.value)}
-                                placeholder="Optional notes about your work"
-                                className="min-h-[80px]"
-                              />
-                            ) : (
-                              entry.notes || (
-                                <span className="text-muted-foreground italic">
-                                  {t("bilan.noNotes")}
-                                </span>
-                              )
-                            )}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {editingTaskId === entry.task_id ? (
-                              <div className="flex justify-end space-x-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={cancelEditing}
-                                >
-                                  <X className="h-4 w-4 mr-1" />
-                                  {t("bilan.cancel")}
-                                </Button>
-                                <Button
-                                  variant="default"
-                                  size="sm"
-                                  onClick={() => saveTimeEntry(entry.task_id)}
-                                  disabled={isSaving}
-                                >
-                                  {isSaving ? (
-                                    <>
-                                      <span className="mr-1 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent"></span>
-                                      {t("bilan.saving")}
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Save className="h-4 w-4 mr-1" />
-                                      {t("bilan.save")}
-                                    </>
-                                  )}
-                                </Button>
-                              </div>
-                            ) : (
-                              <div className="flex justify-end space-x-2">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => startEditing(entry.task_id)}
-                                  disabled={!isDateToday(selectedDate)}
-                                >
-                                  <Pencil className="h-4 w-4 mr-1" />
-                                  {t("bilan.edit")}
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => markTaskAsDone(entry.task!)}
-                                  disabled={
-                                    !isDateToday(selectedDate) ||
-                                    entry.task?.status === "Done"
-                                  }
-                                >
-                                  <CheckCircle className="h-4 w-4 mr-1" />
-                                  {t("bilan.markAsDone")}
-                                </Button>
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="text-destructive hover:text-destructive"
-                                        onClick={() =>
-                                          deleteTimeEntry(entry.id)
-                                        }
-                                        disabled={!isDateToday(selectedDate)}
-                                      >
-                                        <X className="h-4 w-4" />
-                                      </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p>{t("bilan.deleteTimeEntry")}</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
-                              </div>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
+            <BilanTaskTable
+              bilan={bilan}
+              totalMinutes={totalMinutes}
+              editingTaskId={editingTaskId}
+              timeInput={timeInput}
+              notesInput={notesInput}
+              isSaving={isSaving}
+              isDateToday={isDateToday}
+              onStartEditing={startEditing}
+              onCancelEditing={cancelEditing}
+              onTimeInputChange={setTimeInput}
+              onNotesInputChange={setNotesInput}
+              onSaveTimeEntry={saveTimeEntry}
+              onMarkTaskAsDone={markTaskAsDone}
+              onDeleteTimeEntry={deleteTimeEntry}
+              formatTime={formatTime}
+            />
 
             {isDateToday(selectedDate) && (
               <>
-                {renderOverdueTasks()}
-                {renderUpcomingDeadlineTasks()}
-                {renderOtherTasks()}
+                <TaskSection
+                  title={t("bilan.overdueTasks")}
+                  description={t("bilan.tasksPassedDeadline")}
+                  icon={<AlertTriangle className="h-5 w-5 mr-2 text-red-600" />}
+                  borderColor="border-red-300"
+                  headerBgColor="bg-red-50 dark:bg-red-950/40"
+                  tasks={getOverdueTasks()}
+                  selectedDate={selectedDate}
+                  editingTaskId={editingTaskId}
+                  timeInput={timeInput}
+                  notesInput={notesInput}
+                  isSaving={isSaving}
+                  isDateToday={isDateToday}
+                  onStartEditing={startEditing}
+                  onCancelEditing={cancelEditing}
+                  onTimeInputChange={setTimeInput}
+                  onNotesInputChange={setNotesInput}
+                  onSaveTimeEntry={saveTimeEntry}
+                  onMarkTaskAsDone={markTaskAsDone}
+                  formatDeadline={formatDeadline}
+                />
+
+                <TaskSection
+                  title={t("bilan.upcomingDeadlines")}
+                  description={t("bilan.tasksWithUpcomingDeadlines")}
+                  icon={<Calendar className="h-5 w-5 mr-2 text-amber-600" />}
+                  borderColor="border-amber-300"
+                  headerBgColor="bg-amber-50 dark:bg-amber-950/40"
+                  tasks={getUpcomingDeadlineTasks()}
+                  selectedDate={selectedDate}
+                  editingTaskId={editingTaskId}
+                  timeInput={timeInput}
+                  notesInput={notesInput}
+                  isSaving={isSaving}
+                  isDateToday={isDateToday}
+                  onStartEditing={startEditing}
+                  onCancelEditing={cancelEditing}
+                  onTimeInputChange={setTimeInput}
+                  onNotesInputChange={setNotesInput}
+                  onSaveTimeEntry={saveTimeEntry}
+                  onMarkTaskAsDone={markTaskAsDone}
+                  formatDeadline={formatDeadline}
+                />
+
+                <TaskSection
+                  title={t("bilan.tasksBeyond7Days")}
+                  description={t("bilan.tasksWithFutureDeadlines")}
+                  icon={<Calendar className="h-5 w-5 mr-2 text-slate-600" />}
+                  borderColor="border-slate-300"
+                  headerBgColor="bg-slate-50 dark:bg-slate-950/40"
+                  tasks={getOtherTasks()}
+                  selectedDate={selectedDate}
+                  editingTaskId={editingTaskId}
+                  timeInput={timeInput}
+                  notesInput={notesInput}
+                  isSaving={isSaving}
+                  isDateToday={isDateToday}
+                  onStartEditing={startEditing}
+                  onCancelEditing={cancelEditing}
+                  onTimeInputChange={setTimeInput}
+                  onNotesInputChange={setNotesInput}
+                  onSaveTimeEntry={saveTimeEntry}
+                  onMarkTaskAsDone={markTaskAsDone}
+                  formatDeadline={formatDeadline}
+                />
               </>
             )}
           </>
