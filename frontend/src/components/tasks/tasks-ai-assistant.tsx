@@ -17,6 +17,9 @@ import {
 import { taskService } from "../../services/taskService";
 import { Task } from "../../../types/task";
 
+// Local storage key for saving prioritization results
+const PRIORITIZATION_STORAGE_KEY = "plan-genie-ai-prioritization-result";
+
 export default function AiAssistantPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [prioritizationResult, setPrioritizationResult] =
@@ -27,7 +30,43 @@ export default function AiAssistantPage() {
 
   useEffect(() => {
     loadTasks();
+    loadPrioritizationFromStorage();
   }, []);
+
+  // Load prioritization result from localStorage
+  const loadPrioritizationFromStorage = () => {
+    try {
+      const stored = localStorage.getItem(PRIORITIZATION_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setPrioritizationResult(parsed);
+      }
+    } catch (error) {
+      console.error("Error loading prioritization from localStorage:", error);
+      // Clear corrupted data
+      localStorage.removeItem(PRIORITIZATION_STORAGE_KEY);
+    }
+  };
+
+  // Save prioritization result to localStorage
+  const savePrioritizationToStorage = (result: TaskPrioritizationResult) => {
+    try {
+      localStorage.setItem(PRIORITIZATION_STORAGE_KEY, JSON.stringify(result));
+    } catch (error) {
+      console.error("Error saving prioritization to localStorage:", error);
+    }
+  };
+
+  // Clear prioritization result from localStorage
+  const clearPrioritizationFromStorage = () => {
+    try {
+      localStorage.removeItem(PRIORITIZATION_STORAGE_KEY);
+      setPrioritizationResult(null);
+      toast.success("Prioritization results cleared");
+    } catch (error) {
+      console.error("Error clearing prioritization from localStorage:", error);
+    }
+  };
 
   // Auto-scroll to results when they're generated
   useEffect(() => {
@@ -101,6 +140,7 @@ export default function AiAssistantPage() {
       setLoadingPriorities(true);
       const result = await geminiService.getTaskPriorities();
       setPrioritizationResult(result);
+      savePrioritizationToStorage(result);
       toast.success("Task priorities generated successfully!");
     } catch (error) {
       toast.error("Failed to get task priorities");
@@ -127,20 +167,31 @@ export default function AiAssistantPage() {
       {/* Action Button */}
       <div className="flex justify-center">
         <div className="flex flex-col items-center gap-4">
-          <Button
-            onClick={handleGetPriorities}
-            disabled={loadingPriorities || activeTasks.length === 0}
-            className="flex items-center gap-2 px-8 py-3 text-base"
-          >
-            {loadingPriorities ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              <Sparkles className="h-5 w-5" />
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={handleGetPriorities}
+              disabled={loadingPriorities || activeTasks.length === 0}
+              className="flex items-center gap-2 px-8 py-3 text-base"
+            >
+              {loadingPriorities ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Sparkles className="h-5 w-5" />
+              )}
+              {loadingPriorities
+                ? "Prioritizing your Tasks with AI..."
+                : "Prioritize your Tasks with AI"}
+            </Button>
+            {prioritizationResult && (
+              <Button
+                onClick={clearPrioritizationFromStorage}
+                variant="outline"
+                className="flex items-center gap-2 px-4 py-3 text-sm"
+              >
+                Clear Results
+              </Button>
             )}
-            {loadingPriorities
-              ? "Prioritizing your Tasks with AI..."
-              : "Prioritize your Tasks with AI"}
-          </Button>
+          </div>
           {loadingPriorities && showLoadingText && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <span>This might take a few seconds...</span>

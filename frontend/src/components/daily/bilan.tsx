@@ -642,7 +642,7 @@ const BilanPage = () => {
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className="bg-amber-100 text-amber-800 border-amber-300"
+                        className="bg-gray-100 text-gray-800 border-gray-300"
                       >
                         {formatDeadline(task.deadline)}
                       </Badge>
@@ -678,9 +678,9 @@ const BilanPage = () => {
                           task.status === "Done" &&
                             "bg-green-100 text-green-800 border-green-300",
                           task.status === "In Progress" &&
-                            "bg-blue-100 text-blue-800 border-blue-300",
+                            "bg-orange-100 text-orange-800 border-orange-300",
                           (!task.status || task.status === "Planned") &&
-                            "bg-amber-100 text-amber-800 border-amber-300"
+                            "bg-gray-100 text-gray-800 border-gray-300"
                         )}
                       >
                         {t(`bilan.${task.status || "planned"}`)}
@@ -819,9 +819,9 @@ const BilanPage = () => {
                           task.status === "Done" &&
                             "bg-green-100 text-green-800 border-green-300",
                           task.status === "In Progress" &&
-                            "bg-blue-100 text-blue-800 border-blue-300",
+                            "bg-orange-100 text-orange-800 border-orange-300",
                           (!task.status || task.status === "Planned") &&
-                            "bg-amber-100 text-amber-800 border-amber-300"
+                            "bg-gray-100 text-gray-800 border-gray-300"
                         )}
                       >
                         {t(`bilan.${task.status || "planned"}`)}
@@ -963,9 +963,9 @@ const BilanPage = () => {
                           task.status === "Done" &&
                             "bg-green-100 text-green-800 border-green-300",
                           task.status === "In Progress" &&
-                            "bg-blue-100 text-blue-800 border-blue-300",
+                            "bg-orange-100 text-orange-800 border-orange-300",
                           (!task.status || task.status === "Planned") &&
-                            "bg-amber-100 text-amber-800 border-amber-300"
+                            "bg-gray-100 text-gray-800 border-gray-300"
                         )}
                       >
                         {t(`bilan.${task.status || "planned"}`)}

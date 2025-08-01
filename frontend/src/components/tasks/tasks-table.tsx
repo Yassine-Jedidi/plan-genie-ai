@@ -421,8 +421,8 @@ export default function TasksTable({ tasks }: TasksTableProps) {
 
         const statusColors: Record<string, string> = {
           Done: "bg-green-100 text-green-800 border-green-300",
-          "In Progress": "bg-blue-100 text-blue-800 border-blue-300",
-          Planned: "bg-amber-100 text-amber-800 border-amber-300",
+          "In Progress": "bg-orange-100 text-orange-800 border-orange-300",
+          Planned: "bg-gray-100 text-gray-800 border-gray-300",
         };
 
         const statusIcons: Record<string, React.ReactElement> = {
@@ -453,8 +453,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
         };
 
         const colorClass =
-          statusColors[status] ||
-          "bg-amber-100 text-amber-800 border-amber-300"; // Default to Planned style
+          statusColors[status] || "bg-gray-100 text-gray-800 border-gray-300"; // Default to Planned style
 
         return (
           <Badge className={cn(colorClass)} variant="outline">
@@ -973,8 +972,8 @@ export default function TasksTable({ tasks }: TasksTableProps) {
           size="sm"
           variant="outline"
           className={cn(
-            "bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200 text-xs",
-            selectedStatuses.includes("Planned") && "ring-2 ring-amber-400"
+            "bg-gray-100 text-gray-800 border-gray-300 hover:bg-gray-200 text-xs",
+            selectedStatuses.includes("Planned") && "ring-2 ring-gray-400"
           )}
           onClick={() => {
             // Toggle filter for "Planned" status
@@ -997,7 +996,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
             aria-hidden="true"
           />{" "}
           {t("tasksTable.planned")}
-          <span className="ml-1 inline-flex h-4 items-center rounded bg-background-200 px-1 text-xs font-medium text-amber-800">
+          <span className="ml-1 inline-flex h-4 items-center rounded bg-background-200 px-1 text-xs font-medium text-gray-800">
             {`(${statusCounts.get("Planned") || 0})`}
           </span>
         </Button>
@@ -1005,8 +1004,8 @@ export default function TasksTable({ tasks }: TasksTableProps) {
           size="sm"
           variant="outline"
           className={cn(
-            "bg-blue-100 text-blue-800 border-blue-300 hover:bg-blue-200 text-xs",
-            selectedStatuses.includes("In Progress") && "ring-2 ring-blue-400"
+            "bg-orange-100 text-orange-800 border-orange-300 hover:bg-orange-200 text-xs",
+            selectedStatuses.includes("In Progress") && "ring-2 ring-orange-400"
           )}
           onClick={() => {
             // Toggle filter for "In Progress" status
@@ -1029,7 +1028,7 @@ export default function TasksTable({ tasks }: TasksTableProps) {
             aria-hidden="true"
           />{" "}
           {t("tasksTable.inProgress")}
-          <span className="ml-1 inline-flex h-4 items-center rounded bg-background-200 px-1 text-xs font-medium text-blue-800">
+          <span className="ml-1 inline-flex h-4 items-center rounded bg-background-200 px-1 text-xs font-medium text-orange-800">
             {`(${statusCounts.get("In Progress") || 0})`}
           </span>
         </Button>
