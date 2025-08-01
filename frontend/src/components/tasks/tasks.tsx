@@ -64,10 +64,25 @@ const TasksPage = () => {
           onValueChange={setActiveTab}
           className="w-full"
         >
-          <TabsList className="mb-4 bg-primary/80 text-primary-foreground">
-            <TabsTrigger value="table">{t("tasks.table")}</TabsTrigger>
-            <TabsTrigger value="kanban">{t("tasks.kanban")}</TabsTrigger>
-            <TabsTrigger value="ai">AI Assistant</TabsTrigger>
+          <TabsList className="mb-4 bg-primary/80 text-primary-foreground ">
+            <TabsTrigger
+              value="table"
+              className={`${activeTab === "table" ? "px-12" : "px-6"}`}
+            >
+              {t("tasks.table")}
+            </TabsTrigger>
+            <TabsTrigger
+              value="kanban"
+              className={`${activeTab === "kanban" ? "px-12" : "px-6"}`}
+            >
+              {t("tasks.kanban")}
+            </TabsTrigger>
+            <TabsTrigger
+              value="ai"
+              className={`${activeTab === "ai" ? "px-12" : "px-6"}`}
+            >
+              AI Assistant
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="table" className="w-full">

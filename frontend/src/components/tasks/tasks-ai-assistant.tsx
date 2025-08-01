@@ -29,6 +29,7 @@ export default function AiAssistantPage() {
   const [loading, setLoading] = useState(false);
   const [loadingPriorities, setLoadingPriorities] = useState(false);
   const [showLoadingText, setShowLoadingText] = useState(false);
+  const [shouldScrollToResults, setShouldScrollToResults] = useState(false);
 
   useEffect(() => {
     loadTasks();
@@ -42,6 +43,8 @@ export default function AiAssistantPage() {
       if (stored) {
         const parsed = JSON.parse(stored);
         setPrioritizationResult(parsed);
+        // Don't scroll when loading from storage
+        setShouldScrollToResults(false);
       }
     } catch (error) {
       console.error("Error loading prioritization from localStorage:", error);
@@ -70,17 +73,19 @@ export default function AiAssistantPage() {
     }
   };
 
-  // Auto-scroll to results when they're generated
+  // Auto-scroll to results when they're generated (only for new results)
   useEffect(() => {
-    if (prioritizationResult) {
+    if (prioritizationResult && shouldScrollToResults) {
       const resultsElement = document.getElementById(
         "prioritized-tasks-results"
       );
       if (resultsElement) {
         resultsElement.scrollIntoView({ behavior: "smooth", block: "start" });
       }
+      // Reset the scroll flag after scrolling
+      setShouldScrollToResults(false);
     }
-  }, [prioritizationResult]);
+  }, [prioritizationResult, shouldScrollToResults]);
 
   // Show loading text after 3 seconds
   useEffect(() => {
@@ -144,6 +149,8 @@ export default function AiAssistantPage() {
       setPrioritizationResult(result);
       savePrioritizationToStorage(result);
       toast.success(t("aiAssistant.toast.prioritiesGenerated"));
+      // Set the scroll flag to true when new results are generated
+      setShouldScrollToResults(true);
     } catch (error) {
       toast.error(t("aiAssistant.toast.failedToGetPriorities"));
       console.error("Error getting priorities:", error);
