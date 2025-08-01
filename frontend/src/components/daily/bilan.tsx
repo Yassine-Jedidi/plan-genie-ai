@@ -46,6 +46,8 @@ import {
   History,
   Info,
   CheckCircle,
+  Target,
+  TrendingUp,
 } from "lucide-react";
 import { cn, formatDate, formatTime as formatTimeUtils } from "@/lib/dateUtils";
 import { DatePicker } from "@/components/daily/date-picker";
@@ -73,36 +75,6 @@ const BilanPage = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [currentUtcTime, setCurrentUtcTime] = useState("");
-
-  // Format date for display - fixing potential timezone issues
-  const formatDateDisplay = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-
-      // Get offset in minutes and convert to hours
-      const offsetMinutes = date.getTimezoneOffset(); // e.g., -60 for GMT+1
-      const offsetHours = -offsetMinutes / 60;
-
-      // Format offset string
-      const gmtOffset =
-        "GMT" + (offsetHours >= 0 ? "+" : "") + offsetHours.toString();
-
-      // Format date without timezone name
-      const formattedDate = new Intl.DateTimeFormat("en-US", {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: false,
-      }).format(date);
-
-      return `${formattedDate} ${gmtOffset}`;
-    } catch {
-      return dateString;
-    }
-  };
 
   // Calculate total time spent
   const calculateTotalTime = (entries: BilanEntry[]) => {
@@ -194,6 +166,16 @@ const BilanPage = () => {
   // Calculate total time for a bilan
   const calculateBilanTotalTime = (bilan: Bilan) => {
     return bilan.entries.reduce((sum, entry) => sum + entry.minutes_spent, 0);
+  };
+
+  // Calculate number of non-overdue tasks
+  const getNonOverdueTasksCount = () => {
+    return tasks.filter(
+      (task) =>
+        !isTaskOverdue(task.deadline) &&
+        (task.status !== "Done" ||
+          bilan?.entries.some((entry) => entry.task_id === task.id))
+    ).length;
   };
 
   // Get the bilan entry for a specific task
@@ -429,16 +411,40 @@ const BilanPage = () => {
       setLoadingRecentBilans(true);
       const bilansData = await bilanService.getRecentBilans(7);
 
-      // Filter to ensure we only have the last 7 days
-      const lastWeek = subDays(new Date(), 7);
-      lastWeek.setHours(0, 0, 0, 0);
+      // Create an array of the last 7 days, starting with today
+      const last7Days = [];
+      for (let i = 0; i <= 6; i++) {
+        const date = subDays(new Date(), i);
+        date.setHours(12, 0, 0, 0); // Set to noon to avoid timezone issues
+        last7Days.push(date);
+      }
 
-      const filteredBilans = bilansData.filter((bilan) => {
+      // Create a map of existing bilans by date
+      const bilansByDate = new Map();
+      bilansData.forEach((bilan) => {
         const bilanDate = new Date(bilan.date);
-        return bilanDate >= lastWeek;
+        bilanDate.setHours(12, 0, 0, 0);
+        bilansByDate.set(bilanDate.getTime(), bilan);
       });
 
-      setRecentBilans(filteredBilans);
+      // Create the final array with all 7 days, today first
+      const allBilans = last7Days.map((date) => {
+        const existingBilan = bilansByDate.get(date.getTime());
+        if (existingBilan) {
+          return existingBilan;
+        } else {
+          // Create a placeholder bilan for days without data
+          return {
+            id: `placeholder-${date.getTime()}`,
+            date: date.toISOString(),
+            entries: [],
+            created_at: date.toISOString(),
+            updated_at: date.toISOString(),
+          };
+        }
+      });
+
+      setRecentBilans(allBilans);
     } catch (error) {
       console.error("Error fetching recent bilans:", error);
       toast.error("Failed to load recent summaries. Please try again.");
@@ -1029,13 +1035,15 @@ const BilanPage = () => {
       <div className="p-4 flex flex-col h-[calc(100vh-60px)] overflow-auto">
         <div className="flex justify-between items-center mb-4">
           <div className="flex flex-col">
-            <h1 className="text-2xl font-bold">{t("bilan.daily")}</h1>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="text-sm text-muted-foreground mt-1 flex items-center">
-                    Current UTC Time: {currentUtcTime}
-                    <Info className="ml-2 h-3 w-3 text-muted-foreground" />
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1 px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded-full">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <span>Live : {currentUtcTime}</span>
+                      <Info className="h-3 w-3" />
+                    </div>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -1106,10 +1114,64 @@ const BilanPage = () => {
           </div>
         ) : bilan ? (
           <>
-            <p className="text-primary dark:text-primary/80 mb-4">
-              {formatDateDisplay(bilan.date)}
-            </p>
+            {bilan && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4  mb-6">
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-4 border border-green-200/50 dark:border-green-700/50">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-green-500 rounded-xl">
+                      <Clock className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">
+                        Total Time
+                      </p>
+                      <p className="text-2xl font-bold text-green-700 dark:text-green-400">
+                        {formatTime(totalMinutes)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-4 border border-blue-200/50 dark:border-blue-700/50">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-500 rounded-xl">
+                      <Target className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">
+                        Tasks Tracked
+                      </p>
+                      <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">
+                        {bilan.entries.length}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-4 border border-purple-200/50 dark:border-purple-700/50">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-purple-500 rounded-xl">
+                      <TrendingUp className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">
+                        Productivity
+                      </p>
+                      <p className="text-2xl font-bold text-purple-700 dark:text-purple-400">
+                        {totalMinutes > 0
+                          ? Math.round(
+                              (bilan.entries.length /
+                                getNonOverdueTasksCount()) *
+                                100
+                            )
+                          : 0}
+                        %
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
             <Card className="border-green-300">
               <CardHeader className="bg-green-50 dark:bg-green-950/40 rounded-t-lg">
                 <CardTitle className="text-xl flex items-center">
