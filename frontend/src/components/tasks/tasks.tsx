@@ -64,7 +64,7 @@ const TasksPage = () => {
           onValueChange={setActiveTab}
           className="w-full"
         >
-          <TabsList className="mb-4 bg-primary/80 text-primary-foreground ">
+          <TabsList className="mb-4 bg-primary/80 text-primary-foreground flex justify-center max-w-fit mx-auto rounded-lg">
             <TabsTrigger
               value="table"
               className={`${activeTab === "table" ? "px-12" : "px-6"}`}
@@ -79,7 +79,7 @@ const TasksPage = () => {
             </TabsTrigger>
             <TabsTrigger
               value="ai"
-              className={`${activeTab === "ai" ? "px-12" : "px-6"}`}
+              className={`${activeTab === "ai" ? "px-10" : "px-6"}`}
             >
               AI Assistant
             </TabsTrigger>
