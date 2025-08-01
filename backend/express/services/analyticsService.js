@@ -156,18 +156,35 @@ class AnalyticsService {
     );
     const allEventAnalytics = calculateEventAnalytics(events, todayStart);
 
-    // Today's tasks analytics
+    // Today's tasks analytics - include all tasks that have activity today
     const tomorrow = new Date(todayStart);
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const todayTasks = tasks.filter((task) => {
-      if (!task.deadline) return false;
-      const deadlineDate = new Date(task.deadline);
-      return deadlineDate >= todayStart && deadlineDate < tomorrow;
-    });
+
+    // Get tasks that have bilan entries for today OR have deadlines today
     const todayBilanEntries = allBilanEntries.filter((entry) => {
-      const entryDate = new Date(entry.created_at);
-      return entryDate >= todayStart && entryDate < tomorrow;
+      const bilanDate = new Date(entry.bilanDate);
+      return bilanDate >= todayStart && bilanDate < tomorrow;
     });
+
+    // Get unique task IDs from today's bilan entries
+    const todayTaskIds = [
+      ...new Set(todayBilanEntries.map((entry) => entry.task_id)),
+    ];
+
+    // Include tasks that either have activity today OR have deadlines today
+    const todayTasks = tasks.filter((task) => {
+      // Include if task has activity today
+      if (todayTaskIds.includes(task.id)) {
+        return true;
+      }
+      // Include if task has deadline today
+      if (task.deadline) {
+        const deadlineDate = new Date(task.deadline);
+        return deadlineDate >= todayStart && deadlineDate < tomorrow;
+      }
+      return false;
+    });
+
     const todayAnalytics = calculateTaskAnalytics(
       todayTasks,
       todayBilanEntries,
@@ -196,15 +213,31 @@ class AnalyticsService {
     currentWeekEnd.setDate(currentWeekEnd.getDate() + 7);
     currentWeekEnd.setHours(0, 0, 0, 0);
 
-    const thisWeekTasks = tasks.filter((task) => {
-      if (!task.deadline) return false;
-      const deadlineDate = new Date(task.deadline);
-      return deadlineDate >= currentWeekStart && deadlineDate < currentWeekEnd;
-    });
+    // Get tasks that have bilan entries this week OR have deadlines this week
     const thisWeekBilanEntries = allBilanEntries.filter((entry) => {
-      const entryDate = new Date(entry.created_at);
-      return entryDate >= currentWeekStart && entryDate < currentWeekEnd;
+      const bilanDate = new Date(entry.bilanDate);
+      return bilanDate >= currentWeekStart && bilanDate < currentWeekEnd;
     });
+
+    const thisWeekTaskIds = [
+      ...new Set(thisWeekBilanEntries.map((entry) => entry.task_id)),
+    ];
+
+    const thisWeekTasks = tasks.filter((task) => {
+      // Include if task has activity this week
+      if (thisWeekTaskIds.includes(task.id)) {
+        return true;
+      }
+      // Include if task has deadline this week
+      if (task.deadline) {
+        const deadlineDate = new Date(task.deadline);
+        return (
+          deadlineDate >= currentWeekStart && deadlineDate < currentWeekEnd
+        );
+      }
+      return false;
+    });
+
     const thisWeekAnalytics = calculateTaskAnalytics(
       thisWeekTasks,
       thisWeekBilanEntries,
@@ -229,15 +262,31 @@ class AnalyticsService {
     const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1);
     nextMonthStart.setHours(0, 0, 0, 0);
 
-    const thisMonthTasks = tasks.filter((task) => {
-      if (!task.deadline) return false;
-      const deadlineDate = new Date(task.deadline);
-      return deadlineDate >= currentMonthStart && deadlineDate < nextMonthStart;
-    });
+    // Get tasks that have bilan entries this month OR have deadlines this month
     const thisMonthBilanEntries = allBilanEntries.filter((entry) => {
-      const entryDate = new Date(entry.created_at);
-      return entryDate >= currentMonthStart && entryDate < nextMonthStart;
+      const bilanDate = new Date(entry.bilanDate);
+      return bilanDate >= currentMonthStart && bilanDate < nextMonthStart;
     });
+
+    const thisMonthTaskIds = [
+      ...new Set(thisMonthBilanEntries.map((entry) => entry.task_id)),
+    ];
+
+    const thisMonthTasks = tasks.filter((task) => {
+      // Include if task has activity this month
+      if (thisMonthTaskIds.includes(task.id)) {
+        return true;
+      }
+      // Include if task has deadline this month
+      if (task.deadline) {
+        const deadlineDate = new Date(task.deadline);
+        return (
+          deadlineDate >= currentMonthStart && deadlineDate < nextMonthStart
+        );
+      }
+      return false;
+    });
+
     const thisMonthAnalytics = calculateTaskAnalytics(
       thisMonthTasks,
       thisMonthBilanEntries,
