@@ -34,6 +34,7 @@ export function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const selectedFileRef = useRef<File | null>(null);
   const { t } = useTranslation();
 
   // Check if user is authenticated with Google
@@ -47,10 +48,21 @@ export function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
         fullName: user.user_metadata?.full_name || "",
         email: user.email || "",
       });
-      setAvatarPreview(user.user_metadata?.avatar_url || null);
-      setAvatarFile(null);
+
+      // Only reset avatar data when dialog actually opens (not when user data refreshes)
+      if (!selectedFileRef.current) {
+        setAvatarPreview(user.user_metadata?.avatar_url || null);
+        setAvatarFile(null);
+      }
     }
   }, [user, open]);
+
+  // Clear selected file ref when dialog closes
+  useEffect(() => {
+    if (!open) {
+      selectedFileRef.current = null;
+    }
+  }, [open]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -59,6 +71,7 @@ export function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
     if (file) {
       // Check if file is an image
       if (!file.type.startsWith("image/")) {
@@ -73,9 +86,13 @@ export function ProfileDialog({ open, onOpenChange }: ProfileDialogProps) {
       }
 
       setAvatarFile(file);
+      selectedFileRef.current = file;
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatarPreview(reader.result as string);
+      };
+      reader.onerror = (error) => {
+        console.error("FileReader error:", error);
       };
       reader.readAsDataURL(file);
     }
