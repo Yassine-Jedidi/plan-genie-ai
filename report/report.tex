@@ -1,0 +1,229 @@
+\documentclass[12pt,a4paper]{article}
+
+% Minimal packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{threeparttable}
+\usepackage{changepage}
+\usepackage{calc}
+\usepackage{chngcntr}
+\usepackage{setspace}
+\usepackage{textcomp}
+\usepackage{gensymb}
+\usepackage{url}
+\usepackage{cite}
+
+% Page geometry
+\geometry{
+    left=1.5cm,
+    right=1.5cm,
+    top=2.5cm,
+    bottom=2.5cm,
+    headheight=15pt
+}
+
+% Header and footer setup
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Custom cover page
+\newcommand{\makecoverpage}{
+    \thispagestyle{empty}
+    \begin{titlepage}
+        % Top section with logos and affiliations
+        \begin{center}
+            % Top row with three justified elements
+            \begin{minipage}[t]{0.3\textwidth}
+                \begin{center}
+                    \includegraphics[width=3.75cm]{images/logo_university.png}\\
+                    \textbf{Faculty of Sciences of}\\
+                    \textbf{Bizerte}
+                \end{center}
+            \end{minipage}
+            \hfill
+            \begin{minipage}[t]{0.35\textwidth}
+                \begin{center}
+                    \vspace{-3.8cm}
+                    \includegraphics[width=1cm]{images/republic_of_tunisia.png}\\
+                    \textbf{Republic of Tunisia}\\
+                    \textbf{Ministry of Higher Education}\\
+                    \textbf{and Scientific Research}\\
+                    \rule{3cm}{0.5pt}\\
+                    \vspace{0.2cm}
+                    \textbf{University of Carthage}
+                \end{center}
+            \end{minipage}
+            \hfill
+            \begin{minipage}[t]{0.25\textwidth}
+                \begin{center}
+                    \includegraphics[width=1.25cm]{images/logo_department.png} \\
+                    \textbf{Computer Science}\\
+                    \textbf{Department}
+                \end{center}
+            \end{minipage}
+        \end{center}
+        
+        \vspace{0.5cm}
+        
+        % Center section with title
+        \begin{center}
+            \textbf{\Large End of Studies Project Report}\\
+            \vspace{1cm}
+            \textbf{For the obtention of a National Engineering Diploma}\\
+            \vspace{0.5cm}
+            \textbf{Track: Software Engineering and Data Engineering}\\
+            \vspace{1.5cm}
+            \textit{Title:}\\
+            \vspace{0.5cm}
+            \textbf{\Huge PLAN GENIE AI}\\
+            \vspace{0.2cm}
+            \textbf{\Large Intelligent Task \& Event Management Platform}\\
+            \vspace{0.2cm}
+            \textbf{\large Powered by Advanced NLP and Speech Recognition}
+        \end{center}
+        
+        \vspace{0.5cm}
+        
+        % Lower middle section with author and company
+        \begin{center}
+            \textit{Prepared by:}\\
+            \vspace{0.5cm}
+            \textbf{\Large Yassine Jedidi}\\
+            \vspace{1cm}
+            \textit{Realised within} \textbf{\large SFM}\\
+            \vspace{0.5cm}
+            \includegraphics[width=5cm]{images/logo_entreprise.png}
+        \end{center}
+        
+        \vspace{0.5cm}
+        
+        % Bottom section with supervisors and academic year
+        \begin{center}
+            \textit{Supervised by:}\\
+            \vspace{0.5cm}
+            \textbf{Ms. Amani Wattas (SFM)}\\
+            \vspace{0.3cm}
+            \textbf{Mr. Taoufik Ben Abdallah (FSB)}
+        \end{center}
+        
+        \vfill
+        
+        % Bottom row with academic year
+        \begin{center}
+            \textbf{Academic Year 2024-2025}
+        \end{center}
+    \end{titlepage}
+}
+
+% Code listing setup
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red},
+    backgroundcolor=\color{gray!10},
+    showstringspaces=false,
+    tabsize=2
+}
+
+% Document begins
+\begin{document}
+
+% Cover page
+\makecoverpage
+
+% Dedication page
+\newpage
+\thispagestyle{empty}
+\begin{center}
+    \vspace*{5cm}
+    \textbf{\Large Dedication}
+    \vspace{2cm}
+    
+    \textit{To my family and mentors,}\\
+    \textit{whose support made this possible.}
+    \vfill
+    
+    \textit{--- Yassine Jedidi}
+\end{center}
+
+% Acknowledgements page
+\newpage
+\thispagestyle{empty}
+\begin{center}
+    \textbf{\Large Acknowledgements}
+\end{center}
+
+\vspace{1cm}
+
+I would like to express my deepest gratitude to everyone who contributed to the successful completion of this project.
+
+I extend my heartfelt thanks to my academic supervisor, Mr. Taoufik Ben Abdallah (FSB), for his expert guidance, constant support, and constructive feedback throughout every stage of this work.
+
+I am especially grateful to my industrial supervisor, Ms. Amani Wattas (SFM), whose exceptional mentorship, technical expertise, and unwavering involvement were instrumental in shaping the direction and success of this project. Her commitment, availability, and deep understanding of the domain greatly enriched both the learning experience and the outcome of this work.
+
+I also thank the SFM team for providing a supportive and inspiring environment, exposing me to real-world challenges, and entrusting me with responsibilities that made this AI-powered task and event management system possible.
+
+I would like to express my appreciation to all my professors at the Faculty of Sciences of Bizerte for the education, support, and encouragement they have provided throughout my academic journey.
+
+Finally, I express my sincere gratitude to my family for their unwavering support, patience, and understanding during this challenging journey. Their encouragement and belief in my abilities have been a constant source of motivation.
+
+% Introduction page
+\newpage
+\thispagestyle{empty}
+\begin{center}
+    \textbf{\Large Introduction}
+\end{center}
+
+\vspace{1cm}
+
+In today's busy world, managing tasks and events effectively is very important for both personal and work productivity. Traditional ways of managing tasks and events are often slow, make mistakes, and don't adapt to what users prefer.
+
+This project introduces \textbf{Plan Genie AI}, a smart task and event management platform that uses artificial intelligence to change how people and organizations plan, organize, and track their activities. The system uses Natural Language Processing (NLP), speech recognition, and data analysis to provide a smooth, intelligent, and easy-to-use experience.
+
+\vspace{0.5cm}
+
+\textbf{Main Goals:}
+
+\begin{itemize}
+    \item Build an AI platform that can understand and process natural language for creating tasks and planning events
+    \item Add speech-to-text features to allow voice-based task and event management
+    \item Provide performance analytics and visualization tools
+    \item Ensure data security and privacy protection
+    \item Make a responsive application that works on different devices
+\end{itemize}
+
+\vspace{0.5cm}
+
+The project uses modern technologies including React.js for the frontend, Node.js and Python FastAPI for backend services, PostgreSQL for data storage, and Hugging Face Transformers for advanced NLP features. The system can process multiple languages, extract information automatically, and provide detailed performance analytics through interactive charts.
+
+\vspace{0.5cm}
+
+This report shows the complete development process of Plan Genie AI, from initial idea and requirements through design, building, testing, and deployment. It demonstrates how artificial intelligence can be used to solve real productivity problems while maintaining good user experience and data security.
+
+\end{document}
