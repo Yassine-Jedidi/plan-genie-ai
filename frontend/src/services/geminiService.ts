@@ -12,7 +12,14 @@ export interface TaskPrioritizationResult {
 export const geminiService = {
   async getTaskPriorities(): Promise<TaskPrioritizationResult> {
     try {
-      const { data } = await api.get("/tasks/priorities");
+      // Get user's language preference from localStorage
+      const userLanguage = localStorage.getItem("i18nextLng") || "en";
+      
+      const { data } = await api.get("/tasks/priorities", {
+        headers: {
+          "Accept-Language": userLanguage,
+        },
+      });
       return data;
     } catch (error) {
       if (error instanceof AxiosError && error.response) {

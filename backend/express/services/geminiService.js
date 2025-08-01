@@ -6,7 +6,7 @@ class GeminiService {
     this.model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
   }
 
-  async prioritizeTasks(tasks) {
+  async prioritizeTasks(tasks, language = "en") {
     try {
       if (!process.env.GEMINI_API_KEY) {
         throw new Error("GEMINI_API_KEY is not configured");
@@ -36,10 +36,14 @@ class GeminiService {
       });
 
       if (activeTasks.length === 0) {
+        const noTasksMessage =
+          language === "fr"
+            ? "Aucune tâche active à prioriser. Toutes les tâches sont soit terminées soit en retard."
+            : "No active tasks to prioritize. All tasks are either completed or overdue.";
+
         return {
           prioritizedTasks: [],
-          reasoning:
-            "No active tasks to prioritize. All tasks are either completed or overdue.",
+          reasoning: noTasksMessage,
         };
       }
 
@@ -55,6 +59,8 @@ class GeminiService {
                 minute: "2-digit",
                 hour12: false,
               })
+            : language === "fr"
+            ? "Aucune échéance"
             : "No deadline";
           const priority = task.priority || "Medium";
           const daysUntilDeadline = task.deadline
@@ -65,27 +71,58 @@ class GeminiService {
 
           let urgencyIndicator = "";
           if (daysUntilDeadline !== null) {
-            if (daysUntilDeadline < 0) urgencyIndicator = " (OVERDUE)";
-            else if (daysUntilDeadline === 0) urgencyIndicator = " (DUE TODAY)";
-            else if (daysUntilDeadline === 1)
-              urgencyIndicator = " (DUE TOMORROW)";
-            else if (daysUntilDeadline <= 3)
+            if (daysUntilDeadline < 0) {
               urgencyIndicator =
-                " (URGENT - due in " + daysUntilDeadline + " days)";
-            else if (daysUntilDeadline <= 7)
-              urgencyIndicator = " (due in " + daysUntilDeadline + " days)";
-            else urgencyIndicator = " (due in " + daysUntilDeadline + " days)";
+                language === "fr" ? " (EN RETARD)" : " (OVERDUE)";
+            } else if (daysUntilDeadline === 0) {
+              urgencyIndicator =
+                language === "fr" ? " (À RENDRE AUJOURD'HUI)" : " (DUE TODAY)";
+            } else if (daysUntilDeadline === 1) {
+              urgencyIndicator =
+                language === "fr" ? " (À RENDRE DEMAIN)" : " (DUE TOMORROW)";
+            } else if (daysUntilDeadline <= 3) {
+              urgencyIndicator =
+                language === "fr"
+                  ? " (URGENT - à rendre dans " + daysUntilDeadline + " jours)"
+                  : " (URGENT - due in " + daysUntilDeadline + " days)";
+            } else if (daysUntilDeadline <= 7) {
+              urgencyIndicator =
+                language === "fr"
+                  ? " (à rendre dans " + daysUntilDeadline + " jours)"
+                  : " (due in " + daysUntilDeadline + " days)";
+            } else {
+              urgencyIndicator =
+                language === "fr"
+                  ? " (à rendre dans " + daysUntilDeadline + " jours)"
+                  : " (due in " + daysUntilDeadline + " days)";
+            }
           }
+
+          const statusText =
+            language === "fr"
+              ? task.status === "In Progress"
+                ? "En cours"
+                : task.status === "Planned"
+                ? "Planifié"
+                : task.status === "Done"
+                ? "Terminé"
+                : "En attente"
+              : task.status || "Pending";
 
           return `${index + 1}. ${task.title}
    - PRIORITY: ${priority.toUpperCase()}
    - DEADLINE: ${deadline}${urgencyIndicator}
-   - Description: ${task.description || "No description"}
-   - Status: ${task.status || "Pending"}`;
+   - Description: ${
+     task.description ||
+     (language === "fr" ? "Aucune description" : "No description")
+   }
+   - Status: ${statusText}`;
         })
         .join("\n\n");
 
-      const prompt = `You are a task prioritization expert. Analyze the following tasks and prioritize them based on DUE TIME and PRIORITY LEVELS.
+      // Create language-specific prompts
+      const prompts = {
+        en: `You are a task prioritization expert. Analyze the following tasks and prioritize them based on DUE TIME and PRIORITY LEVELS.
 
 IMPORTANT: All dates are in DD/MM/YYYY format (European format). For example:
 - 04/08/2025 means August 4th, 2025 (not April 8th)
@@ -111,8 +148,8 @@ PRIORITIZATION RULES:
 - When time difference is less than 3 hours, prioritize by priority level first, then by time
 
 IMPORTANT: You MUST include ALL ${
-        activeTasks.length
-      } tasks in your prioritization. Do not skip any tasks.
+          activeTasks.length
+        } tasks in your prioritization. Do not skip any tasks.
 
 Please provide a JSON response with this EXACT structure (no additional text before or after the JSON):
 {
@@ -153,8 +190,8 @@ ${activeTasks
 
 CRITICAL REQUIREMENTS:
 - You MUST include ALL ${
-        activeTasks.length
-      } tasks in the prioritizedTaskIds array
+          activeTasks.length
+        } tasks in the prioritizedTaskIds array
 - The task title in reasoning MUST match the task that is actually prioritized in that position
 ${activeTasks
   .map(
@@ -178,7 +215,105 @@ ${activeTasks
   * Medium tasks (meetings, focused work): 1-2 hours  
   * Complex tasks (reports, projects): 2-4 hours or more
   * Return estimates in minutes or hours, e.g. "30 minutes", "2 hours"
-  * Use common sense based on task titles`;
+  * Use common sense based on task titles`,
+
+        fr: `Vous êtes un expert en priorisation de tâches. Analysez les tâches suivantes et priorisez-les en fonction de l'ÉCHÉANCE et des NIVEAUX DE PRIORITÉ.
+
+IMPORTANT: Toutes les dates sont au format DD/MM/YYYY (format européen). Par exemple:
+- 04/08/2025 signifie le 4 août 2025 (pas le 8 avril)
+- 02/08/2025 signifie le 2 août 2025 (pas le 8 février)
+- 12/08/2025 signifie le 12 août 2025 (pas le 8 décembre)
+
+Tâches à analyser:
+${tasksDescription}
+
+CRITÈRES DE PRIORISATION (par ordre d'importance):
+1. **Échéance (Très Important)**: Les tâches avec des échéances plus précoces doivent être priorisées plus haut
+2. **Niveau de Priorité (Très Important)**: Les tâches de haute priorité doivent être classées au-dessus des moyennes, moyennes au-dessus des basses
+3. **Sensibilité Temporelle**: Considérez à quel point l'échéance est proche d'aujourd'hui
+4. **Surcharge de Priorité**: Quand les tâches sont dues le même jour ou dans quelques heures, le NIVEAU DE PRIORITÉ prend le dessus sur les petites différences de temps
+5. **Dépendances de Tâches**: Si une tâche bloque les autres, priorisez-la en premier
+
+RÈGLES DE PRIORISATION:
+- Trier par échéance d'abord (la plus précoce en premier)
+- Dans la même échéance, trier par priorité (Haute > Moyenne > Basse)
+- SURCHARGE DE PRIORITÉ: Si les tâches sont dues le même jour ou dans 2-3 heures, la priorité haute bat la priorité basse indépendamment des petites différences de temps
+- Les tâches sans échéance vont en dernier, triées par priorité
+- Considérez l'urgence: les tâches dues aujourd'hui/demain obtiennent la priorité la plus haute
+- Quand la différence de temps est inférieure à 3 heures, priorisez par niveau de priorité d'abord, puis par temps
+
+IMPORTANT: Vous DEVEZ inclure TOUTES les ${
+          activeTasks.length
+        } tâches dans votre priorisation. Ne sautez aucune tâche.
+
+Veuillez fournir une réponse JSON avec cette structure EXACTE (pas de texte supplémentaire avant ou après le JSON):
+{
+  "prioritizedTaskIds": [${activeTasks
+    .map((_, index) => index + 1)
+    .join(", ")}],
+  "reasoning": {
+${activeTasks
+  .map(
+    (_, index) =>
+      `    "${
+        index + 1
+      }": "[Explication brève et naturelle se concentrant sur les facteurs d'échéance et de priorité]"`
+  )
+  .join(",\n")}
+  },
+  "estimatedTimePerTask": {
+${activeTasks
+  .map(
+    (_, index) =>
+      `    "${
+        index + 1
+      }": "[Estimation de temps réaliste basée sur la complexité et la nature de la tâche]"`
+  )
+  .join(",\n")}
+  },
+  "timeColors": {
+${activeTasks
+  .map(
+    (_, index) =>
+      `    "${
+        index + 1
+      }": "[Couleur pour l'estimation de temps: 'green' pour les tâches courtes (≤30min), 'yellow' pour les tâches moyennes (1-2h), 'red' pour les tâches longues (3h+)]"`
+  )
+  .join(",\n")}
+  }
+}
+
+EXIGENCES CRITIQUES:
+- Vous DEVEZ inclure TOUTES les ${
+          activeTasks.length
+        } tâches dans le tableau prioritizedTaskIds
+- Le titre de la tâche dans le raisonnement DOIT correspondre à la tâche qui est réellement priorisée à cette position
+${activeTasks
+  .map(
+    (_, index) =>
+      `- Le raisonnement de la position ${
+        index + 1
+      } doit décrire la tâche qui est classée #${index + 1}`
+  )
+  .join("\n")}
+- Utilisez le TITRE EXACT de la tâche de la liste priorisée dans chaque raisonnement
+- Assurez-vous que le raisonnement reflète avec précision l'échéance et la priorité réelles de cette tâche spécifique
+- Retournez UNIQUEMENT du JSON valide, pas de formatage markdown ou de texte supplémentaire
+- Priorisez par ÉCHÉANCE D'ABORD, puis par NIVEAU DE PRIORITÉ
+- IMPORTANT: Quand les tâches sont dues le même jour ou dans 2-3 heures, la priorité HAUTE doit battre la priorité BASSE
+- Vérifiez que chaque raisonnement décrit la tâche correcte pour cette position
+- NE SAUTEZ AUCUNE TÂCHE - incluez toutes les ${activeTasks.length} tâches
+- STYLE DE RAISONNEMENT: Écrivez des explications naturelles et concises sans phrases répétitives comme "La tâche X est priorisée Y parce que". Concentrez-vous sur les facteurs clés qui ont déterminé la priorité.
+- FORMAT DE DATE: Rappelez-vous que toutes les dates sont au format DD/MM/YYYY (format européen).
+- ESTIMATION DE TEMPS: Fournissez des estimations de temps réalistes basées sur la complexité de la tâche. Considérez:
+  * Tâches simples (appels rapides, courses courtes): 15-30 minutes
+  * Tâches moyennes (réunions, travail concentré): 1-2 heures
+  * Tâches complexes (rapports, projets): 2-4 heures ou plus
+  * Retournez les estimations en minutes ou heures, ex. "30 minutes", "2 heures"
+  * Utilisez le bon sens basé sur les titres de tâches`,
+      };
+
+      const prompt = prompts[language] || prompts.en;
 
       const result = await this.model.generateContent(prompt);
       const response = await result.response;
@@ -266,6 +401,8 @@ ${activeTasks
                     minute: "2-digit",
                     hour12: false,
                   })
+                : language === "fr"
+                ? "Aucune échéance"
                 : "No deadline";
               const priority = actualTask.priority || "Medium";
               const daysUntilDeadline = actualTask.deadline
@@ -277,17 +414,33 @@ ${activeTasks
 
               let urgencyText = "";
               if (daysUntilDeadline !== null) {
-                if (daysUntilDeadline === 0) urgencyText = " (due today)";
-                else if (daysUntilDeadline === 1)
-                  urgencyText = " (due tomorrow)";
-                else if (daysUntilDeadline <= 3)
-                  urgencyText = ` (due in ${daysUntilDeadline} days)`;
-                else urgencyText = ` (due in ${daysUntilDeadline} days)`;
+                if (daysUntilDeadline === 0) {
+                  urgencyText =
+                    language === "fr"
+                      ? " (à rendre aujourd'hui)"
+                      : " (due today)";
+                } else if (daysUntilDeadline === 1) {
+                  urgencyText =
+                    language === "fr"
+                      ? " (à rendre demain)"
+                      : " (due tomorrow)";
+                } else if (daysUntilDeadline <= 3) {
+                  urgencyText =
+                    language === "fr"
+                      ? ` (à rendre dans ${daysUntilDeadline} jours)`
+                      : ` (due in ${daysUntilDeadline} days)`;
+                } else {
+                  urgencyText =
+                    language === "fr"
+                      ? ` (à rendre dans ${daysUntilDeadline} jours)`
+                      : ` (due in ${daysUntilDeadline} days)`;
+                }
               }
 
-              reasoning[
-                String(index + 1)
-              ] = `Due ${deadline}${urgencyText} with ${priority.toUpperCase()} priority level.`;
+              reasoning[String(index + 1)] =
+                language === "fr"
+                  ? `Échéance ${deadline}${urgencyText} avec niveau de priorité ${priority.toUpperCase()}.`
+                  : `Due ${deadline}${urgencyText} with ${priority.toUpperCase()} priority level.`;
             }
           }
         });
@@ -320,6 +473,8 @@ ${activeTasks
                 minute: "2-digit",
                 hour12: false,
               })
+            : language === "fr"
+            ? "Aucune échéance"
             : "No deadline";
           const priority = task.priority || "Medium";
           const daysUntilDeadline = task.deadline
@@ -330,16 +485,29 @@ ${activeTasks
 
           let urgencyText = "";
           if (daysUntilDeadline !== null) {
-            if (daysUntilDeadline === 0) urgencyText = " (due today)";
-            else if (daysUntilDeadline === 1) urgencyText = " (due tomorrow)";
-            else if (daysUntilDeadline <= 3)
-              urgencyText = ` (due in ${daysUntilDeadline} days)`;
-            else urgencyText = ` (due in ${daysUntilDeadline} days)`;
+            if (daysUntilDeadline === 0) {
+              urgencyText =
+                language === "fr" ? " (à rendre aujourd'hui)" : " (due today)";
+            } else if (daysUntilDeadline === 1) {
+              urgencyText =
+                language === "fr" ? " (à rendre demain)" : " (due tomorrow)";
+            } else if (daysUntilDeadline <= 3) {
+              urgencyText =
+                language === "fr"
+                  ? ` (à rendre dans ${daysUntilDeadline} jours)`
+                  : ` (due in ${daysUntilDeadline} days)`;
+            } else {
+              urgencyText =
+                language === "fr"
+                  ? ` (à rendre dans ${daysUntilDeadline} jours)`
+                  : ` (due in ${daysUntilDeadline} days)`;
+            }
           }
 
-          fallbackReasoning[
-            String(index + 1)
-          ] = `Due ${deadline}${urgencyText} with ${priority.toUpperCase()} priority level.`;
+          fallbackReasoning[String(index + 1)] =
+            language === "fr"
+              ? `Échéance ${deadline}${urgencyText} avec niveau de priorité ${priority.toUpperCase()}.`
+              : `Due ${deadline}${urgencyText} with ${priority.toUpperCase()} priority level.`;
         });
 
         return {

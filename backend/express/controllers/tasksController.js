@@ -102,6 +102,9 @@ class TasksController {
       const userId = req.user.id;
       const tasks = await tasksService.getTasksByUserId(userId);
 
+      // Get language preference from request headers
+      const userLanguage = req.headers["accept-language"] || "en";
+
       if (!tasks || tasks.length === 0) {
         return res.status(200).json({
           prioritizedTasks: [],
@@ -111,7 +114,10 @@ class TasksController {
         });
       }
 
-      const prioritizationResult = await geminiService.prioritizeTasks(tasks);
+      const prioritizationResult = await geminiService.prioritizeTasks(
+        tasks,
+        userLanguage
+      );
 
       return res.status(200).json(prioritizationResult);
     } catch (error) {
