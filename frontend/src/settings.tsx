@@ -148,186 +148,195 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="flex flex-col items-center py-6 w-full">
-      <div className="space-y-6 w-full max-w-2xl">
-        <div className="flex items-center justify-between">
-          <span className="text-primary text-3xl font-bold">
-            {t("settings.title")}
-          </span>
-          {isMobile && <SidebarTrigger className="h-9 w-9 border rounded-md" />}
-        </div>
-        <p className="text-muted-foreground">{t("settings.description")}</p>
-
-        <Tabs defaultValue="appearance">
-          <TabsList className="mb-4">
-            <TabsTrigger value="appearance">
-              {t("settings.appearance")}
-            </TabsTrigger>
-            <TabsTrigger value="notifications">
-              {t("settings.notifications")}
-            </TabsTrigger>
-            <TabsTrigger value="language">{t("settings.language")}</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="appearance" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-primary">
-                  {t("settings.themeMode")}
-                </CardTitle>
-                <CardDescription>
-                  {t("settings.themeModeDescription")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    {theme === "light" ? (
-                      <Sun className="h-5 w-5" />
-                    ) : (
-                      <Moon className="h-5 w-5" />
-                    )}
-                    <span className="font-medium">
-                      {theme === "system"
-                        ? t("settings.mode.system")
-                        : theme === "dark"
-                        ? t("settings.mode.dark")
-                        : t("settings.mode.light")}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleModeChange("light")}
-                      className={theme === "light" ? "border-primary" : ""}
-                      disabled={saving}
-                    >
-                      <Sun className="h-4 w-4 mr-1" />
-                      {t("settings.light")}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleModeChange("dark")}
-                      className={theme === "dark" ? "border-primary" : ""}
-                      disabled={saving}
-                    >
-                      <Moon className="h-4 w-4 mr-1" />
-                      {t("settings.dark")}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleModeChange("system")}
-                      className={theme === "system" ? "border-primary" : ""}
-                      disabled={saving}
-                    >
-                      {t("settings.system")}
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>{t("settings.colorTheme")}</CardTitle>
-                <CardDescription>
-                  {t("settings.colorThemeDescription")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  {colorThemes.map((colorScheme) => (
-                    <Button
-                      key={colorScheme.name}
-                      variant="outline"
-                      className="flex flex-col items-center justify-center h-24 p-4 gap-2 hover:border-primary"
-                      onClick={() =>
-                        handleThemeChange(
-                          colorScheme.name.toLowerCase() as ColorTheme
-                        )
-                      }
-                      disabled={saving}
-                    >
-                      <div
-                        className="w-10 h-10 rounded-full border"
-                        style={{ backgroundColor: colorScheme.color }}
-                      >
-                        {colorTheme === colorScheme.name.toLowerCase() && (
-                          <div className="flex items-center justify-center h-full">
-                            <Check className="h-5 w-5 text-white" />
-                          </div>
-                        )}
-                      </div>
-                      <span className="text-xs">
-                        {t(`settings.colorThemes.${colorScheme.name}`)}
-                      </span>
-                    </Button>
-                  ))}
-                </div>
-                <p className="mt-4 text-xs text-muted-foreground">
-                  {t("settings.themePreferencesSaved")}
-                </p>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="notifications" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-primary">
-                  {t("settings.notificationSettings")}
-                </CardTitle>
-                <CardDescription>
-                  {t("settings.notificationSettingsDescription")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span>{t("settings.taskNotifications")}</span>
-                  <Switch
-                    checked={
-                      loadingPreferences ? true : receiveTaskNotifications
-                    }
-                    onCheckedChange={(checked) =>
-                      handleNotificationPreferenceChange("task", checked)
-                    }
-                    disabled={saving || loadingPreferences}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>{t("settings.eventNotifications")}</span>
-                  <Switch
-                    checked={
-                      loadingPreferences ? true : receiveEventNotifications
-                    }
-                    onCheckedChange={(checked) =>
-                      handleNotificationPreferenceChange("event", checked)
-                    }
-                    disabled={saving || loadingPreferences}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="language" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>{t("settings.language")}</CardTitle>
-                <CardDescription>
-                  {t("settings.languageDescription")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <LanguageSwitch />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+    <>
+      <div className="px-4 py-2">
+        <SidebarTrigger className="h-4 w-4 mt-2" />
       </div>
-    </div>
+      <div className="flex flex-col items-center py-6 w-full">
+        <div className="space-y-6 w-full max-w-2xl">
+          <div className="flex items-center justify-between">
+            <span className="text-primary text-3xl font-bold">
+              {t("settings.title")}
+            </span>
+            {isMobile && (
+              <SidebarTrigger className="h-9 w-9 border rounded-md" />
+            )}
+          </div>
+          <p className="text-muted-foreground">{t("settings.description")}</p>
+
+          <Tabs defaultValue="appearance">
+            <TabsList className="mb-4">
+              <TabsTrigger value="appearance">
+                {t("settings.appearance")}
+              </TabsTrigger>
+              <TabsTrigger value="notifications">
+                {t("settings.notifications")}
+              </TabsTrigger>
+              <TabsTrigger value="language">
+                {t("settings.language")}
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="appearance" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-primary">
+                    {t("settings.themeMode")}
+                  </CardTitle>
+                  <CardDescription>
+                    {t("settings.themeModeDescription")}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {theme === "light" ? (
+                        <Sun className="h-5 w-5" />
+                      ) : (
+                        <Moon className="h-5 w-5" />
+                      )}
+                      <span className="font-medium">
+                        {theme === "system"
+                          ? t("settings.mode.system")
+                          : theme === "dark"
+                          ? t("settings.mode.dark")
+                          : t("settings.mode.light")}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleModeChange("light")}
+                        className={theme === "light" ? "border-primary" : ""}
+                        disabled={saving}
+                      >
+                        <Sun className="h-4 w-4 mr-1" />
+                        {t("settings.light")}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleModeChange("dark")}
+                        className={theme === "dark" ? "border-primary" : ""}
+                        disabled={saving}
+                      >
+                        <Moon className="h-4 w-4 mr-1" />
+                        {t("settings.dark")}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleModeChange("system")}
+                        className={theme === "system" ? "border-primary" : ""}
+                        disabled={saving}
+                      >
+                        {t("settings.system")}
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("settings.colorTheme")}</CardTitle>
+                  <CardDescription>
+                    {t("settings.colorThemeDescription")}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {colorThemes.map((colorScheme) => (
+                      <Button
+                        key={colorScheme.name}
+                        variant="outline"
+                        className="flex flex-col items-center justify-center h-24 p-4 gap-2 hover:border-primary"
+                        onClick={() =>
+                          handleThemeChange(
+                            colorScheme.name.toLowerCase() as ColorTheme
+                          )
+                        }
+                        disabled={saving}
+                      >
+                        <div
+                          className="w-10 h-10 rounded-full border"
+                          style={{ backgroundColor: colorScheme.color }}
+                        >
+                          {colorTheme === colorScheme.name.toLowerCase() && (
+                            <div className="flex items-center justify-center h-full">
+                              <Check className="h-5 w-5 text-white" />
+                            </div>
+                          )}
+                        </div>
+                        <span className="text-xs">
+                          {t(`settings.colorThemes.${colorScheme.name}`)}
+                        </span>
+                      </Button>
+                    ))}
+                  </div>
+                  <p className="mt-4 text-xs text-muted-foreground">
+                    {t("settings.themePreferencesSaved")}
+                  </p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="notifications" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-primary">
+                    {t("settings.notificationSettings")}
+                  </CardTitle>
+                  <CardDescription>
+                    {t("settings.notificationSettingsDescription")}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span>{t("settings.taskNotifications")}</span>
+                    <Switch
+                      checked={
+                        loadingPreferences ? true : receiveTaskNotifications
+                      }
+                      onCheckedChange={(checked) =>
+                        handleNotificationPreferenceChange("task", checked)
+                      }
+                      disabled={saving || loadingPreferences}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>{t("settings.eventNotifications")}</span>
+                    <Switch
+                      checked={
+                        loadingPreferences ? true : receiveEventNotifications
+                      }
+                      onCheckedChange={(checked) =>
+                        handleNotificationPreferenceChange("event", checked)
+                      }
+                      disabled={saving || loadingPreferences}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="language" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("settings.language")}</CardTitle>
+                  <CardDescription>
+                    {t("settings.languageDescription")}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <LanguageSwitch />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+    </>
   );
 }
