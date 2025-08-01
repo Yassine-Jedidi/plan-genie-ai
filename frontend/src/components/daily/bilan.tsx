@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { taskService } from "../../services/taskService";
 import { Task } from "types/task";
 import { bilanService } from "../../services/bilanService";
