@@ -8,8 +8,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Sparkles, Clock, AlertTriangle } from "lucide-react";
+import { Loader2, Sparkles, Clock, AlertTriangle, Target } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import {
   geminiService,
   TaskPrioritizationResult,
@@ -21,6 +22,7 @@ import { Task } from "../../../types/task";
 const PRIORITIZATION_STORAGE_KEY = "plan-genie-ai-prioritization-result";
 
 export default function AiAssistantPage() {
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [prioritizationResult, setPrioritizationResult] =
     useState<TaskPrioritizationResult | null>(null);
@@ -62,7 +64,7 @@ export default function AiAssistantPage() {
     try {
       localStorage.removeItem(PRIORITIZATION_STORAGE_KEY);
       setPrioritizationResult(null);
-      toast.success("Prioritization results cleared");
+      toast.success(t("aiAssistant.toast.resultsCleared"));
     } catch (error) {
       console.error("Error clearing prioritization from localStorage:", error);
     }
@@ -141,9 +143,9 @@ export default function AiAssistantPage() {
       const result = await geminiService.getTaskPriorities();
       setPrioritizationResult(result);
       savePrioritizationToStorage(result);
-      toast.success("Task priorities generated successfully!");
+      toast.success(t("aiAssistant.toast.prioritiesGenerated"));
     } catch (error) {
-      toast.error("Failed to get task priorities");
+      toast.error(t("aiAssistant.toast.failedToGetPriorities"));
       console.error("Error getting priorities:", error);
     } finally {
       setLoadingPriorities(false);
@@ -151,7 +153,7 @@ export default function AiAssistantPage() {
   };
 
   const formatDate = (date: Date | null) => {
-    if (!date) return "No deadline";
+    if (!date) return t("aiAssistant.noDeadline");
     return new Date(date).toLocaleString("en-GB", {
       year: "numeric",
       month: "2-digit",
@@ -176,11 +178,11 @@ export default function AiAssistantPage() {
               {loadingPriorities ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
-                <Sparkles className="h-5 w-5" />
+                <Target className="h-5 w-5" />
               )}
               {loadingPriorities
-                ? "Prioritizing your Tasks with AI..."
-                : "Prioritize your Tasks with AI"}
+                ? t("aiAssistant.prioritizingTasks")
+                : t("aiAssistant.prioritizeWithAI")}
             </Button>
             {prioritizationResult && (
               <Button
@@ -188,13 +190,13 @@ export default function AiAssistantPage() {
                 variant="outline"
                 className="flex items-center gap-2 px-4 py-3 text-sm"
               >
-                Clear Results
+                {t("aiAssistant.clearResults")}
               </Button>
             )}
           </div>
           {loadingPriorities && showLoadingText && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>This might take a few seconds...</span>
+              <span>{t("aiAssistant.thisMightTakeSeconds")}</span>
             </div>
           )}
         </div>
@@ -205,24 +207,23 @@ export default function AiAssistantPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <div className="w-2 h-2 bg-primary rounded-full"></div>
-            Active Tasks ({activeTasks.length})
+            {t("aiAssistant.activeTasks")} ({activeTasks.length})
           </CardTitle>
           <CardDescription>
-            Your active tasks (not completed, not overdue) that will be analyzed
-            by Plan Genie AI.
+            {t("aiAssistant.activeTasksDescription")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin" />
-              <span className="ml-2">Loading tasks...</span>
+              <span className="ml-2">{t("aiAssistant.loadingTasks")}</span>
             </div>
           ) : activeTasks.length === 0 ? (
             <div className="flex items-center gap-2 p-4 border border-orange-200 bg-orange-50 rounded-lg">
               <AlertTriangle className="h-4 w-4 text-orange-600" />
               <span className="text-sm text-orange-800">
-                No tasks found. Create some tasks first to test the AI features.
+                {t("aiAssistant.noTasksFound")}
               </span>
             </div>
           ) : (
@@ -268,7 +269,13 @@ export default function AiAssistantPage() {
                                 : "border-gray-200 text-gray-700 bg-gray-50"
                             }`}
                           >
-                            {task.priority || "Medium"}
+                            {task.priority === "High"
+                              ? t("aiAssistant.badges.priority.high")
+                              : task.priority === "Medium"
+                              ? t("aiAssistant.badges.priority.medium")
+                              : task.priority === "Low"
+                              ? t("aiAssistant.badges.priority.low")
+                              : t("aiAssistant.priority.medium")}
                           </Badge>
                           <Badge
                             variant="secondary"
@@ -284,7 +291,15 @@ export default function AiAssistantPage() {
                                 : "border-gray-200 text-gray-700 bg-gray-50"
                             }`}
                           >
-                            {task.status || "Pending"}
+                            {task.status === "In Progress" ||
+                            task.status === "in-progress"
+                              ? t("aiAssistant.badges.status.inProgress")
+                              : task.status === "Planned"
+                              ? t("aiAssistant.badges.status.planned")
+                              : task.status === "completed" ||
+                                task.status === "done"
+                              ? t("aiAssistant.badges.status.done")
+                              : t("aiAssistant.badges.status.pending")}
                           </Badge>
                         </div>
                       </div>
@@ -292,7 +307,9 @@ export default function AiAssistantPage() {
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          <span>Due: {formatDate(task.deadline)}</span>
+                          <span>
+                            {t("aiAssistant.due")}: {formatDate(task.deadline)}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -312,10 +329,10 @@ export default function AiAssistantPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-primary rounded-full"></div>
-                Prioritized Tasks
+                {t("aiAssistant.prioritizedTasks")}
               </CardTitle>
               <CardDescription>
-                AI-optimized task order for maximum productivity
+                {t("aiAssistant.prioritizedTasksDescription")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -361,7 +378,13 @@ export default function AiAssistantPage() {
                                   : "border-gray-200 text-gray-700 bg-gray-50"
                               }`}
                             >
-                              {task.priority || "Medium"}
+                              {task.priority === "High"
+                                ? t("aiAssistant.badges.priority.high")
+                                : task.priority === "Medium"
+                                ? t("aiAssistant.badges.priority.medium")
+                                : task.priority === "Low"
+                                ? t("aiAssistant.badges.priority.low")
+                                : t("aiAssistant.priority.medium")}
                             </Badge>
                             {prioritizationResult.estimatedTimePerTask[
                               String(index + 1)
@@ -413,7 +436,7 @@ export default function AiAssistantPage() {
                               <Sparkles className="h-3 w-3 text-primary mt-0.5 flex-shrink-0" />
                               <div className="flex-1">
                                 <p className="text-xs font-medium text-foreground mb-1">
-                                  AI Insight
+                                  {t("aiAssistant.aiInsight")}
                                 </p>
                                 <p className="text-xs text-muted-foreground leading-relaxed">
                                   {

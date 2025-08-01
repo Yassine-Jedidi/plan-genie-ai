@@ -705,5 +705,50 @@
         "proceedButton": "Accéder à la page d'accueil"
       }
     }
+  },
+  "aiAssistant": {
+    "prioritizeWithAI": "Prioriser vos Tâches avec l'IA",
+    "prioritizingTasks": "Priorisation de vos Tâches avec l'IA...",
+    "thisMightTakeSeconds": "Cela peut prendre quelques secondes...",
+    "clearResults": "Effacer les Résultats",
+    "activeTasks": "Tâches Actives",
+    "activeTasksDescription": "Vos tâches actives (non terminées, non en retard) qui seront analysées par Plan Genie AI.",
+    "loadingTasks": "Chargement des tâches...",
+    "noTasksFound": "Aucune tâche trouvée. Créez d'abord quelques tâches pour tester les fonctionnalités IA.",
+    "prioritizedTasks": "Tâches Priorisées",
+    "prioritizedTasksDescription": "Ordre des tâches optimisé par l'IA pour une productivité maximale",
+    "aiInsight": "Aperçu IA",
+    "due": "À rendre",
+    "noDeadline": "Aucune échéance",
+    "priority": {
+      "high": "Élevée",
+      "medium": "Moyenne",
+      "low": "Faible"
+    },
+    "status": {
+      "pending": "En attente",
+      "inProgress": "En cours",
+      "planned": "Planifié",
+      "completed": "Terminé"
+    },
+    "badges": {
+      "priority": {
+        "high": "Élevée",
+        "medium": "Moyenne",
+        "low": "Faible"
+      },
+      "status": {
+        "pending": "En attente",
+        "inProgress": "En cours",
+        "planned": "Planifié",
+        "completed": "Terminé",
+        "done": "Terminé"
+      }
+    },
+    "toast": {
+      "prioritiesGenerated": "Priorités des tâches générées avec succès !",
+      "failedToGetPriorities": "Échec de l'obtention des priorités des tâches",
+      "resultsCleared": "Résultats de priorisation effacés"
+    }
   }
 } 

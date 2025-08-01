@@ -704,5 +704,50 @@
         "proceedButton": "Proceed to Home Page"
       }
     }
+  },
+  "aiAssistant": {
+    "prioritizeWithAI": "Prioritize your Tasks with AI",
+    "prioritizingTasks": "Prioritizing your Tasks with AI...",
+    "thisMightTakeSeconds": "This might take a few seconds...",
+    "clearResults": "Clear Results",
+    "activeTasks": "Active Tasks",
+    "activeTasksDescription": "Your active tasks (not completed, not overdue) that will be analyzed by Plan Genie AI.",
+    "loadingTasks": "Loading tasks...",
+    "noTasksFound": "No tasks found. Create some tasks first to test the AI features.",
+    "prioritizedTasks": "Prioritized Tasks",
+    "prioritizedTasksDescription": "AI-optimized task order for maximum productivity",
+    "aiInsight": "AI Insight",
+    "due": "Due",
+    "noDeadline": "No deadline",
+    "priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "status": {
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "planned": "Planned",
+      "completed": "Completed"
+    },
+    "badges": {
+      "priority": {
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      },
+      "status": {
+        "pending": "Pending",
+        "inProgress": "In Progress",
+        "planned": "Planned",
+        "completed": "Completed",
+        "done": "Done"
+      }
+    },
+    "toast": {
+      "prioritiesGenerated": "Task priorities generated successfully!",
+      "failedToGetPriorities": "Failed to get task priorities",
+      "resultsCleared": "Prioritization results cleared"
+    }
   }
 } 
