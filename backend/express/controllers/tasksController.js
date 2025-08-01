@@ -1,4 +1,5 @@
 const tasksService = require("../services/tasksService");
+const geminiService = require("../services/geminiService");
 
 class TasksController {
   async saveTask(req, res) {
@@ -95,6 +96,30 @@ class TasksController {
         .json({ error: "Failed to create task: " + error.message });
     }
   }
-}
 
+  async getTaskPriorities(req, res) {
+    try {
+      const userId = req.user.id;
+      const tasks = await tasksService.getTasksByUserId(userId);
+
+      if (!tasks || tasks.length === 0) {
+        return res.status(200).json({
+          prioritizedTasks: [],
+          reasoning: "No tasks to prioritize",
+          overallStrategy: "No tasks available",
+          estimatedTimePerTask: {},
+        });
+      }
+
+      const prioritizationResult = await geminiService.prioritizeTasks(tasks);
+
+      return res.status(200).json(prioritizationResult);
+    } catch (error) {
+      console.error("Error getting task priorities:", error);
+      res.status(500).json({
+        error: "Failed to get task priorities: " + error.message,
+      });
+    }
+  }
+}
 module.exports = new TasksController();

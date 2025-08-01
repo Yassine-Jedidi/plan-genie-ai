@@ -21,4 +21,7 @@ router.put("/:taskId", tasksController.updateTask);
 // Manual task creation endpoint
 router.post("/manual", tasksController.createManualTask);
 
+// Gemini API integration endpoints
+router.get("/priorities", tasksController.getTaskPriorities);
+
 module.exports = router;

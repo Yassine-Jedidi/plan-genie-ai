@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TasksKanban } from "./tasks-kanban";
 import { useTranslation } from "react-i18next";
 import { Task } from "types/task";
+import AiAssistantPage from "./tasks-ai-assistant";
 
 const TasksPage = () => {
   const { t } = useTranslation();
@@ -66,6 +67,7 @@ const TasksPage = () => {
           <TabsList className="mb-4 bg-primary/80 text-primary-foreground">
             <TabsTrigger value="table">{t("tasks.table")}</TabsTrigger>
             <TabsTrigger value="kanban">{t("tasks.kanban")}</TabsTrigger>
+            <TabsTrigger value="ai">AI Assistant</TabsTrigger>
           </TabsList>
 
           <TabsContent value="table" className="w-full">
@@ -76,6 +78,10 @@ const TasksPage = () => {
 
           <TabsContent value="kanban" className="w-full h-[calc(100vh-180px)]">
             {activeTab === "kanban" && <TasksKanban tasks={tasks} />}
+          </TabsContent>
+
+          <TabsContent value="ai" className="w-full h-[calc(100vh-180px)]">
+            {activeTab === "ai" && <AiAssistantPage />}
           </TabsContent>
         </Tabs>
       </div>
