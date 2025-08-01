@@ -11,7 +11,7 @@
 
 ---
 
-An intelligent application designed to assist users in managing daily tasks and events using advanced AI technologies. This project integrates Natural Language Processing (NLP), speech recognition, and data visualization to automate task generation, event planning, and performance tracking.
+An intelligent application designed to assist users in managing daily tasks and events using advanced AI technologies. This project integrates Natural Language Processing (NLP), speech recognition, data visualization, and Google's Gemini AI to automate task generation, intelligent prioritization, event planning, and performance tracking.
 
 ---
 
@@ -31,6 +31,7 @@ An intelligent application designed to assist users in managing daily tasks and 
 ### **Task & Event Management**
 
 - [✓] **Automatic Task Generation**: Create organized task lists with priorities and deadlines.
+- [✓] **Intelligent Task Prioritization**: Leverage Google's Gemini AI to intelligently prioritize tasks based on context, deadlines, and user preferences.
 - [✓] **Calendar Integration**: Sync extracted events with an interactive calendar.
 - [✓] **Manual Adjustments**: Allow users to modify generated tasks/events.
 
@@ -71,17 +72,18 @@ An intelligent application designed to assist users in managing daily tasks and 
 - React.js with TypeScript - Web application
 - Vite - Build tool
 - Tailwind CSS - Styling
-- Radix UI - Component library
+- Shadcn - Reusable Components
 
 **AI/ML**
 
+- Google Gemini AI - Intelligent task prioritization and contextual understanding
 - Hugging Face Transformers - NLP models
 - CamemBERT - French language model
 - Custom trained models for entity extraction and classification
 
 **Data Visualization**
 
-- Recharts of shadcn - Interactive charts and analytics
+- Shadcn Charts - Interactive charts and analytics
 
 **Additional Libraries**
 
