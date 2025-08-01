@@ -79,6 +79,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Clear theme settings from localStorage
       localStorage.removeItem("vite-ui-theme");
       localStorage.removeItem("vite-ui-color-theme");
+      // Clear prioritization result from localStorage
+      localStorage.removeItem("plan-genie-ai-prioritization-result");
       await api.post("/auth/signout");
       setUser(null);
     } catch (error) {
