@@ -230,14 +230,17 @@ export function AnalysisResults({
   // Function to save task to the database
   const saveTask = async () => {
     if (!results) {
-      toast.error("No task to save", {
-        position: "top-right",
-      });
+      toast.error(
+        "No analysis results to save. Please analyze some text first.",
+        {
+          position: "top-right",
+        }
+      );
       return;
     }
 
     if (isSaved) {
-      toast.info("This task has already been saved", {
+      toast.info("This item has already been saved to your workspace.", {
         position: "top-right",
       });
       return;
@@ -375,9 +378,12 @@ export function AnalysisResults({
         await taskService.saveTask(payload);
       }
 
-      toast.success(`${results.type} saved successfully!`, {
-        position: "top-right",
-      });
+      toast.success(
+        `${results.type} has been successfully added to your workspace!`,
+        {
+          position: "top-right",
+        }
+      );
 
       // If onSave callback is provided, call it to move to next result
       if (onSave) {
@@ -390,8 +396,8 @@ export function AnalysisResults({
       console.error("Error saving:", error);
       toast.error(
         error instanceof Error
-          ? error.message
-          : "Failed to save. Please try again.",
+          ? `Failed to save ${results.type.toLowerCase()}: ${error.message}`
+          : `Unable to save ${results.type.toLowerCase()}. Please check your connection and try again.`,
         {
           position: "top-right",
         }
@@ -452,15 +458,18 @@ export function AnalysisResults({
   };
 
   return (
-    <Card className="shadow-md border border-primary/30 overflow-hidden bg-gradient-to-br from-background to-muted/30">
-      <CardHeader className="p-3 pb-0">
-        <CardTitle className="text-lg flex justify-between items-center">
-          <span>{t("analysis.resultsTitle")}</span>
+    <Card className="shadow-lg border border-primary/20 overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
+      <CardHeader className="p-4 pb-2 bg-gradient-to-r from-primary/5 to-primary/10">
+        <CardTitle className="text-xl flex justify-between items-center text-primary">
+          <span className="flex items-center gap-2">
+            <span className="text-2xl">📋</span>
+            Analysis Results
+          </span>
         </CardTitle>
       </CardHeader>
       <CardContent className="p-3 space-y-4">
         <div className="flex items-center gap-3">
-          <h3 className="text-sm font-medium">{t("analysis.type")}</h3>
+          <h3 className="text-sm font-medium">Item Type:</h3>
           <SelectType value={results.type} onValueChange={handleTypeChange} />
         </div>
 
@@ -518,9 +527,9 @@ export function AnalysisResults({
                 {t("analysis.saving")}
               </div>
             ) : isSaved ? (
-              t("analysis.saved")
+              "✓ Saved to Workspace"
             ) : (
-              t("analysis.save")
+              `Save ${results.type}`
             )}
           </Button>
         </CardFooter>
