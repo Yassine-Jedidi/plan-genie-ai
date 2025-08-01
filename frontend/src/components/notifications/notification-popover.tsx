@@ -340,7 +340,7 @@ export const NotificationPopover = ({
       >
         <Bell size={16} />
         {unreadCount > 0 && (
-          <div className="absolute -top-1 -right-1 w-5 h-5 bg-black dark:bg-white rounded-full flex items-center justify-center text-xs border border-gray-800 text-white dark:text-black">
+          <div className="absolute -top-1 -right-1 w-5 h-5 bg-black dark:bg-white rounded-full flex items-center justify-center text-xs border border-gray-800 text-white dark:text-black animate-pulse">
             {unreadCount}
           </div>
         )}
