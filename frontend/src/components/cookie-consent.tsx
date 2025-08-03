@@ -88,8 +88,8 @@ function CookieBanner({
             </div>
             <div className="px-6 pb-4">
               <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                We use cookies to enhance your experience, personalize content,
-                and analyze traffic.
+                We use cookies to keep you logged in and ensure secure access to
+                your account.
               </p>
               <Link
                 to={cookiePolicyUrl}

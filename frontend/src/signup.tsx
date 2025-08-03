@@ -224,6 +224,17 @@ function SignUpPage() {
 
           <CardFooter>
             <div className="grid w-full gap-y-4">
+              <div className="text-xs text-muted-foreground text-center">
+                By signing up, you agree to our{" "}
+                <Link
+                  to="/privacy-policy"
+                  className="text-primary hover:underline font-medium"
+                >
+                  Privacy Policy
+                </Link>{" "}
+                and consent to the processing of your personal data for
+                authentication purposes.
+              </div>
               <Button type="submit" disabled={loading}>
                 {loading ? t("signUp.signingUp") : t("signUp.signUp")}
               </Button>

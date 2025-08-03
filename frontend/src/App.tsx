@@ -26,6 +26,7 @@ import { NotificationPopover } from "./components/notifications/notification-pop
 import Analytics from "./components/analytics/analytics";
 import DashboardPage from "./components/dashboard/dashboard";
 import NotFoundPage from "./page-not-found";
+import { PrivacyPolicyPage } from "./privacy-policy";
 
 function AppContent() {
   const location = useLocation();
@@ -34,7 +35,8 @@ function AppContent() {
     location.pathname === "/sign-in" ||
     location.pathname === "/sign-up" ||
     location.pathname === "/forgot-password" ||
-    location.pathname === "/reset-password";
+    location.pathname === "/reset-password" ||
+    location.pathname === "/privacy-policy";
 
   return (
     <ThemeProvider
@@ -53,6 +55,7 @@ function AppContent() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
 
         {/* Protected routes */}
         <Route element={<ProtectedRoute />}>
