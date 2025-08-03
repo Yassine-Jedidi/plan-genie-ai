@@ -48,7 +48,7 @@ An intelligent application designed to assist users in managing daily tasks and 
 ### **User Interface**
 
 - [✓] **Responsive Web App**: Built with React.js and TypeScript.
-- [✓] **Mobile App**: Built with Flutter.
+- [✓] **Mobile App**: Built with React Native.
 - [✓] **Multilingual UI**: Support multiple interface languages.
 
 ### **Security & Compliance**
@@ -63,7 +63,7 @@ An intelligent application designed to assist users in managing daily tasks and 
 **Backend**
 
 - Node.js (Express.js) - Main backend API
-- Python (FastAPI) - AI/ML services (Hugging Face Space)
+- Python (FastAPI) - Hugging Face Space
 - PostgreSQL (via Prisma ORM) - Structured Data
 - Supabase - Authentication and database
 
@@ -77,9 +77,9 @@ An intelligent application designed to assist users in managing daily tasks and 
 **AI/ML**
 
 - Google Gemini AI - Intelligent task prioritization and contextual understanding
-- Hugging Face Transformers - NLP models
-- CamemBERT - French language model
-- Custom trained models for entity extraction and classification
+- Groq - Whisper for speech-to-text processing
+- Hugging Face Transformers
+- CamemBERT - French language model (NLP Model) - Extract entities and classify text
 
 **Data Visualization**
 
