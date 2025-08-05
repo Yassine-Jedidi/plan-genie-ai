@@ -577,6 +577,7 @@
     "exportDataButton": "Exporter mes données",
     "exportDataSuccess": "Exportation des données initiée avec succès !",
     "exportDataError": "Échec de l'initiation de l'exportation des données.",
+    "exportDataExporting": "Exportation...",
     "deleteAccount": "Supprimer le compte",
     "deleteAccountDescription": "Supprimez définitivement votre compte et toutes les données associées. Cette action ne peut pas être annulée.",
     "deleteAccountWarning": "Cette action est irréversible. Toutes vos données seront définitivement supprimées.",

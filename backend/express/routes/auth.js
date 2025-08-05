@@ -98,6 +98,7 @@ router.post("/signout", authController.signOut);
 router.get("/me", authController.getCurrentUser);
 router.post("/refresh", authController.refreshToken);
 router.delete("/delete-account", authController.deleteAccount);
+router.get("/export-data", authController.exportData);
 router.post(
   "/upload-avatar",
   upload.single("avatar"),

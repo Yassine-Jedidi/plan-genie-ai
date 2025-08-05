@@ -179,20 +179,36 @@ export default function SettingsPage() {
   const handleExportData = async () => {
     setExportingData(true);
     try {
-      // TODO: Implement backend endpoint for data export
-      // For now, just show a success message
       const result = await accountService.exportData();
 
       if (result.success) {
+        // Create a downloadable JSON file
+        const dataStr = JSON.stringify(result.data, null, 2);
+        const dataBlob = new Blob([dataStr], { type: "application/json" });
+
+        // Create download link
+        const url = window.URL.createObjectURL(dataBlob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `plan-genie-data-${
+          new Date().toISOString().split("T")[0]
+        }.json`;
+
+        // Trigger download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Clean up
+        window.URL.revokeObjectURL(url);
+
         toast.success(t("settings.exportDataSuccess"));
-        // TODO: Handle file download if backend returns a file
       } else {
         throw new Error(result.error || "Data export failed");
       }
     } catch (error) {
       console.error("Failed to export data:", error);
-      // For now, show success message since backend endpoint doesn't exist yet
-      toast.success(t("settings.exportDataSuccess"));
+      toast.error((error as Error).message || t("settings.exportDataError"));
     } finally {
       setExportingData(false);
     }
@@ -434,9 +450,13 @@ export default function SettingsPage() {
                     disabled={exportingData}
                     className="w-full sm:w-auto"
                   >
-                    <Download className="h-4 w-4 mr-2" />
+                    {exportingData ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Download className="h-4 w-4 mr-2" />
+                    )}
                     {exportingData
-                      ? "Exporting..."
+                      ? t("settings.exportDataExporting")
                       : t("settings.exportDataButton")}
                   </Button>
                 </CardContent>

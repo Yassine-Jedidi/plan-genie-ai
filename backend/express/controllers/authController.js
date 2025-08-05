@@ -355,6 +355,32 @@ class AuthController {
       res.status(500).json({ error: error.message });
     }
   }
+
+  async exportData(req, res) {
+    try {
+      const accessToken = req.cookies["sb-access-token"];
+
+      if (!accessToken) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const result = await authService.exportData(accessToken);
+
+      // Set headers for file download
+      res.setHeader("Content-Type", "application/json");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="plan-genie-data-${
+          new Date().toISOString().split("T")[0]
+        }.json"`
+      );
+
+      res.json(result);
+    } catch (error) {
+      console.error("Data export error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  }
 }
 
 module.exports = new AuthController();

@@ -653,7 +653,7 @@ class AuthService {
 
       // Manually delete all related records to avoid foreign key constraint violations
       // Delete in the correct order to respect foreign key constraints
-
+      
       // 1. Delete notifications first (they reference tasks and events)
       await prisma.notification.deleteMany({
         where: { user_id: user.id },
@@ -697,6 +697,89 @@ class AuthService {
       return { success: true, message: "Account deleted successfully" };
     } catch (error) {
       console.error("Error deleting account:", error);
+      throw error;
+    }
+  }
+
+  async exportData(accessToken) {
+    try {
+      // Get current user
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser(accessToken);
+      if (userError) throw userError;
+
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      // Fetch all user data from Prisma database
+      const userData = await prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+          tasks: {
+            include: {
+              bilanEntries: true,
+              Notification: true,
+            },
+          },
+          events: {
+            include: {
+              Notification: true,
+            },
+          },
+          bilans: {
+            include: {
+              entries: {
+                include: {
+                  task: true,
+                },
+              },
+            },
+          },
+          notifications: true,
+        },
+      });
+
+      if (!userData) {
+        throw new Error("User data not found");
+      }
+
+      // Create export data object
+      const exportData = {
+        exportDate: new Date().toISOString(),
+        user: {
+          id: userData.id,
+          email: userData.email,
+          full_name: userData.full_name,
+          avatar_url: userData.avatar_url,
+          theme: userData.theme,
+          colorTheme: userData.colorTheme,
+          created_at: userData.created_at,
+          updated_at: userData.updated_at,
+          receive_task_notifications: userData.receive_task_notifications,
+          receive_event_notifications: userData.receive_event_notifications,
+        },
+        tasks: userData.tasks,
+        events: userData.events,
+        bilans: userData.bilans,
+        notifications: userData.notifications,
+        summary: {
+          totalTasks: userData.tasks.length,
+          totalEvents: userData.events.length,
+          totalBilans: userData.bilans.length,
+          totalNotifications: userData.notifications.length,
+        },
+      };
+
+      return {
+        success: true,
+        data: exportData,
+        message: "Data exported successfully",
+      };
+    } catch (error) {
+      console.error("Error exporting data:", error);
       throw error;
     }
   }
