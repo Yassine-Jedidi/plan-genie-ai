@@ -312,20 +312,47 @@ class AuthController {
   async updateTheme(req, res) {
     try {
       const { theme, colorTheme } = req.body;
+      const accessToken = req.cookies["sb-access-token"];
+
+      if (!accessToken) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
       const result = await authService.updateTheme(
         theme,
         colorTheme,
-        req.cookies["sb-access-token"]
+        accessToken
       );
-      res.json({
-        success: true,
-        ...result,
-      });
+      res.json(result);
     } catch (error) {
-      console.error("Update theme error:", error);
-      res
-        .status(500)
-        .json({ error: error.message || "Failed to update theme settings" });
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async deleteAccount(req, res) {
+    try {
+      const accessToken = req.cookies["sb-access-token"];
+
+      if (!accessToken) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const result = await authService.deleteAccount(accessToken);
+
+      // Clear cookies after successful deletion
+      res.clearCookie("sb-access-token", {
+        ...authService.getCookieOptions(req),
+        path: "/",
+      });
+      res.clearCookie("sb-refresh-token", {
+        ...authService.getCookieOptions(req),
+        path: "/",
+      });
+
+      res.json(result);
+    } catch (error) {
+      console.error("Account deletion error:", error);
+      res.status(500).json({ error: error.message });
     }
   }
 }

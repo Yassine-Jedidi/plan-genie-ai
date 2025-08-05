@@ -97,6 +97,7 @@ router.post("/update-password", authController.updatePassword);
 router.post("/signout", authController.signOut);
 router.get("/me", authController.getCurrentUser);
 router.post("/refresh", authController.refreshToken);
+router.delete("/delete-account", authController.deleteAccount);
 router.post(
   "/upload-avatar",
   upload.single("avatar"),

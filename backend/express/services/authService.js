@@ -604,39 +604,101 @@ class AuthService {
   }
 
   async updateTheme(theme, colorTheme, accessToken) {
-    if (!accessToken) {
-      throw new Error("Not authenticated");
+    try {
+      // Get current user
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser(accessToken);
+      if (userError) throw userError;
+
+      // Update Prisma database
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          theme: theme,
+          colorTheme: colorTheme,
+        },
+      });
+
+      // Update Supabase user metadata
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: {
+          theme: theme,
+          colorTheme: colorTheme,
+        },
+      });
+
+      if (updateError) throw updateError;
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating theme:", error);
+      throw error;
     }
+  }
 
-    if (!theme && !colorTheme) {
-      throw new Error("Theme or colorTheme is required");
+  async deleteAccount(accessToken) {
+    try {
+      // Get current user
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser(accessToken);
+      if (userError) throw userError;
+
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      // Manually delete all related records to avoid foreign key constraint violations
+      // Delete in the correct order to respect foreign key constraints
+
+      // 1. Delete notifications first (they reference tasks and events)
+      await prisma.notification.deleteMany({
+        where: { user_id: user.id },
+      });
+
+      // 2. Delete bilan entries (they reference tasks and bilans)
+      await prisma.bilanEntry.deleteMany({
+        where: {
+          bilan: {
+            user_id: user.id,
+          },
+        },
+      });
+
+      // 3. Delete bilans
+      await prisma.bilan.deleteMany({
+        where: { user_id: user.id },
+      });
+
+      // 4. Delete tasks
+      await prisma.task.deleteMany({
+        where: { user_id: user.id },
+      });
+
+      // 5. Delete events
+      await prisma.event.deleteMany({
+        where: { user_id: user.id },
+      });
+
+      // 6. Finally delete the user
+      await prisma.user.delete({
+        where: { id: user.id },
+      });
+
+      // Delete user from Supabase auth
+      const { error: deleteError } = await supabase.auth.admin.deleteUser(
+        user.id
+      );
+      if (deleteError) throw deleteError;
+
+      return { success: true, message: "Account deleted successfully" };
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      throw error;
     }
-
-    // Get current user
-    const { data: userData, error: userError } = await supabase.auth.getUser(
-      accessToken
-    );
-    if (userError) throw userError;
-
-    const user = userData.user;
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    // Update theme settings in Prisma database
-    const updateData = {};
-    if (theme) updateData.theme = theme;
-    if (colorTheme) updateData.colorTheme = colorTheme;
-
-    const updatedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: updateData,
-    });
-
-    return {
-      theme: updatedUser.theme,
-      colorTheme: updatedUser.colorTheme,
-    };
   }
 }
 

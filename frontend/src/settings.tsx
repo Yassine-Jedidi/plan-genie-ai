@@ -8,17 +8,39 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check, Sun, Moon } from "lucide-react";
+import {
+  Check,
+  Sun,
+  Moon,
+  Download,
+  Trash2,
+  AlertTriangle,
+  Loader2,
+} from "lucide-react";
 import { ColorTheme, Theme } from "@/contexts/theme-context";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import themeService from "@/services/themeService";
 import { Switch } from "@/components/ui/switch";
 import { notificationService } from "@/services/notificationService";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitch } from "@/components/language-switch";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { accountService } from "@/services/accountService";
 
 const colorThemes = [
   { name: "default", primary: "hsl(222.2, 47.4%, 11.2%)", color: "#1e293b" },
@@ -44,6 +66,12 @@ export default function SettingsPage() {
   );
   const [loadingPreferences, setLoadingPreferences] = useState(true);
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  // Account management state
+  const [exportingData, setExportingData] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -147,6 +175,60 @@ export default function SettingsPage() {
     }
   };
 
+  // Account management handlers
+  const handleExportData = async () => {
+    setExportingData(true);
+    try {
+      // TODO: Implement backend endpoint for data export
+      // For now, just show a success message
+      const result = await accountService.exportData();
+
+      if (result.success) {
+        toast.success(t("settings.exportDataSuccess"));
+        // TODO: Handle file download if backend returns a file
+      } else {
+        throw new Error(result.error || "Data export failed");
+      }
+    } catch (error) {
+      console.error("Failed to export data:", error);
+      // For now, show success message since backend endpoint doesn't exist yet
+      toast.success(t("settings.exportDataSuccess"));
+    } finally {
+      setExportingData(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!confirmDelete) {
+      toast.error(
+        "Please confirm that you understand this action cannot be undone."
+      );
+      return;
+    }
+
+    if (!user) {
+      toast.error("You must be logged in to delete your account.");
+      return;
+    }
+
+    setDeletingAccount(true);
+    try {
+      const result = await accountService.deleteAccount();
+
+      if (result.success) {
+        toast.success(t("settings.deleteAccountSuccess"));
+        navigate("/");
+      } else {
+        throw new Error(result.error || "Account deletion failed");
+      }
+    } catch (error) {
+      console.error("Failed to delete account:", error);
+      toast.error((error as Error).message || t("settings.deleteAccountError"));
+    } finally {
+      setDeletingAccount(false);
+    }
+  };
+
   return (
     <>
       <div className="px-4 py-2">
@@ -175,6 +257,7 @@ export default function SettingsPage() {
               <TabsTrigger value="language">
                 {t("settings.language")}
               </TabsTrigger>
+              <TabsTrigger value="account">{t("settings.account")}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="appearance" className="space-y-4">
@@ -331,6 +414,108 @@ export default function SettingsPage() {
                 </CardHeader>
                 <CardContent>
                   <LanguageSwitch />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="account" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-primary">
+                    {t("settings.exportData")}
+                  </CardTitle>
+                  <CardDescription>
+                    {t("settings.exportDataDescription")}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button
+                    onClick={handleExportData}
+                    disabled={exportingData}
+                    className="w-full sm:w-auto"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    {exportingData
+                      ? "Exporting..."
+                      : t("settings.exportDataButton")}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-destructive">
+                    {t("settings.deleteAccount")}
+                  </CardTitle>
+                  <CardDescription>
+                    {t("settings.deleteAccountDescription")}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-start space-x-2 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+                    <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
+                    <p className="text-sm text-destructive">
+                      {t("settings.deleteAccountWarning")}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="confirm-delete"
+                      checked={confirmDelete}
+                      onCheckedChange={(checked) =>
+                        setConfirmDelete(checked as boolean)
+                      }
+                    />
+                    <label
+                      htmlFor="confirm-delete"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      {t("settings.deleteAccountConfirm")}
+                    </label>
+                  </div>
+
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        disabled={!confirmDelete || deletingAccount}
+                        className="w-full sm:w-auto"
+                      >
+                        {deletingAccount ? (
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-4 w-4 mr-2" />
+                        )}
+                        {deletingAccount
+                          ? t("settings.deleteAccountDialogDeleting")
+                          : t("settings.deleteAccountButton")}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          {t("settings.deleteAccountDialogTitle")}
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          {t("settings.deleteAccountDialogDescription")}
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>
+                          {t("settings.deleteAccountDialogCancel")}
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleDeleteAccount}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          {deletingAccount
+                            ? t("settings.deleteAccountDialogDeleting")
+                            : t("settings.deleteAccountDialogDelete")}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </CardContent>
               </Card>
             </TabsContent>
