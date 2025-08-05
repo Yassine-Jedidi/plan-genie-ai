@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/dateUtils";
+import { useTranslation } from "react-i18next";
 
 // --------------------------------
 // Types and Interfaces
@@ -66,6 +67,8 @@ function CookieBanner({
   cookiePolicyUrl,
   className,
 }: CookieBannerProps) {
+  const { t } = useTranslation();
+
   return (
     <AnimatePresence>
       {isVisible && (
@@ -84,19 +87,20 @@ function CookieBanner({
               <div className="bg-primary/10 p-2 rounded-lg">
                 <CookieIcon className="h-5 w-5 text-primary" />
               </div>
-              <h2 className="text-lg font-semibold">Cookie Preferences</h2>
+              <h2 className="text-lg font-semibold">
+                {t("cookieConsent.title")}
+              </h2>
             </div>
             <div className="px-6 pb-4">
               <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                We use cookies to keep you logged in and ensure secure access to
-                your account.
+                {t("cookieConsent.description")}
               </p>
               <Link
                 to={cookiePolicyUrl}
                 onClick={onPolicyClick}
                 className="text-xs inline-flex items-center text-primary hover:underline group font-medium transition-colors"
               >
-                Cookie Policy
+                {t("cookieConsent.cookiePolicy")}
                 <ChevronRight className="h-3 w-3 ml-1 transition-transform group-hover:translate-x-0.5" />
               </Link>
             </div>
@@ -106,7 +110,7 @@ function CookieBanner({
                 size="sm"
                 className="w-full sm:flex-1 h-9 rounded-lg text-sm transition-all hover:shadow-md"
               >
-                Accept
+                {t("cookieConsent.accept")}
               </Button>
               <Button
                 onClick={onLearnMore}
@@ -114,7 +118,7 @@ function CookieBanner({
                 variant="outline"
                 className="w-full sm:flex-1 h-9 rounded-lg text-sm transition-all hover:shadow-md"
               >
-                Learn More
+                {t("cookieConsent.learnMore")}
               </Button>
             </div>
           </div>
@@ -130,60 +134,60 @@ interface CookiePolicyDialogProps {
 }
 
 function CookiePolicyDialog({ open, onOpenChange }: CookiePolicyDialogProps) {
+  const { t } = useTranslation();
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-card/95 backdrop-blur-lg z-[200] sm:max-w-[500px] p-0 gap-0 border-border/50 shadow-2xl">
         <DialogHeader className="p-6 pb-4 border-b border-border/50">
           <DialogTitle className="text-xl font-semibold flex items-center gap-2">
             <CookieIcon className="h-5 w-5 text-primary" />
-            Cookie Policy
+            {t("cookieConsent.policyTitle")}
           </DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            How we use cookies on our website.
+            {t("cookieConsent.policyDescription")}
           </DialogDescription>
         </DialogHeader>
         <div className="px-6 py-6 space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto">
           <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-semibold mb-2">What are cookies?</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                {t("cookieConsent.whatAreCookies")}
+              </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Cookies are small text files stored on your device that help our
-                website remember your login session.
+                {t("cookieConsent.whatAreCookiesDescription")}
               </p>
             </div>
 
             <div>
               <h3 className="text-lg font-semibold mb-2">
-                What cookies do we use?
+                {t("cookieConsent.whatCookiesDoWeUse")}
               </h3>
               <div className="p-3 border rounded-lg">
                 <h4 className="font-medium text-primary">
-                  Authentication Cookies
+                  {t("cookieConsent.authenticationCookies")}
                 </h4>
                 <p className="text-sm text-muted-foreground mt-1">
-                  We use JWT (JSON Web Token) cookies to keep you logged in.
-                  These cookies are essential for the website to function
-                  properly.
+                  {t("cookieConsent.authenticationCookiesDescription")}
                 </p>
               </div>
             </div>
 
             <div>
               <h3 className="text-lg font-semibold mb-2">
-                Why do we need them?
+                {t("cookieConsent.whyDoWeNeedThem")}
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Without these cookies, you would need to log in every time you
-                visit our site. They ensure secure access to your account.
+                {t("cookieConsent.whyDoWeNeedThemDescription")}
               </p>
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold mb-2">Your privacy</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                {t("cookieConsent.yourPrivacy")}
+              </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                These cookies only store your authentication status. We don't
-                track your browsing activity or collect personal information
-                beyond what's needed for login.
+                {t("cookieConsent.yourPrivacyDescription")}
               </p>
             </div>
           </div>
@@ -194,7 +198,7 @@ function CookiePolicyDialog({ open, onOpenChange }: CookiePolicyDialogProps) {
               onClick={() => onOpenChange(false)}
               className="min-w-[100px]"
             >
-              Close
+              {t("cookieConsent.close")}
             </Button>
           </div>
         </DialogFooter>

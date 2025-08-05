@@ -16,6 +16,10 @@ import {
   Trash2,
   AlertTriangle,
   Loader2,
+  Bell,
+  CheckSquare,
+  Calendar,
+  Info,
 } from "lucide-react";
 import { ColorTheme, Theme } from "@/contexts/theme-context";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
@@ -384,37 +388,97 @@ export default function SettingsPage() {
             <TabsContent value="notifications" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-primary">
+                  <CardTitle className="text-primary flex items-center gap-2">
+                    <Bell className="h-5 w-5" />
                     {t("settings.notificationSettings")}
                   </CardTitle>
                   <CardDescription>
                     {t("settings.notificationSettingsDescription")}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span>{t("settings.taskNotifications")}</span>
-                    <Switch
-                      checked={
-                        loadingPreferences ? true : receiveTaskNotifications
-                      }
-                      onCheckedChange={(checked) =>
-                        handleNotificationPreferenceChange("task", checked)
-                      }
-                      disabled={saving || loadingPreferences}
-                    />
+                <CardContent className="space-y-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 rounded-lg border bg-card">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/20">
+                          <CheckSquare className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div className="space-y-1">
+                          <div className="font-medium">
+                            {t("settings.taskNotifications")}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {t("settings.taskNotificationsDescription")}
+                          </div>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={
+                          loadingPreferences ? true : receiveTaskNotifications
+                        }
+                        onCheckedChange={(checked) =>
+                          handleNotificationPreferenceChange("task", checked)
+                        }
+                        disabled={saving || loadingPreferences}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between p-4 rounded-lg border bg-card">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 rounded-full bg-purple-100 dark:bg-purple-900/20">
+                          <Calendar className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                        </div>
+                        <div className="space-y-1">
+                          <div className="font-medium">
+                            {t("settings.eventNotifications")}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {t("settings.eventNotificationsDescription")}
+                          </div>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={
+                          loadingPreferences ? true : receiveEventNotifications
+                        }
+                        onCheckedChange={(checked) =>
+                          handleNotificationPreferenceChange("event", checked)
+                        }
+                        disabled={saving || loadingPreferences}
+                      />
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span>{t("settings.eventNotifications")}</span>
-                    <Switch
-                      checked={
-                        loadingPreferences ? true : receiveEventNotifications
-                      }
-                      onCheckedChange={(checked) =>
-                        handleNotificationPreferenceChange("event", checked)
-                      }
-                      disabled={saving || loadingPreferences}
-                    />
+
+                  {saving && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      {t("settings.savingPreferences")}
+                    </div>
+                  )}
+
+                  <div className="p-4 rounded-lg bg-muted/50 border">
+                    <div className="flex items-start gap-2">
+                      <Info className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                      <div className="text-sm text-muted-foreground">
+                        <p className="font-medium mb-1">
+                          {t("settings.notificationTypes")}
+                        </p>
+                        <p>{t("settings.notificationTypesDescription")}</p>
+                        <ul className="list-disc list-inside mt-2 space-y-1">
+                          <li>
+                            {t("settings.notificationTypesList.tasksDue")}
+                          </li>
+                          <li>
+                            {t("settings.notificationTypesList.eventsStarting")}
+                          </li>
+                          <li>
+                            {t(
+                              "settings.notificationTypesList.updatesReminders"
+                            )}
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

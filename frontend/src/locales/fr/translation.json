@@ -549,6 +549,16 @@
     "task": "tâche",
     "event": "événement",
     "failedToSavePreferences": "Échec de l'enregistrement des préférences de notification",
+    "taskNotificationsDescription": "Soyez notifié des échéances de tâches à venir et des mises à jour",
+    "eventNotificationsDescription": "Recevez des rappels pour les événements et réunions à venir",
+    "savingPreferences": "Enregistrement des préférences...",
+    "notificationTypes": "Types de notifications",
+    "notificationTypesDescription": "Vous recevrez des notifications pour :",
+    "notificationTypesList": {
+      "tasksDue": "Tâches dues dans les 24 heures",
+      "eventsStarting": "Événements qui commencent bientôt",
+      "updatesReminders": "Mises à jour et rappels importants"
+    },
     "colorThemes": {
       "default": "Défaut",
       "red": "Rouge",
@@ -770,5 +780,24 @@
       "failedToGetPriorities": "Échec de l'obtention des priorités des tâches",
       "resultsCleared": "Résultats de priorisation effacés"
     }
+  },
+  "cookieConsent": {
+    "title": "Préférences de cookies",
+    "description": "Nous utilisons des cookies pour vous maintenir connecté et assurer un accès sécurisé à votre compte.",
+    "cookiePolicy": "Politique de cookies",
+    "accept": "Accepter",
+    "learnMore": "En savoir plus",
+    "close": "Fermer",
+    "policyTitle": "Politique de cookies",
+    "policyDescription": "Comment nous utilisons les cookies sur notre site web.",
+    "whatAreCookies": "Que sont les cookies ?",
+    "whatAreCookiesDescription": "Les cookies sont de petits fichiers texte stockés sur votre appareil qui aident notre site web à mémoriser votre session de connexion.",
+    "whatCookiesDoWeUse": "Quels cookies utilisons-nous ?",
+    "authenticationCookies": "Cookies d'authentification",
+    "authenticationCookiesDescription": "Nous utilisons des cookies JWT (JSON Web Token) pour vous maintenir connecté. Ces cookies sont essentiels au bon fonctionnement du site web.",
+    "whyDoWeNeedThem": "Pourquoi en avons-nous besoin ?",
+    "whyDoWeNeedThemDescription": "Sans ces cookies, vous devriez vous connecter à chaque visite de notre site. Ils assurent un accès sécurisé à votre compte.",
+    "yourPrivacy": "Votre vie privée",
+    "yourPrivacyDescription": "Ces cookies ne stockent que votre statut d'authentification. Nous ne suivons pas votre activité de navigation ni ne collectons d'informations personnelles au-delà de ce qui est nécessaire pour la connexion."
   }
 } 
