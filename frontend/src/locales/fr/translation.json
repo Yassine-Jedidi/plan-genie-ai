@@ -670,7 +670,12 @@
   "language": {
     "english": "Anglais",
     "french": "Français",
-    "selectLanguage": "Choisir la langue"
+    "selectLanguage": "Sélectionner la langue",
+    "languageSupport": "Support linguistique",
+    "currentlySupported": "Langues actuellement prises en charge :",
+    "fullSupport": "Support complet",
+    "languageChangesApplied": "Les changements de langue sont appliqués immédiatement.",
+    "chooseLanguageDescription": "Choisissez votre langue préférée pour l'interface de l'application"
   },
   "sidebar": {
     "application": "Application",

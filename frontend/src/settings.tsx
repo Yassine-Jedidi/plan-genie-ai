@@ -20,6 +20,7 @@ import {
   CheckSquare,
   Calendar,
   Info,
+  Languages,
 } from "lucide-react";
 import { ColorTheme, Theme } from "@/contexts/theme-context";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
@@ -487,13 +488,55 @@ export default function SettingsPage() {
             <TabsContent value="language" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>{t("settings.language")}</CardTitle>
+                  <CardTitle className="text-primary flex items-center gap-2">
+                    {t("settings.language")}
+                  </CardTitle>
                   <CardDescription>
                     {t("settings.languageDescription")}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <LanguageSwitch />
+                <CardContent className="space-y-6">
+                  <div className="space-y-4">
+                    <div className="p-4 rounded-lg border bg-card">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-full bg-foreground/70">
+                            <Languages className="h-4 w-4 text-primary-foreground" />
+                          </div>
+                          <div className="space-y-1">
+                            <div className="font-medium">
+                              {t("language.selectLanguage")}
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              {t("language.chooseLanguageDescription")}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-4">
+                        <LanguageSwitch />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-lg bg-muted/50 border">
+                    <div className="flex items-start gap-2">
+                      <Info className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                      <div className="text-sm text-muted-foreground">
+                        <p className="font-medium mb-1">
+                          {t("language.languageSupport")}
+                        </p>
+                        <p>{t("language.currentlySupported")}</p>
+                        <ul className="list-disc list-inside mt-2 space-y-1">
+                          <li>English (EN) - {t("language.fullSupport")}</li>
+                          <li>Français (FR) - {t("language.fullSupport")}</li>
+                        </ul>
+                        <p className="mt-2 text-xs">
+                          {t("language.languageChangesApplied")}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>

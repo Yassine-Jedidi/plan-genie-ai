@@ -669,7 +669,12 @@
   "language": {
     "english": "English",
     "french": "French",
-    "selectLanguage": "Select language"
+    "selectLanguage": "Select Language",
+    "languageSupport": "Language Support",
+    "currentlySupported": "Currently supported languages:",
+    "fullSupport": "Full support",
+    "languageChangesApplied": "Language changes are applied immediately.",
+    "chooseLanguageDescription": "Choose your preferred language for the application interface"
   },
   "sidebar": {
     "application": "Application",
