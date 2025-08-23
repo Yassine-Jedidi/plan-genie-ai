@@ -119,21 +119,12 @@ export default function AiAssistantPage() {
     }
   };
 
-  // Filter tasks to show only active and on-time tasks
+  // Filter tasks to show only active tasks (including overdue tasks)
   const getActiveTasks = () => {
     return tasks.filter((task) => {
       // Skip completed tasks
       if (task.status === "Done") {
         return false;
-      }
-
-      // Skip overdue tasks
-      if (task.deadline) {
-        const deadline = new Date(task.deadline);
-        const now = new Date();
-        if (deadline < now) {
-          return false;
-        }
       }
 
       return true;
@@ -314,8 +305,33 @@ export default function AiAssistantPage() {
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          <span>
+                          <span
+                            className={(() => {
+                              if (!task.deadline) return "";
+                              const deadline = new Date(task.deadline);
+                              const now = new Date();
+                              if (deadline < now) {
+                                return "text-red-600 font-medium";
+                              }
+                              return "";
+                            })()}
+                          >
                             {t("aiAssistant.due")}: {formatDate(task.deadline)}
+                            {task.deadline &&
+                              (() => {
+                                const deadline = new Date(task.deadline);
+                                const now = new Date();
+                                if (deadline < now) {
+                                  const overdueDays = Math.ceil(
+                                    (now.getTime() - deadline.getTime()) /
+                                      (1000 * 60 * 60 * 24)
+                                  );
+                                  return ` (${overdueDays} day${
+                                    overdueDays > 1 ? "s" : ""
+                                  } overdue)`;
+                                }
+                                return "";
+                              })()}
                           </span>
                         </div>
                       </div>
@@ -432,7 +448,34 @@ export default function AiAssistantPage() {
                         <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
                           <div className="flex items-center gap-1">
                             <Clock className="h-3 w-3" />
-                            <span>{formatDate(task.deadline)}</span>
+                            <span
+                              className={(() => {
+                                if (!task.deadline) return "";
+                                const deadline = new Date(task.deadline);
+                                const now = new Date();
+                                if (deadline < now) {
+                                  return "text-red-600 font-medium";
+                                }
+                                return "";
+                              })()}
+                            >
+                              {formatDate(task.deadline)}
+                              {task.deadline &&
+                                (() => {
+                                  const deadline = new Date(task.deadline);
+                                  const now = new Date();
+                                  if (deadline < now) {
+                                    const overdueDays = Math.ceil(
+                                      (now.getTime() - deadline.getTime()) /
+                                        (1000 * 60 * 60 * 24)
+                                    );
+                                    return ` (${overdueDays} day${
+                                      overdueDays > 1 ? "s" : ""
+                                    } overdue)`;
+                                  }
+                                  return "";
+                                })()}
+                            </span>
                           </div>
                         </div>
 

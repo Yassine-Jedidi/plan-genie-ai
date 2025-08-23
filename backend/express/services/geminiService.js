@@ -16,20 +16,11 @@ class GeminiService {
         return { prioritizedTasks: [], reasoning: "No tasks to prioritize" };
       }
 
-      // Filter out completed tasks and overdue tasks
+      // Filter out completed tasks only - include overdue tasks for prioritization
       const activeTasks = tasks.filter((task) => {
         // Skip completed tasks
         if (task.status === "Done") {
           return false;
-        }
-
-        // Skip overdue tasks
-        if (task.deadline) {
-          const deadline = new Date(task.deadline);
-          const now = new Date();
-          if (deadline < now) {
-            return false;
-          }
         }
 
         return true;
@@ -38,8 +29,8 @@ class GeminiService {
       if (activeTasks.length === 0) {
         const noTasksMessage =
           language === "fr"
-            ? "Aucune tâche active à prioriser. Toutes les tâches sont soit terminées soit en retard."
-            : "No active tasks to prioritize. All tasks are either completed or overdue.";
+            ? "Aucune tâche active à prioriser. Toutes les tâches sont terminées."
+            : "No active tasks to prioritize. All tasks are completed.";
 
         return {
           prioritizedTasks: [],
@@ -72,8 +63,15 @@ class GeminiService {
           let urgencyIndicator = "";
           if (daysUntilDeadline !== null) {
             if (daysUntilDeadline < 0) {
+              const overdueDays = Math.abs(daysUntilDeadline);
               urgencyIndicator =
-                language === "fr" ? " (EN RETARD)" : " (OVERDUE)";
+                language === "fr"
+                  ? ` (EN RETARD - ${overdueDays} jour${
+                      overdueDays > 1 ? "s" : ""
+                    } de retard)`
+                  : ` (OVERDUE - ${overdueDays} day${
+                      overdueDays > 1 ? "s" : ""
+                    } overdue)`;
             } else if (daysUntilDeadline === 0) {
               urgencyIndicator =
                 language === "fr" ? " (À RENDRE AUJOURD'HUI)" : " (DUE TODAY)";
@@ -133,18 +131,22 @@ Tasks to analyze:
 ${tasksDescription}
 
 PRIORITIZATION CRITERIA (in order of importance):
-1. **Due Time (Most Important)**: Tasks with earlier deadlines should be prioritized higher
-2. **Priority Level (Very Important)**: High priority tasks should be ranked above Medium, Medium above Low
-3. **Time Sensitivity**: Consider how close the deadline is to today
-4. **Priority Override**: When tasks are due on the same day or within a few hours, PRIORITY LEVEL takes precedence over small time differences
-5. **Task Dependencies**: If one task blocks others, prioritize it first
+1. **Overdue Tasks (Critical)**: Overdue tasks should be given the highest priority and ranked first
+2. **Due Time (Very Important)**: Tasks with earlier deadlines should be prioritized higher
+3. **Priority Level (Important)**: High priority tasks should be ranked above Medium, Medium above Low
+4. **Time Sensitivity**: Consider how close the deadline is to today
+5. **Priority Override**: When tasks are due on the same day or within a few hours, PRIORITY LEVEL takes precedence over small time differences
+6. **Task Dependencies**: If one task blocks others, prioritize it first
 
 PRIORITIZATION RULES:
-- Sort by deadline first (earliest first)
+- OVERDUE TASKS FIRST: All overdue tasks should be ranked at the top, sorted by how overdue they are (most overdue first)
+- Within overdue tasks, sort by priority (High > Medium > Low) for tasks with similar overdue periods
+- CRITICAL OVERDUE: Tasks overdue by 7+ days should be prioritized above all others regardless of priority
+- Then sort remaining tasks by deadline (earliest first)
 - Within same deadline, sort by priority (High > Medium > Low)
 - PRIORITY OVERRIDE: If tasks are due on the same day or within 2-3 hours, High priority beats Low priority regardless of small time differences
 - Tasks without deadlines go last, sorted by priority
-- Consider urgency: tasks due today/tomorrow get highest priority
+- Consider urgency: tasks due today/tomorrow get high priority (after overdue tasks)
 - When time difference is less than 3 hours, prioritize by priority level first, then by time
 
 IMPORTANT: You MUST include ALL ${
@@ -204,7 +206,8 @@ ${activeTasks
 - Use the EXACT task title from the prioritized list in each reasoning
 - Ensure reasoning accurately reflects the actual deadline and priority of that specific task
 - Return ONLY valid JSON, no markdown formatting or additional text
-- Prioritize by DEADLINE FIRST, then by PRIORITY LEVEL
+- CRITICAL: OVERDUE TASKS MUST BE PRIORITIZED FIRST, sorted by how overdue they are
+- Then prioritize by DEADLINE, then by PRIORITY LEVEL
 - IMPORTANT: When tasks are due on the same day or within 2-3 hours, HIGH priority should beat LOW priority
 - Double-check that each reasoning describes the correct task for that position
 - DO NOT OMIT ANY TASKS - include all ${activeTasks.length} tasks
@@ -228,18 +231,22 @@ Tâches à analyser:
 ${tasksDescription}
 
 CRITÈRES DE PRIORISATION (par ordre d'importance):
-1. **Échéance (Très Important)**: Les tâches avec des échéances plus précoces doivent être priorisées plus haut
-2. **Niveau de Priorité (Très Important)**: Les tâches de haute priorité doivent être classées au-dessus des moyennes, moyennes au-dessus des basses
-3. **Sensibilité Temporelle**: Considérez à quel point l'échéance est proche d'aujourd'hui
-4. **Surcharge de Priorité**: Quand les tâches sont dues le même jour ou dans quelques heures, le NIVEAU DE PRIORITÉ prend le dessus sur les petites différences de temps
-5. **Dépendances de Tâches**: Si une tâche bloque les autres, priorisez-la en premier
+1. **Tâches en Retard (Critique)**: Les tâches en retard doivent recevoir la priorité la plus élevée et être classées en premier
+2. **Échéance (Très Important)**: Les tâches avec des échéances plus précoces doivent être priorisées plus haut
+3. **Niveau de Priorité (Important)**: Les tâches de haute priorité doivent être classées au-dessus des moyennes, moyennes au-dessus des basses
+4. **Sensibilité Temporelle**: Considérez à quel point l'échéance est proche d'aujourd'hui
+5. **Surcharge de Priorité**: Quand les tâches sont dues le même jour ou dans quelques heures, le NIVEAU DE PRIORITÉ prend le dessus sur les petites différences de temps
+6. **Dépendances de Tâches**: Si une tâche bloque les autres, priorisez-la en premier
 
 RÈGLES DE PRIORISATION:
-- Trier par échéance d'abord (la plus précoce en premier)
+- TÂCHES EN RETARD EN PREMIER: Toutes les tâches en retard doivent être classées en haut, triées par leur retard (le plus en retard en premier)
+- Dans les tâches en retard, trier par priorité (Haute > Moyenne > Basse) pour les tâches avec des périodes de retard similaires
+- RETARD CRITIQUE: Les tâches en retard de 7+ jours doivent être priorisées au-dessus de toutes les autres indépendamment de la priorité
+- Puis trier les tâches restantes par échéance (la plus précoce en premier)
 - Dans la même échéance, trier par priorité (Haute > Moyenne > Basse)
 - SURCHARGE DE PRIORITÉ: Si les tâches sont dues le même jour ou dans 2-3 heures, la priorité haute bat la priorité basse indépendamment des petites différences de temps
 - Les tâches sans échéance vont en dernier, triées par priorité
-- Considérez l'urgence: les tâches dues aujourd'hui/demain obtiennent la priorité la plus haute
+- Considérez l'urgence: les tâches dues aujourd'hui/demain obtiennent une priorité élevée (après les tâches en retard)
 - Quand la différence de temps est inférieure à 3 heures, priorisez par niveau de priorité d'abord, puis par temps
 
 IMPORTANT: Vous DEVEZ inclure TOUTES les ${
@@ -299,7 +306,8 @@ ${activeTasks
 - Utilisez le TITRE EXACT de la tâche de la liste priorisée dans chaque raisonnement
 - Assurez-vous que le raisonnement reflète avec précision l'échéance et la priorité réelles de cette tâche spécifique
 - Retournez UNIQUEMENT du JSON valide, pas de formatage markdown ou de texte supplémentaire
-- Priorisez par ÉCHÉANCE D'ABORD, puis par NIVEAU DE PRIORITÉ
+- CRITIQUE: LES TÂCHES EN RETARD DOIVENT ÊTRE PRIORISÉES EN PREMIER, triées par leur retard
+- Puis priorisez par ÉCHÉANCE, puis par NIVEAU DE PRIORITÉ
 - IMPORTANT: Quand les tâches sont dues le même jour ou dans 2-3 heures, la priorité HAUTE doit battre la priorité BASSE
 - Vérifiez que chaque raisonnement décrit la tâche correcte pour cette position
 - NE SAUTEZ AUCUNE TÂCHE - incluez toutes les ${activeTasks.length} tâches
